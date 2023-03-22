@@ -1,8 +1,7 @@
 # Student Organizer Website
 
-<div align="center">
-  <img src="https://github.com/ISIL-ESTE/Student-Workflow-Organizer/blob/main/logo.jpg" alt="LOGO" width="350" style="border-radius:50%">
-</div>
+
+<div align="center" style="background-image: url("https://github.com/ISIL-ESTE/Student-Workflow-Organizer/blob/main/logo.jpg"); background-size: cover; width: 100%; height: 300px; border-radius: 10px;"></div>
 
 A website designed to help students organize their homework, exams, and projects in a timeline form. Students can easily keep track of their upcoming assignments, exams, and projects and collaborate with others.
 
