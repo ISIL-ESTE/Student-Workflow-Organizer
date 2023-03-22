@@ -21,6 +21,7 @@
     "hpp": "^0.2.3",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.8.4",
+    "nodemon": "^2.0.21",
     "validator": "^13.7.0",
     "xss-clean": "^0.1.1"
   }

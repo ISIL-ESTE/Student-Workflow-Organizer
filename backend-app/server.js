@@ -21,13 +21,13 @@ mongoose.set("strictQuery", true);
 mongoose
   .connect(database, {useNewUrlParser: true})
   .then((con) => {
-    console.log("DB connection Successfully!");
+    console.log("\x1b[33m","[ app ]","\x1b[0m","DB Connected Successfully!");
   });
 
 // Start the server
 const port = process.env.PORT;
 app.listen(port, () => {
-  console.log("\x1b[30m","Application is running on  ", "\x1b[32m",`http://localhost:${port}/api`, "\x1b[0m", '');
+  console.log("\x1b[33m","[ app ]","\x1b[0m","Running on port : ", "\x1b[32m",`${port}`, "\x1b[0m", '');
 });
 
 process.on("unhandledRejection", (err) => {

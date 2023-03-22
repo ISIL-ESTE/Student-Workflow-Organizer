@@ -42,7 +42,7 @@ app.use(hpp());
 
 
 // Routes
-app.use('/api/users', userRoutes);
+app.use('/api/v1/users', userRoutes);
 
 // handle undefined Routes
 app.use('*', (req, res, next) => {
