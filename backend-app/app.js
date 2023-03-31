@@ -12,6 +12,9 @@ const globalErrHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
 const app = express();
 
+// use json as default format
+app.use(express.json());
+
 // Allow Cross-Origin requests
 app.use(cors());
 
