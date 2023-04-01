@@ -26,6 +26,11 @@ mongoose
     console.log("\x1b[33m","[ app ]","\x1b[0m","DB Connection Failed!"); 
   }); //Now all the errors of mongo will be handled by the catch block
 
+// If the connection throws an error
+mongoose.connection.on('error', (err) => {
+  console.log("\x1b[33m","[ app ]","\x1b[0m","DB Default Connection Failed!");
+});
+
 // Start the server
 const port = process.env.PORT;
 app.listen(port, () => {
