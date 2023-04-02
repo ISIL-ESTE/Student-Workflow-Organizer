@@ -34,7 +34,7 @@ mongoose.connection.on('error', (err) => {
 // When the connection is disconnected
 mongoose.connection.on('disconnected', () => {
 console.log("\x1b[33m","[ app ]","\x1b[0m","DB Default Connection Disconnected!");
-}
+})
 
 // Start the server
 const port = process.env.PORT;
