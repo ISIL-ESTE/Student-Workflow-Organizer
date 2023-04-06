@@ -59,10 +59,5 @@ const Logger = createLogger({
   exitOnError: false, // do not exit on handled exceptions
 });
 
-Logger.error(new Error('Error message').stack);
-Logger.info('Info message');
-Logger.warn('Warn message');
-Logger.debug('Debug message');
-
 // Export the logger
 module.exports = Logger;

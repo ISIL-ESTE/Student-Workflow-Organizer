@@ -5,7 +5,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const cors = require('cors');
-
+const morgan = require('./controllers/morganController')
 
 const userRoutes = require('./routes/userRoutes');
 const globalErrHandler = require('./controllers/errorController');
@@ -14,6 +14,9 @@ const app = express();
 
 // use json as default format
 app.use(express.json());
+
+// use morgan for logging
+app.use(morgan);
 
 // Allow Cross-Origin requests
 app.use(cors());

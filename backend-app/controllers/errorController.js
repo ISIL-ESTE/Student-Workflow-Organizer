@@ -1,8 +1,9 @@
+const Logger = require("../utils/Logger");
 // Express automatically knows that this entire function is an error handling middleware by specifying 4 parameters
 module.exports = (err, req, res, next) => {
     err.statusCode = err.statusCode || 500;
     err.status = err.status || "error"
-    console.log("Stack: ", err.stack);
+    Logger.error(err.stack);
     if(err.code===11000){
         Object.keys(err.keyValue).forEach(key=>{
             err.message = `Duplicate value for the field : [${key}] Please use another value!`;
