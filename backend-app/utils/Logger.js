@@ -21,7 +21,7 @@ addColors(colors);
  * @param {string} info - The log message
  */
 const formatLogMessage = format.printf(
-  (info) => `[${info.timestamp} - Level:${info.level}] ${info.message}`
+  (info) => `[${info.timestamp} - ${info.level} ] ${info.message}`
 );
 
 /**
