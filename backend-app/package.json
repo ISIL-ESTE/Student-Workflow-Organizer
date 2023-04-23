@@ -24,5 +24,9 @@
     "nodemon": "^2.0.21",
     "validator": "^13.7.0",
     "xss-clean": "^0.1.1"
+  },
+  "devDependencies": {
+    "morgan": "^1.10.0",
+    "winston": "^3.8.2"
   }
 }
