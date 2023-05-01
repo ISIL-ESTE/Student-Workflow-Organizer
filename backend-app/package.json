@@ -5,8 +5,9 @@
   "main": "app.js",
   "scripts": {
     "debug": "ndb server.js",
-    "start": "nodemon server.js",
-    "dev": "nodemon server.js"
+    "dev": "NODE_ENV=DEVELOPMENT nodemon server.js",
+    "prod": "NODE_ENV=PRODUCTION node server.js",
+    "start": "nodemon server.js"
   },
   "author": "Bella Abdelouahab",
   "license": "ISC",
