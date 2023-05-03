@@ -2,6 +2,9 @@
  * @description - This file contains the configuration for the logger
  */
 const { addColors, format, transports, createLogger } = require('winston');
+const { join } = require('path');
+const DailyRotateFile = require('winston-daily-rotate-file');
+const logFilePath = join(__dirname, '../server-logs');
 
 // Define the current environment
 const currentEnv = process.env.NODE_ENV || 'development';
@@ -51,11 +54,25 @@ const consoleOptions = {
   ),
 };
 
+const fileOptions = {
+  logLevel,
+  dirname: logFilePath,
+  filename: '%DATE%.log',
+  datePattern: 'YYYY-MM-DD',
+  zippedArchive: true,
+  handleExceptions: true,
+  json: true,
+  maxSize: '20m',
+  maxFiles: '15d',
+};
+
 // Define the transport for the logger
 const consoleTransport = new transports.Console(consoleOptions);
+const fileTransport = new DailyRotateFile(fileOptions);
 
 const Logger = createLogger({
-  transports: [consoleTransport], // add the transport to the logger
+  transports: [consoleTransport, fileTransport], // add the transport to the logger
+  exceptionHandlers: [fileTransport],
   exitOnError: false, // do not exit on handled exceptions
 });
 
