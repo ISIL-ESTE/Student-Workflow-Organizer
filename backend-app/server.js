@@ -41,3 +41,22 @@ process.on('unhandledRejection', (err) => {
     process.exit(1);
   });
 });
+
+// add graceful shutdown.
+process.on('SIGTERM', () => {
+  Logger.info('SIGTERM RECEIVED. Shutting down gracefully');
+  server.close(() => {
+    mongoose.connection.close(false, () => {
+      Logger.info('💥 Process terminated!');
+    });
+  });
+});
+
+process.on('SIGINT', () => {
+  Logger.info('SIGINT RECEIVED. Shutting down gracefully');
+  server.close(() => {
+    mongoose.connection.close(false, () => {
+      Logger.info('💥 Process terminated!');
+    });
+  });
+});
