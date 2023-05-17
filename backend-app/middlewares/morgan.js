@@ -3,6 +3,7 @@
  */
 const morgan = require('morgan');
 const Logger = require('../utils/Logger');
+const currentEnv = process.env.NODE_ENV || 'development';
 
 // Create a stream object with a 'write' function that will be used by `morgan`
 const stream = {
@@ -12,7 +13,7 @@ const stream = {
 // Setup the logger
 const Morgan = morgan(
   ':method :url :status :res[content-length] - :response-time ms',
-  { stream }
+  { stream, skip: () => currentEnv.toLowerCase() === 'production' }
 );
 
 // Export the logger
