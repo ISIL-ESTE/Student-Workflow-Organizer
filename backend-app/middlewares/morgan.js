@@ -2,7 +2,6 @@
  * @description This file contains the morgan middleware for logging requests
  */
 const morgan = require('morgan');
-const Logger = require('../utils/Logger');
 const currentEnv = process.env.NODE_ENV || 'development';
 
 // Create a stream object with a 'write' function that will be used by `morgan`

@@ -53,7 +53,7 @@ app.use('/api/v1/users', userRoutes);
 
 // handle undefined Routes
 app.use('*', (req, res, next) => {
-  const err = new AppError(404, 'fail', 'undefined route');
+  const err = new AppError(404, 'fail', 'Route Not Found',req.path);
   next(err, req, res, next);
 });
 

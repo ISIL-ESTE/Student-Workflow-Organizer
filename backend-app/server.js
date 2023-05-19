@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
-const Logger = require('./utils/Logger');
+require("./utils/Logger");
 const { DATABASE, PORT, DATABASE_PASSWORD } = require('./config/appConfig');
 
 process.on('uncaughtException', (err) => {
+  console.log(err.name, err.message, err.stack);
   Logger.error('UNCAUGHT EXCEPTION!!!  shutting down ...');
   Logger.error(`${err.name}, ${err.message}`);
   process.exit(1);

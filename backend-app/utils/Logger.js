@@ -14,6 +14,5 @@ const Logger = createLogger({
   exceptionHandlers: [fileTransport],
   exitOnError: false, // do not exit on handled exceptions
 });
-
 // Export the logger
-module.exports = Logger;
+global.Logger = Logger;
