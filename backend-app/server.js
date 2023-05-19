@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
 const Logger = require('./utils/Logger');
-dotenv.config();
+const { DATABASE, PORT, DATABASE_PASSWORD } = require('./config/appConfig');
 
 process.on('uncaughtException', (err) => {
   Logger.error('UNCAUGHT EXCEPTION!!!  shutting down ...');
@@ -11,10 +10,7 @@ process.on('uncaughtException', (err) => {
 
 const app = require('./app');
 
-const database = (process.env.DATABASE || '').replace(
-  '<PASSWORD>',
-  process.env.DATABASE_PASSWORD
-);
+const database = DATABASE.replace('<PASSWORD>', DATABASE_PASSWORD);
 
 mongoose.set('strictQuery', true);
 
@@ -29,20 +25,14 @@ mongoose
     Logger.error('DB Connection Failed! \n\tException : '+err)
   }); //Now all the errors of mongo will be handled by the catch block
 
-// If the connection throws an error
-mongoose.connection.on('error', (err) => {
-  Logger.error('DB Connection Error!');
-});
-
 // When the connection is disconnected
 mongoose.connection.on('disconnected', () => {
   Logger.error('DB Connection Disconnected!');
 });
 
 // Start the server
-const port = process.env.PORT;
-app.listen(port, () => {
-  Logger.info(`App running on port ${port}`);
+app.listen(PORT, () => {
+  Logger.info(`App running on port ${PORT}`);
 });
 
 process.on('unhandledRejection', (err) => {
@@ -50,5 +40,24 @@ process.on('unhandledRejection', (err) => {
   Logger.error(`${err.name}, ${err.message}`);
   server.close(() => {
     process.exit(1);
+  });
+});
+
+// add graceful shutdown.
+process.on('SIGTERM', () => {
+  Logger.info('SIGTERM RECEIVED. Shutting down gracefully');
+  server.close(() => {
+    mongoose.connection.close(false, () => {
+      Logger.info('💥 Process terminated!');
+    });
+  });
+});
+
+process.on('SIGINT', () => {
+  Logger.info('SIGINT RECEIVED. Shutting down gracefully');
+  server.close(() => {
+    mongoose.connection.close(false, () => {
+      Logger.info('💥 Process terminated!');
+    });
   });
 });
