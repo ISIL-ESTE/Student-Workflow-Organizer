@@ -1,7 +1,7 @@
 @media (max-width: 768px){
     header{
         flex-direction: row;
-        padding: 1rem 0;
+        padding: 1rem 2rem;
     }
     header > a{
         margin-right: 0;
@@ -34,10 +34,12 @@
     }
     #nav-menu{
         position: absolute;
-        top: 50px;
-        right: .7rem;
-        background: #000;
-        border-radius: .5rem;
+        top: 10%; 
+        left: 0;
+        background: #1d1e21;
+        border-radius: 2.5rem;
+        width: 80vw;
+        margin: 0 10vw;
     }
     #nav-button{
         all: unset;
@@ -48,32 +50,49 @@
         outline: none;
         height: 30px;
         padding:0 1.5rem;
-    }
-    .nav-icon{
-        display: block;
-        width: 25px;
-        height: 5px;
-        background-color: black;
-        margin: 6px 0;
         position: relative;
     }
-    .nav-icon:not(.close):after{
+    #nav-button::after,#nav-button::before{
+        content: '';
         position: absolute;
-        content: "";
-        display: block;
-        width: 35px;
-        height: 5px;
-        background-color: black;
-        margin: -8px 0;
+        top: 50%;
+        left: 50%;
+        left: 0;
+        width: 2rem;
+        height: 2px;
+        pointer-events: none;
+        -webkit-transition: -webkit-transform 0.55s;
+        transition: transform 0.55s;
+        -webkit-transform-origin: 50% 50%;
+        transform-origin: 50% 50%;
+        background: #2a2b30;
     }
-    .nav-icon:not(.close):before{
+    #nav-button:not(.close)::after{
+        transform: translate3d(0, 10px, 0) scale3d(0.8, 1, 1);
+    }
+    #nav-button:not(.close)::before{
+        transform: translate3d(0, -10px, 0) scale3d(0.8, 1, 1);
+    }
+    #nav-button::before{
+            transform: rotate3d(0, 0, 1, 45deg);
+    }
+    #nav-button::after{
+            transform: rotate3d(0, 0, 1, -45deg);
+    }
+    #nav-button span {
         position: absolute;
-        content: "";
-        display: block;
-        width: 20px;
-        height: 5px;
-        background-color: black;
-        margin: 8px 0;
+        left: 0;
+        overflow: hidden;
+        width: 2rem;
+        height: 2px;
+        text-indent: 200%;
+        margin-top: .1rem;
+        -webkit-transition: opacity 0.25s;
+        transition: opacity 0.25s;
+        background: #2a2b30;
+        transition: all 0.5s;
     }
-
+    #nav-button:is(.close) span {
+        opacity: 0;
+    }
 }

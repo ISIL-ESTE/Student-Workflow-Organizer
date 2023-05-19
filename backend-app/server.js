@@ -18,6 +18,7 @@ const database = (process.env.DATABASE || '').replace(
 
 mongoose.set('strictQuery', true);
 
+
 // Connect the database
 mongoose
   .connect(database, { useNewUrlParser: true })
@@ -25,7 +26,7 @@ mongoose
     Logger.info('DB Connected Successfully!');
   })
   .catch((err) => {
-    Logger.error('DB Connection Failed!');
+    Logger.error('DB Connection Failed! \n\tException : '+err)
   }); //Now all the errors of mongo will be handled by the catch block
 
 // If the connection throws an error
