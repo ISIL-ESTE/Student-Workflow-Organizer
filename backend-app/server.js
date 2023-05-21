@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
-const Logger = require('./utils/Logger');
+require("./utils/Logger");
 const { DATABASE, PORT, DATABASE_PASSWORD } = require('./config/appConfig');
 
 process.on('uncaughtException', (err) => {
+  console.log(err.name, err.message, err.stack);
   Logger.error('UNCAUGHT EXCEPTION!!!  shutting down ...');
   Logger.error(`${err.name}, ${err.message}`);
   process.exit(1);
@@ -14,6 +15,7 @@ const database = DATABASE.replace('<PASSWORD>', DATABASE_PASSWORD);
 
 mongoose.set('strictQuery', true);
 
+
 // Connect the database
 mongoose
   .connect(database, { useNewUrlParser: true })
@@ -21,7 +23,7 @@ mongoose
     Logger.info('DB Connected Successfully!');
   })
   .catch((err) => {
-    Logger.error('DB Connection Failed!');
+    Logger.error('DB Connection Failed! \n\tException : '+err)
   }); //Now all the errors of mongo will be handled by the catch block
 
 // When the connection is disconnected

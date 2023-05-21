@@ -5,6 +5,8 @@ import {
   Route,
   createRoutesFromElements,
 } from "react-router-dom";
+
+import Login from './layout/auth/Login';
 import Root from './components/Root';
 
 
@@ -12,6 +14,9 @@ import Root from './components/Root';
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Root />}>
+      <Route path="*" element={<div>Not Found</div>} />
+      {/* login */}
+      <Route path="/login" element={<Login />} />
     </Route>
   )
 );

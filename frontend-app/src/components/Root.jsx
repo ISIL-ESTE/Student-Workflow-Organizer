@@ -1,13 +1,12 @@
-
-import './root.css';
 import './root-phone.css'
 import { NavLink, Outlet } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function Root() {
 
     const toggleMenu = (e) => {
       const el = document.getElementById("nav-menu");
-      const navicon = document.querySelector(".nav-icon");
+      const navicon = document.querySelector("#nav-button");
       if (el.classList.contains("hidden")) {
         document.querySelectorAll(".inner-menu").forEach((item) => {
           item.classList.add("hidden");
@@ -24,18 +23,19 @@ export default function Root() {
       !el.classList.contains("hidden") && el.focus();
     };
 
+
     return (
       <div className="root">
         <header>
           <NavLink to="/">
-            <h1>Frontend App</h1>
+            <h1>Student Work Flow</h1>
           </NavLink>
           <div className="navbar__menu">
           <button
             id="nav-button"
             onClick={(e) => toggleMenu(e)}
           >
-            <span className='nav-icon'></span>
+            <span >M</span>
           </button>
           <ul
             id="nav-menu"
