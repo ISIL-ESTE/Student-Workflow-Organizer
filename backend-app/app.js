@@ -6,11 +6,13 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const cors = require('cors');
 const morgan = require('./middlewares/morgan');
+const swaggerDocs = require('./utils/swagger');
 
 const userRoutes = require('./routes/userRoutes');
 const globalErrHandler = require('./middlewares/globalErrorHandler');
 const AppError = require('./utils/appError');
 const app = express();
+swaggerDocs(app);
 
 // use json as default format
 app.use(express.json());
