@@ -1,4 +1,5 @@
 const swaggerUi = require('swagger-ui-express');
+const { PORT, CURRENT_ENV } = require('../../config/appConfig');
 const path = require('path');
 const YAML = require('yamljs');
 const mergeYamlFiles = require('./mergeYamlFiles');
@@ -18,7 +19,17 @@ swaggerSpec.paths = mergeYamlFiles(docsDirPath);
  * @returns {void}
  */
 const swaggerDocs = (app) => {
+  if (CURRENT_ENV.toLowerCase() === 'production') return;
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  // Get docs in JSON format
+  app.get('/docs-json', (_, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+  });
+  global.Logger.info(`Swagger docs available at http://localhost:${PORT}/docs`);
+  global.Logger.info(
+    `Swagger docs in JSON format available at http://localhost:${PORT}/docs-json`
+  );
 };
 
 module.exports = swaggerDocs;
