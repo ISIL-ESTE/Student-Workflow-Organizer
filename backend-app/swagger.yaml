@@ -1,0 +1,38 @@
+openapi: 3.0.0
+info:
+  title: API Documentation
+  description: Student workflow organizer API Documentation with swagger.
+  version: 1.0
+  contact:
+    email: contact@gmail.com
+  license:
+    name: MIT License
+    url: 'https://opensource.org/licenses/MIT'
+servers:
+  - url: 'http://localhost:4000/api/v1'
+    description: This is the development server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json: {}
+    '201':
+      description: CREATED
+      content:
+        application/json: {}
+    '404':
+      description: NOT FOUND
+    '400':
+      description: BAD REQUEST
+    '401':
+      description: UNAUTHORIZED
+    '403':
+      description: FORBIDDEN
