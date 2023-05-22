@@ -1,5 +1,6 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
+const compression = require("compression");
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
@@ -47,6 +48,9 @@ app.use(xss());
 
 // Prevent parameter pollution
 app.use(hpp());
+
+// Compress all responses
+app.use(compression());
 
 // Routes
 app.use('/api/v1/users', userRoutes);
