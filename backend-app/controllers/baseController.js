@@ -1,6 +1,11 @@
 const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures");
 
+/**
+ * Delete a document by ID
+ * @param {Model} Model - The mongoose model
+ * @returns {Function} - Express middleware function
+ */
 exports.deleteOne = Model => async (req, res, next) => {
     try {
         const doc = await Model.findByIdAndDelete(req.params.id);
@@ -18,6 +23,12 @@ exports.deleteOne = Model => async (req, res, next) => {
     }
 };
 
+
+/**
+ * Update a document by ID
+ * @param {Model} Model - The mongoose model
+ * @returns {Function} - Express middleware function
+ */
 exports.updateOne = Model => async (req, res, next) => {
     try {
         const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
@@ -41,6 +52,12 @@ exports.updateOne = Model => async (req, res, next) => {
     }
 };
 
+
+/**
+ * Create a new document
+ * @param {Model} Model - The mongoose model
+ * @returns {Function} - Express middleware function
+ */
 exports.createOne = Model => async (req, res, next) => {
     try {
         const doc = await Model.create(req.body);
@@ -56,7 +73,11 @@ exports.createOne = Model => async (req, res, next) => {
         next(error);
     }
 };
-
+/**
+ * Get a document by ID
+ * @param {Model} Model - The mongoose model
+ * @returns {Function} - Express middleware function
+ */
 exports.getOne = Model => async (req, res, next) => {
     try {
         const doc = await Model.findById(req.params.id);
@@ -75,7 +96,11 @@ exports.getOne = Model => async (req, res, next) => {
         next(error);
     }
 };
-
+/**
+ * Get all documents
+ * @param {Model} Model - The mongoose model
+ * @returns {Function} - Express middleware function
+ */
 exports.getAll = Model => async (req, res, next) => {
     try {
         const features = new APIFeatures(Model.find(), req.query)

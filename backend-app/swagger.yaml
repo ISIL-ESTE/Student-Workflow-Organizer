@@ -8,9 +8,6 @@ info:
   license:
     name: MIT License
     url: 'https://opensource.org/licenses/MIT'
-servers:
-  - url: 'http://localhost:4000/api/v1'
-    description: This is the development server
 components:
   securitySchemes:
     bearerAuth:
