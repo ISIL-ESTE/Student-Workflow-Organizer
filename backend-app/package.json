@@ -25,10 +25,12 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.8.4",
     "morgan": "^1.10.0",
+    "swagger-ui-express": "^4.6.3",
     "validator": "^13.7.0",
     "winston": "^3.8.2",
     "winston-daily-rotate-file": "^4.7.1",
-    "xss-clean": "^0.1.1"
+    "xss-clean": "^0.1.1",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"

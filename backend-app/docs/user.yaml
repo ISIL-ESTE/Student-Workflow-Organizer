@@ -1,0 +1,270 @@
+/users/login:
+  post:
+    summary: login
+    description: login using email and password.
+    tags:
+      - Auth
+    requestBody:
+      content:
+        'application/json':
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+              password:
+                type: string
+            required:
+              - email
+              - password
+            example:
+              email: 'muttaqin@mail.com'
+              password: 'muttaqin123'
+      required: true
+    responses:
+      200:
+        description: Success
+        content:
+          'application/json':
+            example:
+              status: 'Success'
+              token: 'femgienaiofnqignigwgnine'
+              data:
+                user:
+                  _id: '112121221'
+                  name: 'muttaqin'
+                  email: 'muttaqin@gmail.com'
+                  address: 'mars'
+                  role: 'user'
+                  active: true
+                  cratedAt: '2023-05-21T13:27:35.793Z'
+                  updatedAt: '2023-05-21T13:27:35.793Z'
+
+      404:
+        $ref: '#/components/responses/404'
+      401:
+        $ref: '#/components/responses/401'
+
+/users/signup:
+  post:
+    summary: Signup
+    description: signup with valid credentials.
+    tags:
+      - Auth
+    requestBody:
+      content:
+        'application/json':
+          schema:
+            properties:
+              name:
+                type: string
+              email:
+                type: string
+                format: email
+              password:
+                type: string
+              passwordConfirm:
+                type: string
+            required:
+              - name
+              - email
+              - password
+              - passwordConfirm
+            example:
+              name: 'john doe'
+              email: 'john@mail.com'
+              password: 'john123'
+              passwordConfirm: 'john123'
+      required: true
+    responses:
+      201:
+        description: Created
+        content:
+          'application/json':
+            example:
+              status: 'Success'
+              token: 'femgienaiofnqignigwgnine'
+              data:
+                user:
+                  _id: '112121221'
+                  name: 'tom cruise'
+                  email: 'tom@gmail.com'
+                  address: 'mars'
+                  role: 'user'
+                  active: true
+                  cratedAt: '2023-05-21T13:27:35.793Z'
+                  updatedAt: '2023-05-21T13:27:35.793Z'
+
+/users/deleteMe:
+  delete:
+    summary: delete user
+    description: delete user
+    tags:
+      - Users
+    security:
+      - bearerAuth: []
+    responses:
+      204:
+        description: No Content success
+        content:
+          'application/json':
+            example:
+              status: 'Success'
+              data: null
+/users:
+  get:
+    summary: get all users
+    description: get all users
+    tags:
+      - Users
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: sort
+        in: query
+        schema:
+          type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        schema:
+          type: integer
+    responses:
+      200:
+        description: OK
+        content:
+          'application/json':
+            example:
+              status: 'Success'
+              results: 3
+              data:
+                - _id: '112121221'
+                  name: 'muttaqin'
+                  email: 'muttaqin@gmail.com'
+                  address: 'mars'
+                  role: 'user'
+                  active: true
+                  cratedAt: '2023-05-21T13:27:35.793Z'
+                  updatedAt: '2023-05-21T13:27:35.793Z'
+
+                - _id: '112121221'
+                  name: 'john'
+                  email: 'john@gmail.com'
+                  address: 'earth'
+                  role: 'user'
+                  active: true
+                  cratedAt: '2023-05-21T13:27:35.793Z'
+                  updatedAt: '2023-05-21T13:27:35.793Z'
+
+                - _id: '112121221'
+                  name: 'tom cruise'
+                  email: 'tom@gmail.com'
+                  address: 'jupiter'
+                  role: 'user'
+                  active: true
+                  cratedAt: '2023-05-21T13:27:35.793Z'
+                  updatedAt: '2023-05-21T13:27:35.793Z'
+/users/{id}:
+  get:
+    summary: get single user
+    description: returns a user if the user id matched.
+    tags:
+      - Users
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: id
+        in: path
+        description: ID of the user
+        required: true
+    responses:
+      200:
+        description: OK
+        content:
+          'application/json':
+            example:
+              status: 'success'
+              data:
+                doc:
+                  _id: '112121221'
+                  name: 'tom cruise'
+                  email: 'tom@gmail.com'
+                  address: 'mars'
+                  role: 'user'
+                  active: true
+                  cratedAt: '2023-05-21T13:27:35.793Z'
+                  updatedAt: '2023-05-21T13:27:35.793Z'
+      '404':
+        $ref: '#/components/responses/404'
+  patch:
+    summary: updates user
+    description: returns a single user where the user id matched.
+    tags:
+      - Users
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: id
+        in: path
+        description: ID of the user
+        required: true
+    requestBody:
+      content:
+        'application/json':
+          schema:
+            properties:
+              name:
+                type: string
+              email:
+                type: string
+                format: email
+              password:
+                type: string
+            example:
+              name: 'elon musk'
+              email: 'elon@gmail.com'
+    responses:
+      200:
+        description: OK
+        content:
+          'application/json':
+            example:
+              status: 'success'
+              data:
+                doc:
+                  _id: '112121221'
+                  name: 'elon musk'
+                  email: 'elonmusk@gmail.com'
+                  address: 'mars'
+                  role: 'user'
+                  active: true
+                  cratedAt: '2023-05-21T13:27:35.793Z'
+                  updatedAt: '2023-05-21T13:27:35.793Z'
+      '404':
+        $ref: '#/components/responses/404'
+  delete:
+    summary: deletes user
+    description: deletes the user where the user id matched.
+    tags:
+      - Users
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: id
+        in: path
+        description: ID of the user
+        required: true
+    responses:
+      204:
+        description: No Content Success
+        content:
+          'application/json':
+            example:
+              status: 'success'
+              data: null
+      '404':
+        $ref: '#/components/responses/404'
