@@ -12,10 +12,12 @@ const swaggerSpecPath = path.join(__dirname, '../../swagger.yaml');
 const swaggerSpec = YAML.load(swaggerSpecPath);
 // Merge the swagger.yaml file with the swagger annotations
 swaggerSpec.paths = mergeYamlFiles(docsDirPath);
-swaggerSpec.servers = [{
-  url: `http://localhost:${PORT}/api/v1`,
-  description: "Development server",
-}];
+swaggerSpec.servers = [
+  {
+    url: `http://localhost:${PORT}/api/v1`,
+    description: 'Development server',
+  },
+];
 Logger.info(`swaggerSpec: ${JSON.stringify(swaggerSpec)}`);
 /**
  * This function configures the swagger documentation
