@@ -14,14 +14,14 @@ Object.freeze(Roles);
 
 /**
  *
- * @param {string} role
- * @param { string[]} requiredAuthorities
+ * @param {{authorities:string[]}} user
+ * @param {string[]} requiredAuthorities
  * @returns {boolean}
  */
-const hasAuthority = (role, requiredAuthorities) => {
-  for (const authority of requiredAuthorities)
-    if (Roles[role].includes(authority)) return true;
-  return false;
+const hasAuthority = (user, requiredAuthorities) => {
+  return requiredAuthorities.every((authority) =>
+    user.authorities.includes(authority)
+  );
 };
 
 /**
@@ -34,7 +34,7 @@ const hasAuthority = (role, requiredAuthorities) => {
 const hasPermission = (user, requiredRoles, requiredAuthorities) => {
   for (const role of requiredRoles)
     if (user.roles.includes(role))
-      if (hasAuthority(role, requiredAuthorities)) return true;
+      if (hasAuthority(user, requiredAuthorities)) return true;
   return false;
 };
 /**
@@ -53,9 +53,9 @@ const isRestricted = (user, actions) => {
  * @param  { string[] } roles
  * @returns
  */
-exports.restrictTo = (roles, actions, authorities) => {
+const restrictTo = (roles, actions, requiredAuthorities) => {
   return (req, res, next) => {
-    if (hasPermission(req.user, roles, authorities)) {
+    if (hasPermission(req.user, roles, requiredAuthorities)) {
       if (!isRestricted(req.user, actions)) {
         next();
       }
@@ -71,4 +71,11 @@ exports.restrictTo = (roles, actions, authorities) => {
       next
     );
   };
+};
+
+module.exports = {
+  restrictTo,
+  Authorities,
+  Restrictions,
+  Roles,
 };
