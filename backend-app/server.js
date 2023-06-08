@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-require("./utils/Logger");
+require('./utils/Logger');
 const { DATABASE, PORT, DATABASE_PASSWORD } = require('./config/appConfig');
 
 process.on('uncaughtException', (err) => {
@@ -15,7 +15,6 @@ const database = DATABASE.replace('<PASSWORD>', DATABASE_PASSWORD);
 
 mongoose.set('strictQuery', true);
 
-
 // Connect the database
 mongoose
   .connect(database, { useNewUrlParser: true })
@@ -23,7 +22,7 @@ mongoose
     Logger.info('DB Connected Successfully!');
   })
   .catch((err) => {
-    Logger.error('DB Connection Failed! \n\tException : '+err)
+    Logger.error('DB Connection Failed! \n\tException : ' + err);
   }); //Now all the errors of mongo will be handled by the catch block
 
 // When the connection is disconnected
@@ -32,14 +31,14 @@ mongoose.connection.on('disconnected', () => {
 });
 
 // Start the server
-app.listen(PORT, () => {
+const expServer = app.listen(PORT, () => {
   Logger.info(`App running on port ${PORT}`);
 });
 
 process.on('unhandledRejection', (err) => {
   Logger.error('UNHANDLED REJECTION!!!  shutting down ...');
   Logger.error(`${err.name}, ${err.message}`);
-  server.close(() => {
+  expServer.close(() => {
     process.exit(1);
   });
 });
@@ -47,7 +46,7 @@ process.on('unhandledRejection', (err) => {
 // add graceful shutdown.
 process.on('SIGTERM', () => {
   Logger.info('SIGTERM RECEIVED. Shutting down gracefully');
-  server.close(() => {
+  expServer.close(() => {
     mongoose.connection.close(false, () => {
       Logger.info('💥 Process terminated!');
     });
@@ -56,7 +55,7 @@ process.on('SIGTERM', () => {
 
 process.on('SIGINT', () => {
   Logger.info('SIGINT RECEIVED. Shutting down gracefully');
-  server.close(() => {
+  expServer.close(() => {
     mongoose.connection.close(false, () => {
       Logger.info('💥 Process terminated!');
     });
