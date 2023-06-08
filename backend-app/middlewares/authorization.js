@@ -1,40 +1,52 @@
 const AppError = require('../utils/appError');
 
 //Enum
-const Authorities = {};
-Object.freeze(Authorities);
+const Actions = {
+  DELETE_USER: 'DELETE_USER',
+  UPDATE_USER: 'UPDATE_USER',
+  UPDATE_CALANDER: 'UPDATE_CALANDER',
+};
+Object.freeze(Actions);
 
 // Enum
-const Restrictions = {};
-Object.freeze(Restrictions);
-
-// Enum
-const Roles = {};
+const Roles = {
+  SUPER_ADMIN: {
+    type: 'SUPER_ADMIN',
+    authorities: Object.values(Actions),
+    restrictions: [],
+  },
+  ADMIN: {
+    type: 'ADMIN',
+    authorities: [Actions.DELETE_USER, Actions.UPDATE_USER],
+    restrictions: [Actions.UPDATE_CALANDER],
+  },
+  USER: {
+    type: 'USER',
+    authorities: [Actions.UPDATE_CALANDER],
+    restrictions: [Actions.DELETE_USER],
+  },
+};
 Object.freeze(Roles);
 
 /**
  *
  * @param {{authorities:string[]}} user
- * @param {string[]} requiredAuthorities
+ * @param {string[]} actions
  * @returns {boolean}
  */
-const hasAuthority = (user, requiredAuthorities) => {
-  return requiredAuthorities.every((authority) =>
-    user.authorities.includes(authority)
-  );
+const hasAuthority = (user, actions) => {
+  return actions.every((action) => user.authorities.includes(action));
 };
 
 /**
- * @param {{roles:string[]}} user
- * @param { string[] } requiredRoles
- * @param { string[] } requiredAuthorities
+ * @param {{role:string}} user
+ * @param { string } requiredRole
+ * @param { string[] }actions
  * @returns {boolean}
  *
  */
-const hasPermission = (user, requiredRoles, requiredAuthorities) => {
-  for (const role of requiredRoles)
-    if (user.roles.includes(role))
-      if (hasAuthority(user, requiredAuthorities)) return true;
+const hasPermission = (user, requiredRole, actions) => {
+  if (user.role === requiredRole) if (hasAuthority(user, actions)) return true;
   return false;
 };
 /**
@@ -44,18 +56,18 @@ const hasPermission = (user, requiredRoles, requiredAuthorities) => {
  * @returns {boolean}
  */
 const isRestricted = (user, actions) => {
-  return actions.every((action) => user.restrictions.includes(action));
+  return actions.every((action) => !user.restrictions.includes(action));
 };
 
 /**
  *
- * @param { string[] } action
- * @param  { string[] } roles
+ * @param { string[] } actions
+ * @param  { string } role
  * @returns
  */
-const restrictTo = (roles, actions, requiredAuthorities) => {
+const restrictTo = (role, actions) => {
   return (req, res, next) => {
-    if (hasPermission(req.user, roles, requiredAuthorities)) {
+    if (hasPermission(req.user, role, actions)) {
       if (!isRestricted(req.user, actions)) {
         next();
       }
@@ -75,7 +87,6 @@ const restrictTo = (roles, actions, requiredAuthorities) => {
 
 module.exports = {
   restrictTo,
-  Authorities,
-  Restrictions,
+  Actions,
   Roles,
 };

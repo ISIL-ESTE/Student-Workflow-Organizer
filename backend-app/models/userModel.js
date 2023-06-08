@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
-const { Authorities, Restrictions } = require('../middlewares/authorization');
+const { Actions } = require('../middlewares/authorization');
 
 const userSchema = new mongoose.Schema(
   {
@@ -37,12 +37,24 @@ const userSchema = new mongoose.Schema(
       },
     },
     authorities: {
-      type: String,
-      enum: Object.values(Authorities) || [],
+      type: Array,
+      default: [],
+      validate: {
+        validator: function (el) {
+          return el.every((action) => Object.values(Actions).includes(action));
+        },
+      },
+      message: 'Please provide a valid action',
     },
     restrictions: {
-      type: String,
-      enum: Object.values(Restrictions) || [],
+      type: Array,
+      default: [],
+      validate: {
+        validator: function (el) {
+          return el.every((action) => Object.values(Actions).includes(action));
+        },
+        message: 'Please provide a valid action',
+      },
     },
     role: {
       type: String,
