@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 require('./utils/Logger');
-const { DATABASE, PORT, DATABASE_PASSWORD } = require('./config/appConfig');
+const { DATABASE, PORT} = require('./config/appConfig');
 
 process.on('uncaughtException', (err) => {
   console.log(err.name, err.message, err.stack);
@@ -11,13 +11,11 @@ process.on('uncaughtException', (err) => {
 
 const app = require('./app');
 
-const database = DATABASE.replace('<PASSWORD>', DATABASE_PASSWORD);
-
 mongoose.set('strictQuery', true);
 
 // Connect the database
 mongoose
-  .connect(database, { useNewUrlParser: true })
+  .connect(DATABASE, { useNewUrlParser: true })
   .then((con) => {
     Logger.info('DB Connected Successfully!');
   })
