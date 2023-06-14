@@ -1,6 +1,7 @@
 const express = require('express');
 const {
   addSuperAdmin,
+  removeSuperAdmin,
   authorizeOrRestrict,
   addAdmin,
   removeAdmin,
@@ -23,9 +24,26 @@ router.use(protect);
  */
 router.put(
   '/add-super-admin/:userId',
-  restrictTo(Roles.SUPER_ADMIN.type, [Actions.UPDATE_USER]),
+  restrictTo(Roles.SUPER_ADMIN.type)(Actions.UPDATE_USER),
   addSuperAdmin
 );
+
+/*
+ * @protected
+ * @route PUT /api/v1/admin/remove-super-admin/:userId
+ * @description Remove super admin role from a user
+ * @access Super Admin
+ * @param {string} userId - Id of the user to remove super admin role from
+ **/
+router.put(
+  '/remove-super-admin/:userId',
+  restrictTo(Roles.SUPER_ADMIN.type)(
+    Actions.UPDATE_USER,
+    Actions.REMOVE_SUPER_ADMIN
+  ),
+  removeSuperAdmin
+);
+
 /**
  * @protected
  * @route PUT /api/v1/admin/add-admin/:userId
@@ -35,7 +53,7 @@ router.put(
  */
 router.put(
   '/add-admin/:userId',
-  restrictTo(Roles.SUPER_ADMIN.type, [Actions.UPDATE_USER]),
+  restrictTo(Roles.SUPER_ADMIN.type)(Actions.UPDATE_USER),
   addAdmin
 );
 
@@ -48,7 +66,7 @@ router.put(
  */
 router.put(
   '/remove-admin/:userId',
-  restrictTo(Roles.SUPER_ADMIN.type, [Actions.UPDATE_USER]),
+  restrictTo(Roles.SUPER_ADMIN.type)(Actions.UPDATE_USER),
   removeAdmin
 );
 
@@ -63,6 +81,7 @@ router.put(
  */
 router.put(
   '/authorize-or-restrict/:userId',
-  restrictTo(Roles.ADMIN.type, [Actions.UPDATE_USER]),
+  restrictTo(Roles.SUPER_ADMIN.type)(Actions.UPDATE_USER),
   authorizeOrRestrict
 );
+module.exports = router;

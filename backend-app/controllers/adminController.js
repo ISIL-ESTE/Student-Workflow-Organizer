@@ -7,16 +7,19 @@ exports.addAdmin = async (req, res, next) => {
     const { userId } = req.params;
     const user = await userModel.findById(userId);
     if (!user) throw new AppError(404, 'fail', 'No user found with this id');
-    if (user.role === Roles.ADMIN)
+    if (req.user._id?.toString() === userId?.toString())
+      throw new AppError(400, 'fail', 'You cannot make yourself an admin');
+    console.log(req.user._id?.toString(), userId?.toString());
+    if (user.roles?.includes(Roles.ADMIN.type))
       throw new AppError(400, 'fail', 'User is already an admin');
-    user.role = Roles.ADMIN.type;
+    user.roles?.push(Roles.ADMIN.type);
     const existingAuthorities = user.authorities;
     const existingRestrictions = user.restrictions;
     user.authorities = Array.from(
-      new Set([...Roles[user.role].authorities, ...existingAuthorities])
+      new Set([...Roles.ADMIN.authorities, ...existingAuthorities])
     );
     user.restrictions = Array.from(
-      new Set([...Roles[user.role].restrictions, ...existingRestrictions])
+      new Set([...Roles.ADMIN.restrictions, ...existingRestrictions])
     );
     await user.save();
     res.status(200).json({
@@ -33,11 +36,13 @@ exports.removeAdmin = async (req, res, next) => {
     const { userId } = req.params;
     const user = await userModel.findById(userId);
     if (!user) throw new AppError(404, 'fail', 'No user found with this id');
-    if (user.role === Roles.USER)
+    if (req.user._id?.toString() === userId?.toString())
+      throw new AppError(400, 'fail', 'You cannot remove yourself as an admin');
+    if (!user.roles?.includes(Roles.ADMIN.type))
       throw new AppError(400, 'fail', 'User is not an admin');
-    user.role = Roles.USER.type;
-    user.authorities = Roles[user.role].authorities;
-    user.restrictions = Roles[user.role].restrictions;
+    user.roles = user.roles.filter((role) => role !== Roles.ADMIN.type);
+    user.authorities = Roles.USER.authorities;
+    user.restrictions = Roles.USER.restrictions;
     await user.save();
     res.status(200).json({
       status: 'success',
@@ -53,13 +58,15 @@ exports.addSuperAdmin = async (req, res, next) => {
     const { userId } = req.params;
     const user = await userModel.findById(userId);
     if (!user) throw new AppError(404, 'fail', 'No user found with this id');
-    if (user.role === Roles.SUPER_ADMIN)
+    if (req.user._id?.toString() === userId?.toString())
+      throw new AppError(400, 'fail', 'You cannot make yourself a super admin');
+    if (user.roles?.includes(Roles.SUPER_ADMIN.type))
       throw new AppError(400, 'fail', 'User is already a super admin');
-    user.role = Roles.SUPER_ADMIN.type;
+    user.roles?.push(Roles.SUPER_ADMIN.type);
     const existingRestrictions = user.restrictions;
-    user.authorities = Roles[user.role].authorities;
+    user.authorities = Roles.SUPER_ADMIN.authorities;
     user.restrictions = Array.from(
-      new Set([...Roles[user.role].restrictions, ...existingRestrictions])
+      new Set([...Roles.SUPER_ADMIN.restrictions, ...existingRestrictions])
     );
     await user.save();
     res.status(200).json({
@@ -70,7 +77,31 @@ exports.addSuperAdmin = async (req, res, next) => {
     next(err);
   }
 };
-
+exports.removeSuperAdmin = async (req, res, next) => {
+  const { userId } = req.params;
+  try {
+    const user = await userModel.findById(userId);
+    if (!user) throw new AppError(404, 'fail', 'No user found with this id');
+    if (req.user._id?.toString() === userId?.toString())
+      throw new AppError(
+        400,
+        'fail',
+        'You cannot remove yourself as a super admin'
+      );
+    if (!user.roles?.includes(Roles.SUPER_ADMIN.type))
+      throw new AppError(400, 'fail', 'User is not a super admin');
+    user.roles = user.roles.filter((role) => role !== Roles.SUPER_ADMIN.type);
+    user.authorities = Roles.ADMIN.authorities;
+    user.restrictions = Roles.ADMIN.restrictions;
+    await user.save();
+    res.status(200).json({
+      status: 'success',
+      message: 'User is no longer a super admin',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 exports.authorizeOrRestrict = async (req, res, next) => {
   try {
     const { authorities, restrictions } = req.body;
@@ -83,6 +114,12 @@ exports.authorizeOrRestrict = async (req, res, next) => {
       if (!Object.values(Actions).includes(restriction))
         throw new AppError(400, `fail', 'Invalid restriction: ${restriction}`);
     });
+    if (req.user._id?.toString() === userId?.toString())
+      throw new AppError(
+        400,
+        'fail',
+        'You cannot change your own authorities or restrictions'
+      );
     const user = await userModel.findById(userId);
     if (!user) throw new AppError(404, 'fail', 'No user found with this id');
     const existingAuthorities = user.authorities;
