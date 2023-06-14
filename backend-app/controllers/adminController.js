@@ -9,7 +9,6 @@ exports.addAdmin = async (req, res, next) => {
     if (!user) throw new AppError(404, 'fail', 'No user found with this id');
     if (req.user._id?.toString() === userId?.toString())
       throw new AppError(400, 'fail', 'You cannot make yourself an admin');
-    console.log(req.user._id?.toString(), userId?.toString());
     if (user.roles?.includes(Roles.ADMIN.type))
       throw new AppError(400, 'fail', 'User is already an admin');
     user.roles?.push(Roles.ADMIN.type);
@@ -138,4 +137,45 @@ exports.authorizeOrRestrict = async (req, res, next) => {
     next(err);
   }
 };
-exports.banUser = async (req, res, next) => {};
+exports.banUser = async (req, res, next) => {
+  const { userId } = req.params;
+  try {
+    const user = await userModel.findById(userId);
+    if (!user) throw new AppError(404, 'fail', 'No user found with this id');
+    if (req.user._id?.toString() === userId?.toString())
+      throw new AppError(400, 'fail', 'You cannot ban yourself');
+    if (user.accessRestricted)
+      throw new AppError(400, 'fail', 'User is already banned');
+    if (user.roles?.includes(Roles.SUPER_ADMIN.type))
+      throw new AppError(400, 'fail', 'You cannot ban a super admin');
+    if (user.roles?.includes(Roles.ADMIN.type))
+      throw new AppError(400, 'fail', 'You cannot ban an admin');
+    user.accessRestricted = true;
+    await user.save();
+    res.status(200).json({
+      status: 'success',
+      message: 'User is now banned',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+exports.unbanUser = async (req, res, next) => {
+  const { userId } = req.params;
+  try {
+    const user = await userModel.findById(userId);
+    if (!user) throw new AppError(404, 'fail', 'No user found with this id');
+    if (req.user._id?.toString() === userId?.toString())
+      throw new AppError(400, 'fail', 'You cannot unban yourself');
+    if (!user.accessRestricted)
+      throw new AppError(400, 'fail', 'User is not banned');
+    user.accessRestricted = false;
+    await user.save();
+    res.status(200).json({
+      status: 'success',
+      message: 'User is now unbanned',
+    });
+  } catch (err) {
+    next(err);
+  }
+};

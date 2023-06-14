@@ -5,6 +5,8 @@ const {
   authorizeOrRestrict,
   addAdmin,
   removeAdmin,
+  banUser,
+  unbanUser,
 } = require('../controllers/adminController');
 const { protect } = require('../controllers/authController');
 const { restrictTo, Roles, Actions } = require('../middlewares/authorization');
@@ -84,4 +86,37 @@ router.put(
   restrictTo(Roles.SUPER_ADMIN.type)(Actions.UPDATE_USER),
   authorizeOrRestrict
 );
+
+/**
+ * @protected
+ * @route PUT /api/v1/admin/ban-user/:userId
+ * @description ban a user
+ * @access Super Admin
+ * @param {string} userId - Id of the user to ban
+ **/
+router.put(
+  '/ban-user/:userId',
+  restrictTo(Roles.SUPER_ADMIN.type, Roles.ADMIN.type)(
+    Actions.UPDATE_USER,
+    Actions.BAN_USER
+  ),
+  banUser
+);
+
+/**
+ * @protected
+ * @route PUT /api/v1/admin/unban-user/:userId
+ * @description unban a user
+ * @access Super Admin
+ * @param {string} userId - Id of the user to unban
+ **/
+router.put(
+  '/unban-user/:userId',
+  restrictTo(Roles.SUPER_ADMIN.type, Roles.ADMIN.type)(
+    Actions.UPDATE_USER,
+    Actions.BAN_USER
+  ),
+  unbanUser
+);
+
 module.exports = router;

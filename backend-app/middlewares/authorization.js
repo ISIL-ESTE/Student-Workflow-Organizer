@@ -6,6 +6,7 @@ const { Request, Response, NextFunction } = require('express');
  */
 const Actions = {
   DELETE_USER: 'DELETE_USER',
+  BAN_USER: 'BAN_USER',
   UPDATE_USER: 'UPDATE_USER',
   UPDATE_CALANDER: 'UPDATE_CALANDER',
   REMOVE_SUPER_ADMIN: 'REMOVE_SUPER_ADMIN',
@@ -20,13 +21,13 @@ const Roles = {
   },
   ADMIN: {
     type: 'ADMIN',
-    authorities: [Actions.DELETE_USER, Actions.UPDATE_USER],
-    restrictions: [Actions.UPDATE_CALANDER],
+    authorities: [Actions.DELETE_USER, Actions.UPDATE_USER, Actions.BAN_USER],
+    restrictions: [],
   },
   USER: {
     type: 'USER',
     authorities: [Actions.UPDATE_CALANDER],
-    restrictions: [Actions.DELETE_USER],
+    restrictions: [],
   },
 };
 Object.freeze(Roles);
