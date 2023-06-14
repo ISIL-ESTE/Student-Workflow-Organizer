@@ -132,6 +132,7 @@ exports.authorizeOrRestrict = async (req, res, next) => {
     await user.save();
     res.status(200).json({
       status: 'success',
+      message: 'User authorities and restrictions updated',
     });
   } catch (err) {
     next(err);
