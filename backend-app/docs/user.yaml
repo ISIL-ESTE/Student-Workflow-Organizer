@@ -64,18 +64,14 @@
                 format: email
               password:
                 type: string
-              passwordConfirm:
-                type: string
             required:
               - name
               - email
               - password
-              - passwordConfirm
             example:
               name: 'john doe'
               email: 'john@mail.com'
               password: 'john123'
-              passwordConfirm: 'john123'
       required: true
     responses:
       201:

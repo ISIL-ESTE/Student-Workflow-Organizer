@@ -26,16 +26,6 @@ const userSchema = new mongoose.Schema(
       minLength: 6,
       select: false,
     },
-    passwordConfirm: {
-      type: String,
-      required: [true, 'Please fill your password confirm'],
-      validate: {
-        validator: function (el) {
-          return el === this.password;
-        },
-        message: 'Your password and confirmation password are not the same',
-      },
-    },
     authorities: {
       type: Array,
       default: [],
@@ -76,8 +66,6 @@ userSchema.pre('save', async function (next) {
   }
 
   this.password = await bcrypt.hash(this.password, 12);
-
-  this.passwordConfirm = undefined;
   next();
 });
 
