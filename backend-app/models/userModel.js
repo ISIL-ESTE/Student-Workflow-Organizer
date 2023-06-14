@@ -26,16 +26,6 @@ const userSchema = new mongoose.Schema(
       minLength: 6,
       select: false,
     },
-    passwordConfirm: {
-      type: String,
-      required: [true, 'Please fill your password confirm'],
-      validate: {
-        validator: function (el) {
-          return el === this.password;
-        },
-        message: 'Your password and confirmation password are not the same',
-      },
-    },
     authorities: {
       type: Array,
       default: [],
@@ -56,15 +46,18 @@ const userSchema = new mongoose.Schema(
         message: 'Please provide a valid action',
       },
     },
-    role: {
-      type: String,
-      enum: ['ADMIN', 'USER', 'SUPER_ADMIN'],
-      default: 'USER',
+    roles: {
+      type: Array,
+      default: [],
     },
     active: {
       type: Boolean,
       default: true,
       select: false,
+    },
+    accessRestricted: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
