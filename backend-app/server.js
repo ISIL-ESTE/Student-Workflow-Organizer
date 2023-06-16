@@ -33,6 +33,9 @@ const expServer = app.listen(PORT, () => {
   Logger.info(`App running on port ${PORT}`);
 });
 
+// create the admin user if not exists
+require('./utils/createAdminUser');
+
 process.on('unhandledRejection', (err) => {
   Logger.error('UNHANDLED REJECTION!!!  shutting down ...');
   Logger.error(`${err.name}, ${err.message}`);

@@ -11,7 +11,7 @@ router.use(authController.protect);
 
 router.delete('/deleteMe', userController.deleteMe);
 
-router.use(authController.restrictTo('admin'));
+router.use(authController.restrictTo(["ADMIN", "SUPER_ADMIN"]));
 
 router
     .route('/')

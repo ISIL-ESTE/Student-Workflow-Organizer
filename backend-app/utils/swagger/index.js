@@ -18,7 +18,6 @@ swaggerSpec.servers = [
     description: 'Development server',
   },
 ];
-Logger.info(`swaggerSpec: ${JSON.stringify(swaggerSpec)}`);
 /**
  * This function configures the swagger documentation
  * @param { application } app - The express application
@@ -34,7 +33,7 @@ const swaggerDocs = (app) => {
   });
   global.Logger.info(`Swagger docs available at http://localhost:${PORT}/docs`);
   global.Logger.info(
-    `Swagger docs in JSON format available at http://localhost:${PORT}/docs-json`
+    `Swagger docs JSON format available at http://localhost:${PORT}/docs-json`
   );
 };
 

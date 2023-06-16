@@ -8,12 +8,15 @@ const hpp = require('hpp');
 const cors = require('cors');
 const morgan = require('./middlewares/morgan');
 const swaggerDocs = require('./utils/swagger');
+const {CURRENT_ENV} = require('./config/appConfig');
 
 const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoute');
 const globalErrHandler = require('./middlewares/globalErrorHandler');
 const AppError = require('./utils/appError');
 const app = express();
+
+// configure swagger docs
 swaggerDocs(app);
 
 // use json as default format
