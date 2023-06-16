@@ -1,6 +1,6 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
-const compression = require("compression");
+const compression = require('compression');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
@@ -11,6 +11,7 @@ const swaggerDocs = require('./utils/swagger');
 const {CURRENT_ENV} = require('./config/appConfig');
 
 const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/adminRoute');
 const globalErrHandler = require('./middlewares/globalErrorHandler');
 const AppError = require('./utils/appError');
 const app = express();
@@ -59,10 +60,11 @@ app.use(compression());
 
 // Routes
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/admin', adminRoutes);
 
 // handle undefined Routes
 app.use('*', (req, res, next) => {
-  const err = new AppError(404, 'fail', 'Route Not Found',req.path);
+  const err = new AppError(404, 'fail', 'Route Not Found', req.path);
   next(err, req, res, next);
 });
 

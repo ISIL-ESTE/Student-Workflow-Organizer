@@ -1,14 +1,18 @@
 const AppError = require('../utils/appError');
+const { Request, Response, NextFunction } = require('express');
 
-//Enum
+/**
+ * @enum {string}
+ */
 const Actions = {
   DELETE_USER: 'DELETE_USER',
+  BAN_USER: 'BAN_USER',
   UPDATE_USER: 'UPDATE_USER',
   UPDATE_CALANDER: 'UPDATE_CALANDER',
+  REMOVE_SUPER_ADMIN: 'REMOVE_SUPER_ADMIN',
 };
 Object.freeze(Actions);
 
-// Enum
 const Roles = {
   SUPER_ADMIN: {
     type: 'SUPER_ADMIN',
@@ -17,13 +21,13 @@ const Roles = {
   },
   ADMIN: {
     type: 'ADMIN',
-    authorities: [Actions.DELETE_USER, Actions.UPDATE_USER],
-    restrictions: [Actions.UPDATE_CALANDER],
+    authorities: [Actions.DELETE_USER, Actions.UPDATE_USER, Actions.BAN_USER],
+    restrictions: [],
   },
   USER: {
     type: 'USER',
     authorities: [Actions.UPDATE_CALANDER],
-    restrictions: [Actions.DELETE_USER],
+    restrictions: [],
   },
 };
 Object.freeze(Roles);
@@ -34,19 +38,22 @@ Object.freeze(Roles);
  * @param {string[]} actions
  * @returns {boolean}
  */
-const hasAuthority = (user, actions) => {
-  return actions.every((action) => user.authorities.includes(action));
-};
+const hasAuthority = (user, actions) =>
+  actions.every((action) => user.authorities.includes(action));
 
 /**
- * @param {{role:string}} user
- * @param { string } requiredRole
+ * @param {{roles:string[]}} user
+ * @param { string[] } requiredRoles
  * @param { string[] }actions
  * @returns {boolean}
  *
  */
-const hasPermission = (user, requiredRole, actions) => {
-  if (user.role === requiredRole) if (hasAuthority(user, actions)) return true;
+const hasPermission = (user, acceptedRole, actions) => {
+  const result = user.roles
+    .map((role) => acceptedRole.includes(role))
+    .find((val) => val === true);
+  if (!result) return false;
+  if (hasAuthority(user, actions)) return true;
   return false;
 };
 /**
@@ -55,35 +62,36 @@ const hasPermission = (user, requiredRole, actions) => {
  * @param {string[]} actions
  * @returns {boolean}
  */
-const isRestricted = (user, actions) => {
-  return actions.every((action) => !user.restrictions.includes(action));
-};
+const isRestricted = (user, actions) =>
+  actions.every((action) => !user.restrictions.includes(action)) ? false : true;
 
 /**
- *
- * @param { string[] } actions
- * @param  { string } role
- * @returns
+ * @param {...string} roles
+ * @returns {(...actions:string[])=>(req:Request,res:Response,next:NextFunction)=>void}
  */
-const restrictTo = (role, actions) => {
-  return (req, res, next) => {
-    if (hasPermission(req.user, role, actions)) {
-      if (!isRestricted(req.user, actions)) {
-        next();
-      }
-    }
-    next(
-      new AppError(
-        403,
-        'fail',
-        'You do not have permission to perform this action'
-      ),
-      req,
-      res,
-      next
-    );
+const restrictTo =
+  (...roles) =>
+  (...actions) =>
+  (req, res, next) => {
+    if (hasPermission(req.user, roles, actions)) {
+      if (!isRestricted(req.user, actions)) next();
+      else
+        next(
+          new AppError(
+            403,
+            'fail',
+            'You do not have permission to perform this action'
+          )
+        );
+    } else
+      next(
+        new AppError(
+          403,
+          'fail',
+          'You do not have permission to perform this action'
+        )
+      );
   };
-};
 
 module.exports = {
   restrictTo,

@@ -46,15 +46,18 @@ const userSchema = new mongoose.Schema(
         message: 'Please provide a valid action',
       },
     },
-    role: {
-      type: String,
-      enum: ['ADMIN', 'USER', 'SUPER_ADMIN'],
-      default: 'USER',
+    roles: {
+      type: Array,
+      default: [],
     },
     active: {
       type: Boolean,
       default: true,
       select: false,
+    },
+    accessRestricted: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

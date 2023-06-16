@@ -2,6 +2,7 @@ const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
+const { Roles } = require('../middlewares/authorization');
 
 const createToken = (id) => {
   return jwt.sign(
@@ -76,9 +77,11 @@ exports.signup = async (req, res, next) => {
     const user = await User.create({
       name: req.body.name,
       email: req.body.email,
-      password: req.body.password
+      password: req.body.password,
+      roles: [Roles.USER.type],
+      authorities: Roles.USER.authorities,
+      restrictions: Roles.USER.restrictions,
     });
-
     const token = createToken(user.id);
 
     user.password = undefined;
