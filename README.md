@@ -1,5 +1,11 @@
 # Student Organizer Website
 
+
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
 <p align="center">
     <img src="https://github.com/ISIL-ESTE/Student-Workflow-Organizer/blob/main/logo.jpg" height="350" style="border-radius: 25px;">
 </p>
@@ -51,3 +57,16 @@ This website is for educational purposes only. Do not submit other students' wor
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+
+
+[contributors-shield]: https://img.shields.io/github/contributors/ISIL-ESTE/Student-Workflow-Organizer.svg?style=for-the-badge
+[contributors-url]: https://github.com/ISIL-ESTE/Student-Workflow-Organizer/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/ISIL-ESTE/Student-Workflow-Organizer.svg?style=for-the-badge
+[forks-url]: https://github.com/ISIL-ESTE/Student-Workflow-Organizer/network/members
+[stars-shield]: https://img.shields.io/github/stars/ISIL-ESTE/Student-Workflow-Organizer.svg?style=for-the-badge
+[stars-url]: https://github.com/ISIL-ESTE/Student-Workflow-Organizer/stargazers
+[issues-shield]: https://img.shields.io/github/issues/ISIL-ESTE/Student-Workflow-Organizer.svg?style=for-the-badge
+[issues-url]: https://github.com/ISIL-ESTE/Student-Workflow-Organizer/issues
+[license-shield]: https://img.shields.io/github/license/ISIL-ESTE/Student-Workflow-Organizer.svg?style=for-the-badge
+[license-url]: https://github.com/ISIL-ESTE/Student-Workflow-Organizer/blob/master/LICENSE.txt
