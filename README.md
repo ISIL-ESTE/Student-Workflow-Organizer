@@ -1,13 +1,16 @@
 # Student Organizer Website
 
+<div align="center">
 
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
+
+</div>
 <p align="center">
-    <img src="https://github.com/ISIL-ESTE/Student-Workflow-Organizer/blob/main/docs/logo.jpg" height="350" style="border-radius: 25px;">
+    <img src="./docs/logo.png" height="350" style="border-radius: 25px;" />
 </p>
 
 A website designed to help students organize their homework, exams, and projects in a timeline form. Students can easily keep track of their upcoming assignments, exams, and projects and collaborate with others.
@@ -28,6 +31,7 @@ A website designed to help students organize their homework, exams, and projects
 
 - **Analytics:** View performance metrics such as average grades, completion rates, and time spent on assignments.
 
+- **Applying to Schools:** Keep track of application deadlines and required documents for each school.
 ## Sharing and Help
 
 - **Sharing Courses:** Share your courses with other students and access courses shared by others.
