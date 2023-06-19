@@ -1,7 +1,16 @@
 # Student Organizer Website
 
+<div align="center">
+
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
+
+</div>
 <p align="center">
-    <img src="https://github.com/ISIL-ESTE/Student-Workflow-Organizer/blob/main/logo.jpg" height="350" style="border-radius: 25px;">
+    <img src="./docs/logo.png" height="350" style="border-radius: 25px;" />
 </p>
 
 A website designed to help students organize their homework, exams, and projects in a timeline form. Students can easily keep track of their upcoming assignments, exams, and projects and collaborate with others.
@@ -22,6 +31,7 @@ A website designed to help students organize their homework, exams, and projects
 
 - **Analytics:** View performance metrics such as average grades, completion rates, and time spent on assignments.
 
+- **Applying to Schools:** Keep track of application deadlines and required documents for each school.
 ## Sharing and Help
 
 - **Sharing Courses:** Share your courses with other students and access courses shared by others.
@@ -51,3 +61,16 @@ This website is for educational purposes only. Do not submit other students' wor
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+
+
+[contributors-shield]: https://img.shields.io/github/contributors/ISIL-ESTE/Student-Workflow-Organizer.svg?style=for-the-badge
+[contributors-url]: https://github.com/ISIL-ESTE/Student-Workflow-Organizer/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/ISIL-ESTE/Student-Workflow-Organizer.svg?style=for-the-badge
+[forks-url]: https://github.com/ISIL-ESTE/Student-Workflow-Organizer/network/members
+[stars-shield]: https://img.shields.io/github/stars/ISIL-ESTE/Student-Workflow-Organizer.svg?style=for-the-badge
+[stars-url]: https://github.com/ISIL-ESTE/Student-Workflow-Organizer/stargazers
+[issues-shield]: https://img.shields.io/github/issues/ISIL-ESTE/Student-Workflow-Organizer.svg?style=for-the-badge
+[issues-url]: https://github.com/ISIL-ESTE/Student-Workflow-Organizer/issues
+[license-shield]: https://img.shields.io/github/license/ISIL-ESTE/Student-Workflow-Organizer.svg?style=for-the-badge
+[license-url]: https://github.com/ISIL-ESTE/Student-Workflow-Organizer/blob/master/LICENSE.txt

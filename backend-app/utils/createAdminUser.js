@@ -16,7 +16,7 @@ const createAdminUser = async () => {
       Logger.info('Admin user created successfully');
     }
   } catch (err) {
-    Logger.err(err);
+    Logger.error(err);
   }
 };
 
