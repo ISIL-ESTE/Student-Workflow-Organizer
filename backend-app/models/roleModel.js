@@ -1,7 +1,7 @@
-const { Schema, Model } = require('mongoose');
+const mongoose = require('mongoose');
 const { Actions } = require('../middlewares/authorization');
 const validator = require('validator');
-const roleSchema = Schema(
+const roleSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -19,6 +19,7 @@ const roleSchema = Schema(
       {
         type: String,
         required: true,
+        default: [],
         validate: {
           validator: (value) => {
             return validator.isIn(value, Object.values(Actions));
@@ -26,10 +27,11 @@ const roleSchema = Schema(
         },
       },
     ],
-    authorities: [
+    restrictions: [
       {
         type: String,
         required: true,
+        default: [],
         validate: {
           validator: (value) => {
             return validator.isIn(value, Object.values(Actions));
@@ -44,5 +46,5 @@ const roleSchema = Schema(
   }
 );
 
-const roleModel = new Model('Role', roleSchema);
+const roleModel = mongoose.model('Role', roleSchema);
 module.exports = roleModel;

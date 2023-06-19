@@ -1,22 +1,21 @@
-const AppError = require('../appError');
-const { Types } = require('mongoose');
-const roleModel = require('../../models/roleModel');
-const { Actions, Roles } = require('../../middlewares/authorization');
+const AppError = require('../../appError');
+const roleModel = require('../../../models/roleModel');
+const { Actions } = require('../../../middlewares/authorization');
 class Role {
   roleModel = roleModel;
 
-  _Exist(data, err) {
-    if (data) return data;
-    else throw err;
-  }
   _isRoleName(roleName) {
-    if (!roleName || typeof roleName !== 'string' || roleName?.length <= 0)
+    if (!roleName || typeof roleName !== 'string')
       throw new AppError(400, 'fail', 'Invalid role name!');
     return;
   }
+  /**
+   * Get all roles from database.
+   */
   async getRoles() {
     const data = {};
     const roles = await this.roleModel.find();
+
     roles.forEach((role) => {
       data[role.name] = {
         type: role.name,
@@ -26,18 +25,26 @@ class Role {
     });
     return data;
   }
+  /**
+   * Get role by name from database.
+   * @param {string} roleName
+   * @returns {Promise<{type: string, authorities: string[], restrictions: string[]}>}
+   */
   async getRoleByName(roleName) {
     this._isRoleName(roleName);
     const role = await this.roleModel.findOne({ name: roleName });
-    return this._Exist(
-      {
-        type: role.name,
-        authorities: role.authorities,
-        restrictions: role.restrictions,
-      },
-      new AppError(404, 'fail', 'Role not found!')
-    );
+    if (!role) return null;
+    return {
+      type: role.name,
+      authorities: role.authorities,
+      restrictions: role.restrictions,
+    };
   }
+  /**
+   * Delete role by name from database.
+   * @param {string} roleName
+   * @returns {Promise<{type: string, authorities: string[], restrictions: string[]}>}
+   */
   async deleteRoleByName(roleName) {
     this._isRoleName(roleName);
     if (!this.getRoleByName(roleName))
@@ -56,15 +63,15 @@ class Role {
     );
   }
   /**
-   *
+   * Create role by name from database.
    * @param {string} roleName
-   * @param {keyof Actions} authorities
-   * @param {keyof Actions} restrictions
+   * @param {string[]} authorities
+   * @param {string[]} restrictions
+   * @returns {Promise<{type: string, authorities: string[], restrictions: string[]}>}
    */
   async createRole(roleName, authorities, restrictions) {
     this._isRoleName(roleName);
-    if (this.getRoleByName(roleName))
-      throw new AppError(400, 'fail', 'Role already exists with this name!');
+    if (await this.getRoleByName(roleName)) return;
     authorities ||
       [].forEach((authority) => {
         if (!Object.values(Actions).includes(authority))
@@ -80,14 +87,19 @@ class Role {
       authorities,
       restrictions,
     });
-    return this._Exist(
-      {
-        type: role.name,
-        authorities: role.authorities,
-        restrictions: role.restrictions,
-      },
-      new AppError(500, 'fail', 'Internal server error!')
-    );
+    return {
+      type: role.name,
+      authorities: role.authorities,
+      restrictions: role.restrictions,
+    };
+  }
+  /**
+   * Delete default roles from database.
+   */
+  async deleteDefaultRoles() {
+    this.roleModel.deleteMany({
+      name: { $in: ['SUPER_ADMIN', 'ADMIN', 'USER'] },
+    });
   }
 }
 
