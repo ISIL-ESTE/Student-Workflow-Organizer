@@ -1,9 +1,12 @@
 const userModel = require('../models/userModel');
-const { Roles, Actions } = require('../middlewares/authorization');
+const { Actions } = require('../middlewares/authorization');
+const Role = require('../utils/authorization/role/Role');
 const AppError = require('../utils/appError');
+const role = new Role();
 
 exports.addAdmin = async (req, res, next) => {
   try {
+    const Roles = await role.getRoles();
     const { userId } = req.params;
     const user = await userModel.findById(userId);
     if (!user) throw new AppError(404, 'fail', 'No user found with this id');
@@ -32,6 +35,7 @@ exports.addAdmin = async (req, res, next) => {
 
 exports.removeAdmin = async (req, res, next) => {
   try {
+    const Roles = await role.getRoles();
     const { userId } = req.params;
     const user = await userModel.findById(userId);
     if (!user) throw new AppError(404, 'fail', 'No user found with this id');
@@ -54,6 +58,7 @@ exports.removeAdmin = async (req, res, next) => {
 
 exports.addSuperAdmin = async (req, res, next) => {
   try {
+    const Roles = await role.getRoles();
     const { userId } = req.params;
     const user = await userModel.findById(userId);
     if (!user) throw new AppError(404, 'fail', 'No user found with this id');
@@ -79,6 +84,7 @@ exports.addSuperAdmin = async (req, res, next) => {
 exports.removeSuperAdmin = async (req, res, next) => {
   const { userId } = req.params;
   try {
+    const Roles = await role.getRoles();
     const user = await userModel.findById(userId);
     if (!user) throw new AppError(404, 'fail', 'No user found with this id');
     if (req.user._id?.toString() === userId?.toString())
@@ -141,6 +147,7 @@ exports.authorizeOrRestrict = async (req, res, next) => {
 exports.banUser = async (req, res, next) => {
   const { userId } = req.params;
   try {
+    const Roles = await role.getRoles();
     const user = await userModel.findById(userId);
     if (!user) throw new AppError(404, 'fail', 'No user found with this id');
     if (req.user._id?.toString() === userId?.toString())

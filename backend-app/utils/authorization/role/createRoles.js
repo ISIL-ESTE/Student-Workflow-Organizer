@@ -29,7 +29,7 @@ const createRoles = async () => {
     await role.createRole(admin.type, admin.authorities, admin.restrictions);
     await role.createRole(user.type, user.authorities, user.restrictions);
     global.Logger.info(
-      `${superAdmin.type}, ${admin.type}, ${user.type} roles created`
+      `[ ${superAdmin.type}, ${admin.type}, ${user.type} ] ROLES CREATED!`
     );
     global.Logger.warn(await role.getRoles());
   } catch (err) {

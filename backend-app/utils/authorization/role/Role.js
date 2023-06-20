@@ -97,7 +97,7 @@ class Role {
    * Delete default roles from database.
    */
   async deleteDefaultRoles() {
-    this.roleModel.deleteMany({
+    await this.roleModel.deleteMany({
       name: { $in: ['SUPER_ADMIN', 'ADMIN', 'USER'] },
     });
   }
