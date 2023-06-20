@@ -7,6 +7,11 @@ const {
   removeAdmin,
   banUser,
   unbanUser,
+  createRole,
+  updateRole,
+  getRole,
+  getRoles,
+  deleteRole,
 } = require('../controllers/adminController');
 const { protect } = require('../controllers/authController');
 const { restrictTo } = require('../middlewares/authorization');
@@ -108,4 +113,46 @@ router.put(
   unbanUser
 );
 
+/**
+ * @protected
+ * @route PUT /api/v1/admin/role
+ * @description Get all roles
+ * @access Super Admin
+ **/
+router.put('/role', restrictTo(Actions.MANAGE_ROLES), getRoles);
+
+/**
+ * @protected
+ * @route PUT /api/v1/admin/role/:name
+ * @description Get a single role
+ * @access Super Admin
+ * @param {string} name - Name of the role to find
+ **/
+router.put('/role/:name', restrictTo(Actions.MANAGE_ROLES), getRole);
+
+/**
+ * @protected
+ * @route POST /api/v1/admin/role
+ * @description Create a role
+ * @access Super Admin
+ **/
+router.post('/role', restrictTo(Actions.MANAGE_ROLES), createRole);
+
+/**
+ * @protected
+ * @route PUT /api/v1/admin/role/:name
+ * @description Update a role
+ * @access Super Admin
+ * @param {string} name - Name of the role to update
+ **/
+router.put('/role/:name', restrictTo(Actions.MANAGE_ROLES), updateRole);
+
+/**
+ * @protected
+ * @route DELETE /api/v1/admin/role/:name
+ * @description Delete a role
+ * @access Super Admin
+ * @param {string} name - Name of the role to delete
+ **/
+router.delete('/role/:name', restrictTo(Actions.MANAGE_ROLES), deleteRole);
 module.exports = router;

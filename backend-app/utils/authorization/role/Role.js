@@ -75,12 +75,12 @@ class Role {
     authorities ||
       [].forEach((authority) => {
         if (!Object.values(Actions).includes(authority))
-          throw new AppError(400, 'fail', 'Invalid authority!');
+          throw new AppError(400, 'fail', `Invalid authority ${authority}`);
       });
     restrictions ||
       [].forEach((restriction) => {
         if (!Object.values(Actions).includes(restriction))
-          throw new AppError(400, 'fail', 'Invalid restriction!');
+          throw new AppError(400, 'fail', `Invalid restriction ${restriction}`);
       });
     const role = await this.roleModel.create({
       name: roleName,
@@ -100,6 +100,45 @@ class Role {
     await this.roleModel.deleteMany({
       name: { $in: ['SUPER_ADMIN', 'ADMIN', 'USER'] },
     });
+  }
+  /**
+   *
+   * @param {string} roleName
+   * @param {string[]} authorities
+   * @param {string[]} restrictions
+   */
+  async updateRoleByName(roleName, authorities, restrictions) {
+    authorities ||
+      [].forEach((authority) => {
+        if (!Object.values(Actions).includes(authority))
+          throw new AppError(400, 'fail', `Invalid authority ${authority}`);
+      });
+    restrictions ||
+      [].forEach((restriction) => {
+        if (!Object.values(Actions).includes(restriction))
+          throw new AppError(400, 'fail', `Invalid restriction ${restriction}`);
+      });
+    const exists = await this.roleModel.getRoleByName(name);
+    if (!exists) throw new AppError(404, 'fail', 'Role does not exist');
+
+    const updatedRole = await this.roleModel.findOneAndUpdate(
+      {
+        name: roleName,
+      },
+      {
+        authorities: Array.from(
+          new Set([...exists.authorities, ...authorities])
+        ),
+        restrictions: Array.from(
+          new Set([...exists.restrictions, ...restrictions])
+        ),
+      }
+    );
+    return {
+      type: updatedRole.name,
+      authorities: updatedRole.authorities,
+      restrictions: updatedRole.restrictions,
+    };
   }
 }
 

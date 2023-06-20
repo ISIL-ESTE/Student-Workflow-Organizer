@@ -1,5 +1,6 @@
 const userModel = require('../models/userModel');
-const { Actions } = require('../middlewares/authorization');
+const Actions = require('../constants/Actions');
+const validateActions = require('../utils/authorization/validateActions');
 const Role = require('../utils/authorization/role/Role');
 const AppError = require('../utils/appError');
 const role = new Role();
@@ -111,14 +112,18 @@ exports.authorizeOrRestrict = async (req, res, next) => {
   try {
     const { authorities, restrictions } = req.body;
     const { userId } = req.params;
-    authorities.forEach((authority) => {
-      if (!Object.values(Actions).includes(authority))
-        throw new AppError(400, 'fail', `Invalid authority: ${authority}`);
-    });
-    restrictions.forEach((restriction) => {
-      if (!Object.values(Actions).includes(restriction))
-        throw new AppError(400, `fail', 'Invalid restriction: ${restriction}`);
-    });
+    if (!validateActions(authorities))
+      throw new AppError(
+        400,
+        'fail',
+        'One or many actions are invalid in the authorities array'
+      );
+    if (!validateActions(restrictions))
+      throw new AppError(
+        400,
+        'fail',
+        'One or many actions are invalid in the restrictions array'
+      );
     if (req.user._id?.toString() === userId?.toString())
       throw new AppError(
         400,
@@ -182,6 +187,77 @@ exports.unbanUser = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       message: 'User is now unbanned',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+exports.createRole = async (req, res, next) => {
+  const { name, authorities, restrictions } = req.body;
+  try {
+    if (await role.getRoleByName(name))
+      throw new AppError(400, 'fail', 'Role already exists');
+    const createdRole = await role.createRole(name, authorities, restrictions);
+    res.status(201).json({
+      status: 'success',
+      message: 'Role created',
+      data: createdRole,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+exports.getRoles = async (req, res, next) => {
+  try {
+    const roles = await role.getRoles();
+    res.status(200).json({
+      status: 'success',
+      message: 'Roles retrieved',
+      data: roles,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+exports.getRole = async (req, res, next) => {
+  const { name } = req.params;
+  try {
+    const singleRole = await role.getRoleByName(name);
+    res.status(200).json({
+      status: 'success',
+      message: 'Role retrieved',
+      data: singleRole,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+exports.deleteRole = async (req, res, next) => {
+  const { name } = req.params;
+  try {
+    const deletedRole = await role.deleteRoleByName(name);
+    res.status(200).json({
+      status: 'success',
+      message: 'Role deleted',
+      data: deletedRole,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+exports.updateRole = async (req, res, next) => {
+  const { name } = req.params;
+  const { authorities, restrictions } = req.body;
+  try {
+    const updatedRole = await role.updateRoleByName(
+      name,
+      authorities,
+      restrictions
+    );
+    res.status(200).json({
+      status: 'success',
+      message: 'Role updated',
+      data: updatedRole,
     });
   } catch (err) {
     next(err);
