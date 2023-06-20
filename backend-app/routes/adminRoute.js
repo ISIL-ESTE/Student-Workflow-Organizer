@@ -9,8 +9,10 @@ const {
   unbanUser,
 } = require('../controllers/adminController');
 const { protect } = require('../controllers/authController');
-const { restrictTo, Roles, Actions } = require('../middlewares/authorization');
+const { restrictTo } = require('../middlewares/authorization');
 const router = express.Router();
+const Actions = require('../constants/Actions');
+const Roles = require('../constants/defaultRoles');
 
 /**
  * Below all routes are protected
@@ -26,7 +28,7 @@ router.use(protect);
  */
 router.put(
   '/add-super-admin/:userId',
-  restrictTo(Roles.SUPER_ADMIN.type)(Actions.UPDATE_USER),
+  restrictTo(Actions.UPDATE_USER),
   addSuperAdmin
 );
 
@@ -39,10 +41,7 @@ router.put(
  **/
 router.put(
   '/remove-super-admin/:userId',
-  restrictTo(Roles.SUPER_ADMIN.type)(
-    Actions.UPDATE_USER,
-    Actions.REMOVE_SUPER_ADMIN
-  ),
+  restrictTo(Actions.UPDATE_USER, Actions.REMOVE_SUPER_ADMIN),
   removeSuperAdmin
 );
 
@@ -53,11 +52,7 @@ router.put(
  * @access Super Admin
  * @param {string} userId - Id of the user to add admin role to
  */
-router.put(
-  '/add-admin/:userId',
-  restrictTo(Roles.SUPER_ADMIN.type)(Actions.UPDATE_USER),
-  addAdmin
-);
+router.put('/add-admin/:userId', restrictTo(Actions.UPDATE_USER), addAdmin);
 
 /**
  * @protected
@@ -68,7 +63,7 @@ router.put(
  */
 router.put(
   '/remove-admin/:userId',
-  restrictTo(Roles.SUPER_ADMIN.type)(Actions.UPDATE_USER),
+  restrictTo(Actions.UPDATE_USER),
   removeAdmin
 );
 
@@ -83,7 +78,7 @@ router.put(
  */
 router.put(
   '/authorize-or-restrict/:userId',
-  restrictTo(Roles.SUPER_ADMIN.type)(Actions.UPDATE_USER),
+  restrictTo(Actions.UPDATE_USER),
   authorizeOrRestrict
 );
 
@@ -96,10 +91,7 @@ router.put(
  **/
 router.put(
   '/ban-user/:userId',
-  restrictTo(Roles.SUPER_ADMIN.type, Roles.ADMIN.type)(
-    Actions.UPDATE_USER,
-    Actions.BAN_USER
-  ),
+  restrictTo(Actions.UPDATE_USER, Actions.BAN_USER),
   banUser
 );
 
@@ -112,10 +104,7 @@ router.put(
  **/
 router.put(
   '/unban-user/:userId',
-  restrictTo(Roles.SUPER_ADMIN.type, Roles.ADMIN.type)(
-    Actions.UPDATE_USER,
-    Actions.BAN_USER
-  ),
+  restrictTo(Actions.UPDATE_USER, Actions.BAN_USER),
   unbanUser
 );
 

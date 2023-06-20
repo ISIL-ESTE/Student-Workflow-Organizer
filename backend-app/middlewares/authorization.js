@@ -12,21 +12,6 @@ const hasAuthority = (user, actions) =>
   actions.every((action) => user.authorities.includes(action));
 
 /**
- * @param {{roles:string[]}} user
- * @param { string[] } requiredRoles
- * @param { string[] }actions
- * @returns {boolean}
- *
- */
-const hasPermission = (user, acceptedRole, actions) => {
-  const result = user.roles
-    .map((role) => acceptedRole.includes(role))
-    .find((val) => val === true);
-  if (!result) return false;
-  if (hasAuthority(user, actions)) return true;
-  return false;
-};
-/**
  *
  * @param {{restrictions:string[]}} user
  * @param {string[]} actions
@@ -40,10 +25,9 @@ const isRestricted = (user, actions) =>
  * @returns {(...actions:string[])=>(req:Request,res:Response,next:NextFunction)=>void}
  */
 const restrictTo =
-  (...roles) =>
   (...actions) =>
   (req, res, next) => {
-    if (hasPermission(req.user, roles, actions)) {
+    if (hasAuthority(req.user, actions)) {
       if (!isRestricted(req.user, actions)) next();
       else
         next(
@@ -65,5 +49,4 @@ const restrictTo =
 
 module.exports = {
   restrictTo,
-  Actions,
 };
