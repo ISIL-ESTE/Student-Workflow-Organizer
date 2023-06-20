@@ -1,6 +1,6 @@
 const AppError = require('../../appError');
 const roleModel = require('../../../models/roleModel');
-const { Actions } = require('../../../middlewares/authorization');
+const Actions = require('../../../constants/Actions');
 class Role {
   roleModel = roleModel;
 

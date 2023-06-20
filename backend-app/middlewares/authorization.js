@@ -1,36 +1,6 @@
 const AppError = require('../utils/appError');
 const { Request, Response, NextFunction } = require('express');
-
-/**
- * @enum {string}
- */
-const Actions = {
-  DELETE_USER: 'DELETE_USER',
-  BAN_USER: 'BAN_USER',
-  UPDATE_USER: 'UPDATE_USER',
-  UPDATE_CALANDER: 'UPDATE_CALANDER',
-  REMOVE_SUPER_ADMIN: 'REMOVE_SUPER_ADMIN',
-};
-Object.freeze(Actions);
-
-const Roles = {
-  SUPER_ADMIN: {
-    type: 'SUPER_ADMIN',
-    authorities: Object.values(Actions),
-    restrictions: [],
-  },
-  ADMIN: {
-    type: 'ADMIN',
-    authorities: [Actions.DELETE_USER, Actions.UPDATE_USER, Actions.BAN_USER],
-    restrictions: [],
-  },
-  USER: {
-    type: 'USER',
-    authorities: [Actions.UPDATE_CALANDER],
-    restrictions: [],
-  },
-};
-Object.freeze(Roles);
+const Actions = require('../constants/Actions');
 
 /**
  *
@@ -96,5 +66,4 @@ const restrictTo =
 module.exports = {
   restrictTo,
   Actions,
-  Roles,
 };

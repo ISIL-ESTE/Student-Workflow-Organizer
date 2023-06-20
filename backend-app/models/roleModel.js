@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { Actions } = require('../middlewares/authorization');
+const Actions = require('../constants/Actions');
 const validator = require('validator');
 const roleSchema = new mongoose.Schema(
   {

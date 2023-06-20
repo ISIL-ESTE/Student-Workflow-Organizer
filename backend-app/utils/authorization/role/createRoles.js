@@ -1,5 +1,5 @@
 const Role = require('./Role');
-const { Actions } = require('../../../middlewares/authorization');
+const Actions = require('../../../constants/Actions');
 
 const superAdmin = {
   type: 'SUPER_ADMIN',
