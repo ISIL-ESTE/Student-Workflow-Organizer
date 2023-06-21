@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 require('./utils/Logger');
-const { DATABASE, PORT } = require('./config/appConfig');
-const createRoles = require('./utils/authorization/role/createRoles');
+const { DATABASE, PORT} = require('./config/appConfig');
 
 process.on('uncaughtException', (err) => {
   console.log(err.name, err.message, err.stack);
@@ -30,9 +29,8 @@ mongoose.connection.on('disconnected', () => {
 });
 
 // Start the server
-const expServer = app.listen(PORT, async () => {
+const expServer = app.listen(PORT, () => {
   Logger.info(`App running on port ${PORT}`);
-  await createRoles();
 });
 
 // create the admin user if not exists

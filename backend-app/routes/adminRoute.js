@@ -7,19 +7,10 @@ const {
   removeAdmin,
   banUser,
   unbanUser,
-  createRole,
-  updateRole,
-  getRole,
-  getRoles,
-  deleteRole,
-  assignRoleToUser,
-  removeRoleFromUser,
 } = require('../controllers/adminController');
 const { protect } = require('../controllers/authController');
-const { restrictTo } = require('../middlewares/authorization');
+const { restrictTo, Roles, Actions } = require('../middlewares/authorization');
 const router = express.Router();
-const Actions = require('../constants/Actions');
-const Roles = require('../constants/defaultRoles');
 
 /**
  * Below all routes are protected
@@ -35,7 +26,7 @@ router.use(protect);
  */
 router.put(
   '/add-super-admin/:userId',
-  restrictTo(Actions.UPDATE_USER),
+  restrictTo(Roles.SUPER_ADMIN.type)(Actions.UPDATE_USER),
   addSuperAdmin
 );
 
@@ -48,7 +39,10 @@ router.put(
  **/
 router.put(
   '/remove-super-admin/:userId',
-  restrictTo(Actions.UPDATE_USER, Actions.REMOVE_SUPER_ADMIN),
+  restrictTo(Roles.SUPER_ADMIN.type)(
+    Actions.UPDATE_USER,
+    Actions.REMOVE_SUPER_ADMIN
+  ),
   removeSuperAdmin
 );
 
@@ -59,7 +53,11 @@ router.put(
  * @access Super Admin
  * @param {string} userId - Id of the user to add admin role to
  */
-router.put('/add-admin/:userId', restrictTo(Actions.UPDATE_USER), addAdmin);
+router.put(
+  '/add-admin/:userId',
+  restrictTo(Roles.SUPER_ADMIN.type)(Actions.UPDATE_USER),
+  addAdmin
+);
 
 /**
  * @protected
@@ -70,7 +68,7 @@ router.put('/add-admin/:userId', restrictTo(Actions.UPDATE_USER), addAdmin);
  */
 router.put(
   '/remove-admin/:userId',
-  restrictTo(Actions.UPDATE_USER),
+  restrictTo(Roles.SUPER_ADMIN.type)(Actions.UPDATE_USER),
   removeAdmin
 );
 
@@ -85,7 +83,7 @@ router.put(
  */
 router.put(
   '/authorize-or-restrict/:userId',
-  restrictTo(Actions.UPDATE_USER),
+  restrictTo(Roles.SUPER_ADMIN.type)(Actions.UPDATE_USER),
   authorizeOrRestrict
 );
 
@@ -98,7 +96,10 @@ router.put(
  **/
 router.put(
   '/ban-user/:userId',
-  restrictTo(Actions.UPDATE_USER, Actions.BAN_USER),
+  restrictTo(Roles.SUPER_ADMIN.type, Roles.ADMIN.type)(
+    Actions.UPDATE_USER,
+    Actions.BAN_USER
+  ),
   banUser
 );
 
@@ -111,77 +112,11 @@ router.put(
  **/
 router.put(
   '/unban-user/:userId',
-  restrictTo(Actions.UPDATE_USER, Actions.BAN_USER),
+  restrictTo(Roles.SUPER_ADMIN.type, Roles.ADMIN.type)(
+    Actions.UPDATE_USER,
+    Actions.BAN_USER
+  ),
   unbanUser
 );
 
-/**
- * @protected
- * @route PUT /api/v1/admin/role
- * @description Get all roles
- * @access Super Admin
- **/
-router.put('/role', restrictTo(Actions.MANAGE_ROLES), getRoles);
-
-/**
- * @protected
- * @route PUT /api/v1/admin/role/:name
- * @description Get a single role
- * @access Super Admin
- * @param {string} name - Name of the role to find
- **/
-router.put('/role/:name', restrictTo(Actions.MANAGE_ROLES), getRole);
-
-/**
- * @protected
- * @route POST /api/v1/admin/role
- * @description Create a role
- * @access Super Admin
- **/
-router.post('/role', restrictTo(Actions.MANAGE_ROLES), createRole);
-
-/**
- * @protected
- * @route PUT /api/v1/admin/role/:name
- * @description Update a role
- * @access Super Admin
- * @param {string} name - Name of the role to update
- **/
-router.put('/role/:name', restrictTo(Actions.MANAGE_ROLES), updateRole);
-
-/**
- * @protected
- * @route DELETE /api/v1/admin/role/:name
- * @description Delete a role
- * @access Super Admin
- * @param {string} name - Name of the role to delete
- **/
-router.delete('/role/:name', restrictTo(Actions.MANAGE_ROLES), deleteRole);
-
-/**
- * @protected
- * @route PUT /api/v1/admin/assign-role/:name/:userId
- * @description Assign a role to a user
- * @access Super Admin
- * @param {string} name - Name of the role to assign
- * @param {string} userId - Id of the user to assign the role to
- * */
-router.put(
-  '/assign-role/:name/:userId',
-  restrictTo(Actions.MANAGE_ROLES),
-  assignRoleToUser
-);
-/**
- * @protected
- * @route PUT /api/v1/admin/remove-role/:name/:userId
- * @description Remove a role from a user
- * @access Super Admin
- * @param {string} name - Name of the role to remove
- * @param {string} userId - Id of the user to remove the role from
- * */
-router.put(
-  '/remove-role/:name/:userId',
-  restrictTo(Actions.MANAGE_ROLES),
-  removeRoleFromUser
-);
 module.exports = router;
