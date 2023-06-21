@@ -11,7 +11,7 @@ const mergeYamlFiles = (directoryPath) => {
   const files = fs.readdirSync(directoryPath);
   files.forEach((file) => {
     if (path.extname(file) !== '.yaml')
-      global.Logger.warn(`Skipping file ${file} as it is not a YAML file`);
+      Logger.warn(`Skipping file ${file} as it is not a YAML file`);
     const yamlFilePath = path.join(directoryPath, file);
     const fileContents = fs.readFileSync(yamlFilePath, 'utf8');
     const yamlData = YAML.parse(fileContents);
