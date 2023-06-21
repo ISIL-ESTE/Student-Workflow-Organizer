@@ -263,3 +263,53 @@ exports.updateRole = async (req, res, next) => {
     next(err);
   }
 };
+exports.assignRoleToUser = async (req, res, next) => {
+  const { userId, name } = req.params;
+  try {
+    const user = await userModel.findById(userId);
+    const Role = await role.getRoleByName(name);
+    if (!user) throw new AppError(404, 'fail', 'No user found with this id');
+    if (!Role) throw new AppError(404, 'fail', 'No role found with this name');
+    if (user.roles.includes(Role.type))
+      throw new AppError(400, 'fail', 'User already has this role');
+    user.roles.push(Role.type);
+    user.authorities = Array.from(
+      new Set([...Role.authorities, ...user.authorities])
+    );
+    user.restrictions = Array.from(
+      new Set([...Role.restrictions, ...user.restrictions])
+    );
+    await user.save();
+    res.status(200).json({
+      status: 'success',
+      message: 'Role assigned to user',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+exports.removeRoleFromUser = async (req, res, next) => {
+  const { userId, name } = req.params;
+  try {
+    const Role = await role.getRoleByName(name);
+    if (!Role) throw new AppError(404, 'fail', 'No role found with this name');
+    const user = await userModel.findById(userId);
+    if (!user) throw new AppError(404, 'fail', 'No user found with this id');
+    if (!user.roles.includes(Role.type))
+      throw new AppError(400, 'fail', 'User does not have this role');
+    user.roles = user.roles.filter((role) => role !== Role.type);
+    user.authorities = user.authorities.filter(
+      (authority) => !Role.authorities.includes(authority)
+    );
+    user.restrictions = user.restrictions.filter(
+      (restriction) => !Role.restrictions.includes(restriction)
+    );
+    await user.save();
+    res.status(200).json({
+      status: 'success',
+      message: 'Role removed from user',
+    });
+  } catch (err) {
+    next(err);
+  }
+};

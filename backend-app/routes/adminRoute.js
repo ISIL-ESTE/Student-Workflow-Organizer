@@ -12,6 +12,8 @@ const {
   getRole,
   getRoles,
   deleteRole,
+  assignRoleToUser,
+  removeRoleFromUser,
 } = require('../controllers/adminController');
 const { protect } = require('../controllers/authController');
 const { restrictTo } = require('../middlewares/authorization');
@@ -155,4 +157,31 @@ router.put('/role/:name', restrictTo(Actions.MANAGE_ROLES), updateRole);
  * @param {string} name - Name of the role to delete
  **/
 router.delete('/role/:name', restrictTo(Actions.MANAGE_ROLES), deleteRole);
+
+/**
+ * @protected
+ * @route PUT /api/v1/admin/assign-role/:name/:userId
+ * @description Assign a role to a user
+ * @access Super Admin
+ * @param {string} name - Name of the role to assign
+ * @param {string} userId - Id of the user to assign the role to
+ * */
+router.put(
+  '/assign-role/:name/:userId',
+  restrictTo(Actions.MANAGE_ROLES),
+  assignRoleToUser
+);
+/**
+ * @protected
+ * @route PUT /api/v1/admin/remove-role/:name/:userId
+ * @description Remove a role from a user
+ * @access Super Admin
+ * @param {string} name - Name of the role to remove
+ * @param {string} userId - Id of the user to remove the role from
+ * */
+router.put(
+  '/remove-role/:name/:userId',
+  restrictTo(Actions.MANAGE_ROLES),
+  removeRoleFromUser
+);
 module.exports = router;
