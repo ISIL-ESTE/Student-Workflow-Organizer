@@ -36,7 +36,7 @@ const expServer = app.listen(PORT, async () => {
 });
 
 // create the admin user if not exists
-require('./utils/createAdminUser');
+require('./utils/authorization/createAdminUser');
 
 process.on('unhandledRejection', (err) => {
   Logger.error('UNHANDLED REJECTION!!!  shutting down ...');
