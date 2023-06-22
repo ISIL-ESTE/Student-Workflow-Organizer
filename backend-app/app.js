@@ -1,7 +1,7 @@
 const globalErrHandler = require("./middlewares/globalErrorHandler");
 const AppError = require("./utils/appError");
 const express = require("express");
-const rateLimit = require("express-rate-limit");
+const limiter = require("./middlewares/rate_limit");
 const compression = require("compression");
 const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
@@ -32,12 +32,6 @@ app.use(cors());
 app.use(helmet());
 
 // Limit request from the same API
-const limiter = rateLimit({
-  max: 150,
-  windowMs: 60 * 60 * 1000,
-  message: "Too Many Request from this IP, please try again in an hour",
-});
-app.use("/api", limiter);
 
 // Body parser, reading data from body into req.body
 app.use(
@@ -62,9 +56,23 @@ app.use(hpp());
 // Compress all responses
 app.use(compression());
 
+if (CURRENT_ENV.toLocaleLowerCase() === "production") {
+  //Limiting request form same IP
+  app.use("/api", limiter);
+}
+
 // Routes
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/admin", adminRoutes);
+
+//welcome page with the welcome message and env
+app.get("/", (req, res) => {
+  res.status(200).json({
+    status: "success",
+    message: "Welcome to the backend app",
+    env: CURRENT_ENV,
+  });
+});
 
 // handle undefined Routes
 app.use("*", (req, res, next) => {

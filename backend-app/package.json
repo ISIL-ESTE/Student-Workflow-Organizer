@@ -5,10 +5,10 @@
   "main": "app.js",
   "scripts": {
     "debug": "ndb server.js",
-    "dev": "NODE_ENV=DEVELOPMENT nodemon server.js",
-    "prod": "NODE_ENV=PRODUCTION node server.js",
+    "dev": "nodemon server.js NODE_ENV=DEVELOPMENT ",
+    "prod": "node server.js NODE_ENV=PRODUCTION",
     "start": "nodemon server.js",
-    "test": "jest"
+     "test": "jest"
   },
   "author": "Bella Abdelouahab",
   "license": "ISC",
