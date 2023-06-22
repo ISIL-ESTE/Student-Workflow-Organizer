@@ -36,8 +36,6 @@ A website designed to help students organize their homework, exams, and projects
 
 - **Sharing Courses:** Share your courses with other students and access courses shared by others.
 
-- **Summarizing Courses:** Share summaries of courses to help others study.
-
 - **Project Help:** Add projects that you need help with and share GitHub links to those projects.
 
 ## How to Use
