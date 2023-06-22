@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
-const { Actions } = require('../middlewares/authorization');
+const  Actions = require('../constants/Actions');
 
 const userSchema = new mongoose.Schema(
   {
