@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const Role = require('../utils/authorization/role/Role');
+const { JWT_SECRET , JWT_EXPIRES_IN } = require("../config/appConfig");
 const role = new Role();
 
 const createToken = (id) => {
@@ -10,9 +11,9 @@ const createToken = (id) => {
     {
       id,
     },
-    process.env.JWT_SECRET,
+    JWT_SECRET,
     {
-      expiresIn: process.env.JWT_EXPIRES_IN,
+      expiresIn: JWT_EXPIRES_IN,
     }
   );
 };
@@ -124,7 +125,7 @@ exports.protect = async (req, res, next) => {
     }
 
     // 2) Verify token
-    const decode = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    const decode = await promisify(jwt.verify)(token, JWT_SECRET);
 
     // 3) check if the user is exist (not deleted)
     const user = await User.findById(decode.id);

@@ -1,3 +1,5 @@
+const globalErrHandler = require("./middlewares/globalErrorHandler");
+const AppError = require("./utils/appError");
 const express = require("express");
 const rateLimit = require("express-rate-limit");
 const compression = require("compression");
@@ -12,8 +14,6 @@ const { CURRENT_ENV } = require("./config/appConfig");
 
 const userRoutes = require("./routes/userRoutes");
 const adminRoutes = require("./routes/adminRoute");
-const globalErrHandler = require("./middlewares/globalErrorHandler");
-const AppError = require("./utils/appError");
 const app = express();
 
 // configure swagger docs
