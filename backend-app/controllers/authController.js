@@ -1,21 +1,11 @@
-const { promisify } = require('util');
-const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
-const Role = require('../utils/authorization/role/Role');
+const Role = require('../utils/auth/role/Role');
+const AuthUtils = require('../utils/auth/auth_utils');
+const AuthTokenKeysModel = require('../models/auth_token_keys_model');
 const role = new Role();
-
-const createToken = (id) => {
-  return jwt.sign(
-    {
-      id,
-    },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: process.env.JWT_EXPIRES_IN,
-    }
-  );
-};
+const authUtils = new AuthUtils();
+const crypto = require('crypto');
 
 exports.login = async (req, res, next) => {
   try {
@@ -46,14 +36,29 @@ exports.login = async (req, res, next) => {
     }
 
     // 3) All correct, send jwt to client
-    const token = createToken(user.id);
+    const oldKeys = await AuthTokenKeysModel.findOne({ userId: user._id });
+    if (oldKeys) await oldKeys.remove();
+    const accessTokenKey = crypto.randomBytes(32).toString('hex');
+    const refreshTokenKey = crypto.randomBytes(32).toString('hex');
+    const authTokenKeysRecord = await AuthTokenKeysModel.create({
+      userId: user._id,
+      accessTokenKey,
+      refreshTokenKey,
+    });
+    if (!authTokenKeysRecord)
+      return next(new AppError(500, 'fail', 'Internal Server Error'));
+    const tokens = await authUtils.createTokens(
+      user,
+      accessTokenKey,
+      refreshTokenKey
+    );
 
     // Remove the password from the output
     user.password = undefined;
 
     res.status(200).json({
       status: 'success',
-      token,
+      tokens,
       data: {
         user,
       },
@@ -84,13 +89,25 @@ exports.signup = async (req, res, next) => {
       authorities: Roles.USER.authorities,
       restrictions: Roles.USER.restrictions,
     });
-    const token = createToken(user.id);
-
+    const accessTokenKey = crypto.randomBytes(32).toString('hex');
+    const refreshTokenKey = crypto.randomBytes(32).toString('hex');
+    const authTokenKeysRecord = await AuthTokenKeysModel.create({
+      userId: user._id,
+      accessTokenKey,
+      refreshTokenKey,
+    });
+    if (!authTokenKeysRecord)
+      return next(new AppError(500, 'fail', 'Internal Server Error'));
+    const tokens = await authUtils.createTokens(
+      user,
+      accessTokenKey,
+      refreshTokenKey
+    );
     user.password = undefined;
 
     res.status(201).json({
       status: 'success',
-      token,
+      tokens,
       data: {
         user,
       },
@@ -100,50 +117,71 @@ exports.signup = async (req, res, next) => {
   }
 };
 
-exports.protect = async (req, res, next) => {
+exports.logout = async (req, res, next) => {
   try {
-    // 1) check if the token is there
-    let token;
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith('Bearer')
-    ) {
-      token = req.headers.authorization.split(' ')[1];
-    }
-    if (!token) {
-      return next(
-        new AppError(
-          401,
-          'fail',
-          'You are not logged in! Please login in to continue'
-        ),
-        req,
-        res,
-        next
-      );
-    }
-
-    // 2) Verify token
-    const decode = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-
-    // 3) check if the user is exist (not deleted)
-    const user = await User.findById(decode.id);
-    if (!user) {
-      return next(
-        new AppError(401, 'fail', 'This user is no longer exist'),
-        req,
-        res,
-        next
-      );
-    }
-
-    req.user = user;
-    next();
+    const userAuthTokenKeys = req.authTokenKeys;
+    if (!userAuthTokenKeys)
+      return next(new AppError(500, 'fail', 'Internal Server Error'));
+    await AuthTokenKeysModel.deleteOne({ userId: userAuthTokenKeys.userId });
+    res.status(200).json({
+      status: 'success',
+      message: 'Logged out successfully',
+    });
   } catch (err) {
     next(err);
   }
 };
 
+exports.tokenRefresh = async (req, res, next) => {
+  const { authorization } = req.headers;
+  try {
+    const AccessToken = await authUtils.getAccessToken(authorization);
+    const RefreshToken = req.body.refreshToken; //decoding access token
+    // decoding access token
+    const accessTokenPayload = await authUtils.decodeToken(AccessToken);
+    if (!accessTokenPayload?.userId && !accessTokenPayload?.accessTokenKey)
+      throw new AppError(401, 'fail', 'Invalid access token');
+
+    // searching the user record
+    const getUser = await User.findById(accessTokenPayload.userId);
+    if (!getUser) throw new AppError(401, 'fail', 'Invalid access token');
+    // decoding refresh token
+    const refreshTokenPayload = await authUtils.validateToken(RefreshToken);
+    if (!refreshTokenPayload?.userId && !refreshTokenPayload?.refreshTokenKey)
+      throw new AppError(401, 'fail', 'Invalid refresh token');
+    if (refreshTokenPayload.userId !== accessTokenPayload.userId)
+      throw new AppError(401, 'fail', 'Invalid refresh token');
+    //searching the auth token keys record of the user.
+    const authTokenKeysRecord = await AuthTokenKeysModel.findOne({
+      userId: getUser._id,
+      accessTokenKey: accessTokenPayload.accessTokenKey,
+      refreshTokenKey: refreshTokenPayload.refreshTokenKey,
+    });
+    if (!authTokenKeysRecord)
+      throw new AppError(401, 'fail', 'Invalid refresh token');
+    //removing the old auth token keys record
+    await authTokenKeysRecord.remove();
+    //creating new auth token keys record
+    const newAuthTokenKeys = await AuthTokenKeysModel.create({
+      userId: getUser._id,
+      accessTokenKey: crypto.randomBytes(32).toString('hex'),
+      refreshTokenKey: crypto.randomBytes(32).toString('hex'),
+    });
+    //creating access and refresh tokens
+    const tokens = await authUtils.createTokens(
+      getUser,
+      newAuthTokenKeys.accessTokenKey,
+      newAuthTokenKeys.refreshTokenKey
+    );
+    res.status(200).json({
+      status: 'success',
+      message: 'Token refreshed successfully',
+      tokens,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 // Authorization check if the user have rights to do this action
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
