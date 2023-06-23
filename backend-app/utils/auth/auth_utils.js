@@ -46,6 +46,14 @@ class AuthUtils extends Jwt {
       throw new AppError(500, 'fail', 'Internal Server Error');
     }
   }
+  getAccessToken(authorization) {
+    if (!authorization)
+      throw new AppError(401, 'fail', 'Unauthorized, Please login again');
+    const token = authorization.split(' ')[1];
+    if (!token)
+      throw new AppError(401, 'fail', 'Unauthorized, Please login again');
+    return token;
+  }
 }
 
 module.exports = AuthUtils;
