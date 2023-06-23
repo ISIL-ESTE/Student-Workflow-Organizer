@@ -31,7 +31,7 @@ const createRoles = async () => {
     global.Logger.info(
       `[ ${superAdmin.type}, ${admin.type}, ${user.type} ] ROLES CREATED!`
     );
-    Logger.warn(await role.getRoles());
+    // Logger.warn(await role.getRoles());
   } catch (err) {
     global.Logger.error(err.stack);
   }

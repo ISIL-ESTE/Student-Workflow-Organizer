@@ -4,9 +4,8 @@ const { DATABASE, PORT } = require('./config/appConfig');
 const createRoles = require('./utils/authorization/role/createRoles');
 
 process.on('uncaughtException', (err) => {
-  console.log(err.name, err.message, err.stack);
   Logger.error('UNCAUGHT EXCEPTION!!!  shutting down ...');
-  Logger.error(`${err.name}, ${err.message}`);
+  Logger.error(`${err.name}, ${err.message}, ${err.stack}`);
   process.exit(1);
 });
 
@@ -40,7 +39,7 @@ require('./utils/authorization/createAdminUser');
 
 process.on('unhandledRejection', (err) => {
   Logger.error('UNHANDLED REJECTION!!!  shutting down ...');
-  Logger.error(`${err.name}, ${err.message}`);
+  Logger.error(`${err.name}, ${err.message}, ${err.stack}`);
   expServer.close(() => {
     process.exit(1);
   });
