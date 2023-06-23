@@ -15,16 +15,16 @@ const {
   assignRoleToUser,
   removeRoleFromUser,
 } = require('../controllers/adminController');
-const { protect } = require('../controllers/authController');
 const { restrictTo } = require('../middlewares/authorization');
 const router = express.Router();
 const Actions = require('../constants/Actions');
 const Roles = require('../constants/defaultRoles');
+const { deserializeUser } = require('../middlewares/authentication');
 
 /**
  * Below all routes are protected
  */
-router.use(protect);
+router.use(deserializeUser);
 
 /**
  * @protected
