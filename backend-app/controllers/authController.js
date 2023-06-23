@@ -25,6 +25,12 @@ exports.login = async (req, res, next) => {
     const user = await User.findOne({
       email,
     }).select('+password');
+    if (user.accessRestricted)
+      throw new AppError(
+        403,
+        'fail',
+        'Your account has been banned. Go to contact us for more details'
+      );
 
     if (!user || !(await user.correctPassword(password, user.password))) {
       return next(

@@ -1,8 +1,9 @@
 const userModel = require('../models/userModel');
 const Actions = require('../constants/Actions');
-const validateActions = require('../utils/authorization/validateActions');
-const Role = require('../utils/authorization/role/Role');
+const validateActions = require('../utils/auth/validateActions');
+const Role = require('../utils/auth/role/Role');
 const AppError = require('../utils/appError');
+const AuthTokenKeysModel = require('../models/auth_token_keys_model');
 const role = new Role();
 
 exports.addAdmin = async (req, res, next) => {
@@ -165,6 +166,7 @@ exports.banUser = async (req, res, next) => {
       throw new AppError(400, 'fail', 'You cannot ban an admin');
     user.accessRestricted = true;
     await user.save();
+    await AuthTokenKeysModel.deleteOne({ userId: user._id });
     res.status(200).json({
       status: 'success',
       message: 'User is now banned',
