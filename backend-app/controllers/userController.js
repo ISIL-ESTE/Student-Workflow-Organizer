@@ -6,6 +6,7 @@ const AppError = require("../utils/appError");
 
 exports.getMe = (req, res, next) => {
     // return data of the current user
+    req.user.password = undefined;
     res.status(200).json({
         status: 'success',
         data: req.user
@@ -34,14 +35,14 @@ exports.updateMe = async (req, res, next) => {
     try {
         // 1) Create error if user POSTs password data
         if (req.body.password || req.body.passwordConfirm) {
-            return next(new AppError(400, 'fail', 'This route is not for password updates. Please use /updateMyPassword'), req, res, next);
+            return next(new AppError(403, 'fail', 'This route is not for password updates. Please use /updateMyPassword'), req, res, next);
         }
         // create error if user tries to update role
         if (req.body.roles) {
-            return next(new AppError(400, 'fail', 'This route is not for role updates. Please use /updateRole'), req, res, next);
+            return next(new AppError(403, 'fail', 'This route is not for role updates. Please use /updateRole'), req, res, next);
         }
         // 2) Filtered out unwanted fields names that are not allowed to be updated
-        const filteredBody = Object.keys(req.body).filter(el => el !== 'name' && el !== 'email');
+        const filteredBody = Object.keys(req.body).filter(el => el !== 'email');
 
         // 3) Update user document
         const doc = await User.findByIdAndUpdate(req.user.id, filteredBody, {
@@ -51,6 +52,7 @@ exports.updateMe = async (req, res, next) => {
         if (!doc) {
             return next(new AppError(404, "fail", "No document found with that id"), req, res, next);
         }
+        doc.password = undefined;
 
         res.status(200).json({
             status: "success",
