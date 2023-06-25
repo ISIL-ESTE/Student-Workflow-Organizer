@@ -17,6 +17,5 @@ userRoutes(router);
 adminRoutes(router);
 superAdminRoutes(router);
 
-//welcome page with the welcome message and env
 
 module.exports = router;

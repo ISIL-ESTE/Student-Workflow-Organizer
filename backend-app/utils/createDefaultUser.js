@@ -16,7 +16,6 @@ const createAdminUser = async () => {
         authorities: SUPER_ADMIN.authorities,
         restrictions: SUPER_ADMIN.restrictions,
       });
-      console.log("Default admin user created successfully");
     }
   } catch (err) {
     Logger.error(err);
