@@ -34,7 +34,7 @@ const restrictTo =
           new AppError(
             403,
             'fail',
-            'You do not have permission to perform this action'
+            'You are restricted from performing this action, contact the admin for more information'
           )
         );
     } else

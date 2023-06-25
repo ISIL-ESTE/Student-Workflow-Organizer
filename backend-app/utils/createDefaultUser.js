@@ -8,17 +8,17 @@ const createAdminUser = async () => {
     const user = await User.findOne({ email: ADMIN_EMAIL });
     if (!user) {
       await User.create({
-        name: 'Admin',
+        name: 'Supper Admin',
         email: ADMIN_EMAIL,
         password: ADMIN_PASSWORD,
         roles: ['SUPER_ADMIN'],
       });
-      Logger.info('Admin user created successfully');
+      console.log("Default admin user created successfully");
     }
   } catch (err) {
     Logger.error(err);
   }
 };
 
-createAdminUser();
+module.exports = createAdminUser
 

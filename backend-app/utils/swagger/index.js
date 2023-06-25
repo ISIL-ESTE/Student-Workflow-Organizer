@@ -18,6 +18,20 @@ swaggerSpec.servers = [
     description: 'Development server',
   },
 ];
+const swaggerUiOptions = {
+  swaggerOptions: {
+    tryItOutEnabled: true,
+    // Show the request duration (in ms) in the responses
+    displayRequestDuration: true,
+    // other advanced settings
+    showExtensions: true,
+    filter: true,
+    showCommonExtensions: true,
+    layout: 'BaseLayout',
+    deepLinking: true,
+
+  },
+};
 /**
  * This function configures the swagger documentation
  * @param { application } app - The express application
@@ -25,7 +39,7 @@ swaggerSpec.servers = [
  */
 const swaggerDocs = (app) => {
   if (CURRENT_ENV.toLowerCase() === 'production') return;
-  app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
   // Get docs in JSON format
   app.get('/docs-json', (_, res) => {
     res.setHeader('Content-Type', 'application/json');
