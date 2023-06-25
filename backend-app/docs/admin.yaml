@@ -1,218 +1,188 @@
-/admin/add-super-admin/{userId}:
-  put:
-    summary: add super admin
-    description: make a user super admin.
-    tags:
-      - Admin
-    security:
-      - bearerAuth: []
+/admin/user/{id}:
+  get:
+    description: ''
     parameters:
-      - name: userId
+      - name: id
         in: path
-        description: ID of the user
         required: true
+        type: string
     responses:
-      200:
-        description: Success
-        content:
-          'application/json':
-            example:
-              status: 'Success'
-              message: 'User is now a super admin'
-      404:
-        $ref: '#/components/responses/404'
-      400:
-        $ref: '#/components/responses/400'
-      403:
-        $ref: '#/components/responses/403'
-      401:
-        $ref: '#/components/responses/401'
-/admin/remove-super-admin/{userId}:
-  put:
-    summary: remove super admin
-    description: remove a super admin.
+      default:
+        description: ''
     tags:
-      - Admin
-    security:
-      - bearerAuth: []
+      - admin
+  delete:
+    description: ''
     parameters:
-      - name: userId
+      - name: id
         in: path
-        description: ID of the user
         required: true
+        type: string
     responses:
-      200:
-        description: Success
-        content:
-          'application/json':
-            example:
-              status: 'Success'
-              message: 'User is no longer a super admin'
-      404:
-        $ref: '#/components/responses/404'
-      400:
-        $ref: '#/components/responses/400'
-      403:
-        $ref: '#/components/responses/403'
-      401:
-        $ref: '#/components/responses/401'
-/admin/add-admin/{userId}:
-  put:
-    summary: add admin
-    description: make a user admin.
+      default:
+        description: ''
     tags:
-      - Admin
-    security:
-      - bearerAuth: []
+      - admin
+  patch:
+    description: ''
     parameters:
-      - name: userId
+      - name: id
         in: path
-        description: ID of the user
         required: true
+        type: string
     responses:
-      200:
-        description: Success
-        content:
-          'application/json':
-            example:
-              status: 'Success'
-              message: 'User is now an admin'
-      404:
-        $ref: '#/components/responses/404'
-      400:
-        $ref: '#/components/responses/400'
-      403:
-        $ref: '#/components/responses/403'
-      401:
-        $ref: '#/components/responses/401'
-/admin/remove-admin/{userId}:
-  put:
-    summary: remove admin
-    description: remove a admin.
+      default:
+        description: ''
     tags:
-      - Admin
-    security:
-      - bearerAuth: []
-    parameters:
-      - name: userId
-        in: path
-        description: ID of the user
-        required: true
+      - admin
+/admin/users:
+  get:
+    description: ''
     responses:
-      200:
-        description: Success
-        content:
-          'application/json':
-            example:
-              status: 'Success'
-              message: 'User is no longer an admin'
-      404:
-        $ref: '#/components/responses/404'
-      400:
-        $ref: '#/components/responses/400'
-      403:
-        $ref: '#/components/responses/403'
-      401:
-        $ref: '#/components/responses/401'
+      default:
+        description: ''
+    tags:
+      - admin
 /admin/authorize-or-restrict/{userId}:
   put:
-    summary: authorize or restrict
-    description: add authorization or restriction to a user.
-    tags:
-      - Admin
-    security:
-      - bearerAuth: []
+    description: ''
     parameters:
       - name: userId
         in: path
-        description: ID of the user
         required: true
-    requestBody:
-      content:
-        'application/json':
-          schema:
-            properties:
-              authorities:
-                type: array
-              restrictions:
-                type: array
-            example:
-              authorities:
-                - 'BAN_USER'
-                - 'UPDATE_USER'
-              restrictions:
-                - 'UPDATE_CALANDER'
+        type: string
+      - name: body
+        in: body
+        schema:
+          type: object
+          properties:
+            authorities:
+              example: any
+            restrictions:
+              example: any
     responses:
-      200:
-        description: Success
-        content:
-          'application/json':
-            example:
-              status: 'Success'
-              message: 'User authorities and restrictions updated'
-      404:
-        $ref: '#/components/responses/404'
-      400:
-        $ref: '#/components/responses/400'
-      403:
-        $ref: '#/components/responses/403'
-      401:
-        $ref: '#/components/responses/401'
+      '200':
+        description: OK
+    tags:
+      - admin
 /admin/ban-user/{userId}:
   put:
-    summary: ban user
-    description: ban a user.
-    tags:
-      - Admin
-    security:
-      - bearerAuth: []
+    description: ''
     parameters:
       - name: userId
         in: path
-        description: ID of the user
         required: true
+        type: string
     responses:
-      200:
-        description: Success
-        content:
-          'application/json':
-            example:
-              status: 'Success'
-              message: 'User is now banned'
-      404:
-        $ref: '#/components/responses/404'
-      400:
-        $ref: '#/components/responses/400'
-      403:
-        $ref: '#/components/responses/403'
-      401:
-        $ref: '#/components/responses/401'
+      '200':
+        description: OK
+    tags:
+      - admin
 /admin/unban-user/{userId}:
   put:
-    summary: unban user
-    description: unban a user.
-    tags:
-      - Admin
-    security:
-      - bearerAuth: []
+    description: ''
     parameters:
       - name: userId
         in: path
-        description: ID of the user
         required: true
+        type: string
     responses:
-      200:
-        description: Success
-        content:
-          'application/json':
-            example:
-              status: 'Success'
-              message: 'User is now unbanned'
-      404:
-        $ref: '#/components/responses/404'
-      400:
-        $ref: '#/components/responses/400'
-      403:
-        $ref: '#/components/responses/403'
-      401:
-        $ref: '#/components/responses/401'
+      '200':
+        description: OK
+    tags:
+      - admin
+/admin/role:
+  put:
+    description: ''
+    responses:
+      '200':
+        description: OK
+    tags:
+      - admin
+  post:
+    description: ''
+    parameters:
+      - name: body
+        in: body
+        schema:
+          type: object
+          properties:
+            name:
+              example: any
+            authorities:
+              example: any
+            restrictions:
+              example: any
+    responses:
+      '201':
+        description: Created
+    tags:
+      - admin
+/admin/role/{name}:
+  put:
+    description: ''
+    parameters:
+      - name: name
+        in: path
+        required: true
+        type: string
+      - name: body
+        in: body
+        schema:
+          type: object
+          properties:
+            authorities:
+              example: any
+            restrictions:
+              example: any
+    responses:
+      '200':
+        description: OK
+    tags:
+      - admin
+  delete:
+    description: ''
+    parameters:
+      - name: name
+        in: path
+        required: true
+        type: string
+    responses:
+      '200':
+        description: OK
+    tags:
+      - admin
+/admin/assign-role/{name}/{userId}:
+  put:
+    description: ''
+    parameters:
+      - name: name
+        in: path
+        required: true
+        type: string
+      - name: userId
+        in: path
+        required: true
+        type: string
+    responses:
+      '200':
+        description: OK
+    tags:
+      - admin
+/admin/remove-role/{name}/{userId}:
+  put:
+    description: ''
+    parameters:
+      - name: name
+        in: path
+        required: true
+        type: string
+      - name: userId
+        in: path
+        required: true
+        type: string
+    responses:
+      '200':
+        description: OK
+    tags:
+      - admin

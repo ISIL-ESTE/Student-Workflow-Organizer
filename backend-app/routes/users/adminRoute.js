@@ -1,4 +1,5 @@
 const express = require('express');
+const swaggergenerator = require("../../utils/swagger/swaggergenerator");
 const {
   authorizeOrRestrict,
   banUser,
@@ -152,6 +153,7 @@ router.put(
 );
 
 adminRoutes = (mainrouter) => {
+    swaggergenerator.register("admin", "./routes/users/adminRoute.js");
     mainrouter.use("/admin", router);
 }
 module.exports = adminRoutes;
