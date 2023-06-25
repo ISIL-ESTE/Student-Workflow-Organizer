@@ -1,5 +1,5 @@
 const express = require('express');
-const swaggergenerator = require("../../utils/swagger/swaggergenerator");
+const swaggergenerator = require('../../utils/swagger/swaggergenerator');
 const {
   authorizeOrRestrict,
   banUser,
@@ -11,35 +11,26 @@ const {
   deleteRole,
   assignRoleToUser,
   removeRoleFromUser,
-} = require('../../controllers/adminController');
-const authController = require("../../controllers/authController");
+} = require('../../controllers/admin_controller');
+const authController = require('../../controllers/auth_controller');
 const { restrictTo } = require('../../middlewares/authorization');
 const router = express.Router();
-const Actions = require('../../constants/Actions');
-const Roles = require('../../constants/defaultRoles');
-const userController = require("../../controllers/userController");
+const Actions = require('../../constants/actions');
+const Roles = require('../../constants/default_roles');
+const userController = require('../../controllers/user_controller');
 
 /**
  * Below all routes are protected
  */
 
-router.use(authController.restrictTo("ADMIN", "SUPER_ADMIN"));
-
+router.use(authController.restrictTo('ADMIN', 'SUPER_ADMIN'));
 
 router
-  .route("/user/:id")
+  .route('/user/:id')
   .get(userController.getUser)
   .patch(userController.updateUser)
   .delete(userController.deleteUser);
-router.get("/users", userController.getAllUsers);
-
-
-
-
-
-
-
-
+router.get('/users', userController.getAllUsers);
 
 /**
  * @protected
@@ -153,7 +144,7 @@ router.put(
 );
 
 adminRoutes = (mainrouter) => {
-    swaggergenerator.register("admin", "./routes/users/adminRoute.js");
-    mainrouter.use("/admin", router);
-}
+  swaggergenerator.register('admin', './routes/users/admin_route.js');
+  mainrouter.use('/admin', router);
+};
 module.exports = adminRoutes;

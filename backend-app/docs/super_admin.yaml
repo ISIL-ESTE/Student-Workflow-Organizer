@@ -1,4 +1,4 @@
-/super_admin/add-super-admin/{userId}:
+'/super_admin/add-super-admin/{userId}':
   put:
     description: ''
     parameters:
@@ -11,7 +11,7 @@
         description: OK
     tags:
       - super_admin
-/super_admin/remove-super-admin/{userId}:
+'/super_admin/remove-super-admin/{userId}':
   put:
     description: ''
     parameters:
@@ -24,7 +24,7 @@
         description: OK
     tags:
       - super_admin
-/super_admin/add-admin/{userId}:
+'/super_admin/add-admin/{userId}':
   put:
     description: ''
     parameters:
@@ -37,7 +37,7 @@
         description: OK
     tags:
       - super_admin
-/super_admin/remove-admin/{userId}:
+'/super_admin/remove-admin/{userId}':
   put:
     description: ''
     parameters:

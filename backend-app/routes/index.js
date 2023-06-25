@@ -1,14 +1,14 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 
-const userRoutes = require("./users/userRoute");
-const adminRoutes = require("./users/adminRoute");
-const superAdminRoutes = require("./users/superAdminRoute");
-const authRoutes = require("./authRoutes");
-const authController = require("../controllers/authController");
+const userRoutes = require('./users/user_route');
+const adminRoutes = require('./users/admin_route');
+const superAdminRoutes = require('./users/super_admin_route');
+const authRoutes = require('./auth_routes');
+const authController = require('../controllers/auth_controller');
 
 // public routes
-authRoutes(router)
+authRoutes(router);
 
 router.use(authController.protect);
 
@@ -16,6 +16,5 @@ router.use(authController.protect);
 userRoutes(router);
 adminRoutes(router);
 superAdminRoutes(router);
-
 
 module.exports = router;

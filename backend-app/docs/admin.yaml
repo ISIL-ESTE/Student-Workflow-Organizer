@@ -1,4 +1,4 @@
-/admin/user/{id}:
+'/admin/user/{id}':
   get:
     description: ''
     parameters:
@@ -43,7 +43,7 @@
         description: ''
     tags:
       - admin
-/admin/authorize-or-restrict/{userId}:
+'/admin/authorize-or-restrict/{userId}':
   put:
     description: ''
     parameters:
@@ -65,7 +65,7 @@
         description: OK
     tags:
       - admin
-/admin/ban-user/{userId}:
+'/admin/ban-user/{userId}':
   put:
     description: ''
     parameters:
@@ -78,7 +78,7 @@
         description: OK
     tags:
       - admin
-/admin/unban-user/{userId}:
+'/admin/unban-user/{userId}':
   put:
     description: ''
     parameters:
@@ -118,7 +118,7 @@
         description: Created
     tags:
       - admin
-/admin/role/{name}:
+'/admin/role/{name}':
   put:
     description: ''
     parameters:
@@ -152,7 +152,7 @@
         description: OK
     tags:
       - admin
-/admin/assign-role/{name}/{userId}:
+'/admin/assign-role/{name}/{userId}':
   put:
     description: ''
     parameters:
@@ -169,7 +169,7 @@
         description: OK
     tags:
       - admin
-/admin/remove-role/{name}/{userId}:
+'/admin/remove-role/{name}/{userId}':
   put:
     description: ''
     parameters:

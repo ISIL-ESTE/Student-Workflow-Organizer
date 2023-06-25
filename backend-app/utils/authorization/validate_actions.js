@@ -1,4 +1,4 @@
-const Actions = require('../../constants/Actions');
+const Actions = require('../../constants/actions');
 
 /**
  * Validate all the actions in the array

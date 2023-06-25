@@ -1,7 +1,7 @@
-const httpStatus = require("http-status-codes");
-const currentEnv = process.env.NODE_ENV || "development";
-const AppError = require("../utils/appError");
-require("../utils/Logger");
+const httpStatus = require('http-status-codes');
+const currentEnv = process.env.NODE_ENV || 'development';
+const AppError = require('../utils/app_error');
+require('../utils/logger');
 
 /**
  * Error handling middleware
@@ -21,13 +21,13 @@ module.exports = (err, req, res, next) => {
     err.statusCode = 409;
   }
   if (err.name === 'ValidationError') {
-      err = new AppError(400, 'fail', err.message);
+    err = new AppError(400, 'fail', err.message);
   }
   // If the error dosent have a status code, set it to 500
   err.statusCode = err.statusCode || 500;
   // If the error dosent have a message, set it to 'Internal Server Error'
   err.message = err.message || httpStatus.getStatusText(err.statusCode);
-  
+
   res.status(err.statusCode).json({
     status: err.statusCode,
     title: httpStatus.getStatusText(err.statusCode),
@@ -35,9 +35,8 @@ module.exports = (err, req, res, next) => {
       ...(err.path && { path: err.path }),
       description: err.message,
     },
-    ...(currentEnv === "development" && {
-      error:
-        " Do not Forget to remove this in production! \n " + err.stack,
+    ...(currentEnv === 'development' && {
+      error: ' Do not Forget to remove this in production! \n ' + err.stack,
     }),
   });
 };
