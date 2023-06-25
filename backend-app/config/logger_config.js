@@ -1,5 +1,5 @@
 const { addColors, format } = require('winston');
-const { logFilePath } = require('./appConfig');
+const { logFilePath } = require('./app_config');
 // Define the current environment
 const currentEnv = process.env.NODE_ENV || 'development';
 
@@ -63,4 +63,4 @@ const fileOptions = {
 module.exports = {
   fileOptions,
   consoleOptions,
-}
+};

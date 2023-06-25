@@ -1,6 +1,6 @@
-const AppError = require('../utils/appError');
+const AppError = require('../utils/app_error');
 const { Request, Response, NextFunction } = require('express');
-const Actions = require('../constants/Actions');
+const Actions = require('../constants/actions');
 
 /**
  *

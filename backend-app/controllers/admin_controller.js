@@ -1,8 +1,8 @@
-const userModel = require('../models/userModel');
-const Actions = require('../constants/Actions');
-const validateActions = require('../utils/authorization/validateActions');
-const Role = require('../utils/authorization/role/Role');
-const AppError = require('../utils/appError');
+const userModel = require('../models/user_model');
+const Actions = require('../constants/actions');
+const validateActions = require('../utils/authorization/validate_actions');
+const Role = require('../utils/authorization/role/role');
+const AppError = require('../utils/app_error');
 const role = new Role();
 
 exports.addAdmin = async (req, res, next) => {
@@ -133,8 +133,8 @@ exports.authorizeOrRestrict = async (req, res, next) => {
     const user = await userModel.findById(userId);
     if (!user) throw new AppError(404, 'fail', 'No user found with this id');
     // if the user is a super admin, he can't be restricted
-    if (user.roles?.includes("SUPER_ADMIN"))
-      throw new AppError(400, "fail", "User is a super admin");
+    if (user.roles?.includes('SUPER_ADMIN'))
+      throw new AppError(400, 'fail', 'User is a super admin');
     const existingAuthorities = user.authorities;
     const existingRestrictions = user.restrictions;
     user.authorities = Array.from(
