@@ -1,8 +1,8 @@
 const swaggerUi = require('swagger-ui-express');
-const { PORT, CURRENT_ENV } = require('../../config/appConfig');
+const { PORT, CURRENT_ENV } = require('../../config/app_config');
 const path = require('path');
 const YAML = require('yamljs');
-const mergeYamlFiles = require('./mergeYamlFiles');
+const mergeYamlFiles = require('./merge_yaml_files');
 const { application } = require('express');
 // Path to the swagger annotations directory
 const docsDirPath = path.join(__dirname, '../../docs');
@@ -29,7 +29,6 @@ const swaggerUiOptions = {
     showCommonExtensions: true,
     layout: 'BaseLayout',
     deepLinking: true,
-
   },
 };
 /**
@@ -39,7 +38,11 @@ const swaggerUiOptions = {
  */
 const swaggerDocs = (app) => {
   if (CURRENT_ENV.toLowerCase() === 'production') return;
-  app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
+  app.use(
+    '/docs',
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec, swaggerUiOptions)
+  );
   // Get docs in JSON format
   app.get('/docs-json', (_, res) => {
     res.setHeader('Content-Type', 'application/json');

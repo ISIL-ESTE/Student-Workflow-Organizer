@@ -1,22 +1,17 @@
-
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const authController = require("../../controllers/authController");
-const { restrictTo } = require("../../middlewares/authorization");
-const swaggergenerator = require("../../utils/swagger/swaggergenerator");
-const Actions = require("../../constants/Actions");
+const authController = require('../../controllers/auth_controller');
+const { restrictTo } = require('../../middlewares/authorization');
+const swaggergenerator = require('../../utils/swagger/swaggergenerator');
+const Actions = require('../../constants/actions');
 const {
   addSuperAdmin,
   removeSuperAdmin,
   addAdmin,
-  removeAdmin
-} = require("../../controllers/adminController");
+  removeAdmin,
+} = require('../../controllers/admin_controller');
 
-
-router.use(authController.restrictTo("SUPER_ADMIN"));
-
-
-
+router.use(authController.restrictTo('SUPER_ADMIN'));
 
 /**
  * @protected
@@ -53,7 +48,6 @@ router.put(
  */
 router.put('/add-admin/:userId', restrictTo(Actions.UPDATE_USER), addAdmin);
 
-
 /**
  * @protected
  * @route PUT /api/v1/admin/remove-admin/:userId
@@ -68,7 +62,11 @@ router.put(
 );
 
 superAdminRoutes = (mainrouter) => {
-  swaggergenerator.register("super_admin", "./routes/users/superAdminRoute.js");
-  mainrouter.use("/super_admin", router);
-}
+  swaggergenerator.register(
+    'super_admin',
+    './routes/users/super_admin_route.js'
+  );
+  mainrouter.use('/super_admin', router);
+};
 module.exports = superAdminRoutes;
+

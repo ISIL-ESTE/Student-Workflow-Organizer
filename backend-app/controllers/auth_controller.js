@@ -1,9 +1,9 @@
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
-const User = require('../models/userModel');
-const AppError = require('../utils/appError');
-const Role = require('../utils/authorization/role/Role');
-const { JWT_SECRET , JWT_EXPIRES_IN } = require("../config/appConfig");
+const User = require('../models/user_model');
+const AppError = require('../utils/app_error');
+const Role = require('../utils/authorization/role/role');
+const { JWT_SECRET, JWT_EXPIRES_IN } = require('../config/app_config');
 const role = new Role();
 
 const createToken = (id) => {
@@ -178,7 +178,7 @@ exports.restrictTo = (...roles) => {
     });
     if (!roleExist) {
       return next(
-        new AppError(403, "fail", "You are not allowed to do this action"),
+        new AppError(403, 'fail', 'You are not allowed to do this action'),
         req,
         res,
         next
