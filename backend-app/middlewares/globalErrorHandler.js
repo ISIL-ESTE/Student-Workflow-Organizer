@@ -13,14 +13,13 @@ require("../utils/Logger");
  * Express automatically knows that this entire function is an error handling middleware by specifying 4 parameters
  */
 module.exports = (err, req, res, next) => {
-  // Logger.error(err.stack);
+  err.path = err.path || req.path;
   if (err.code === 11000) {
     Object.keys(err.keyValue).forEach((key) => {
       err.message = `Duplicate value for the field : [${key}] Please use another value!`;
     });
     err.statusCode = 409;
   }
-  // console.log(err);
   if (err.name === 'ValidationError') {
       err = new AppError(400, 'fail', err.message);
   }

@@ -1,0 +1,52 @@
+/super_admin/add-super-admin/{userId}:
+  put:
+    description: ''
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        type: string
+    responses:
+      '200':
+        description: OK
+    tags:
+      - super_admin
+/super_admin/remove-super-admin/{userId}:
+  put:
+    description: ''
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        type: string
+    responses:
+      '200':
+        description: OK
+    tags:
+      - super_admin
+/super_admin/add-admin/{userId}:
+  put:
+    description: ''
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        type: string
+    responses:
+      '200':
+        description: OK
+    tags:
+      - super_admin
+/super_admin/remove-admin/{userId}:
+  put:
+    description: ''
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        type: string
+    responses:
+      '200':
+        description: OK
+    tags:
+      - super_admin

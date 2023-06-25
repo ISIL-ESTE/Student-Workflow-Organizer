@@ -10,10 +10,8 @@ const hpp = require("hpp");
 const cors = require("cors");
 const morgan = require("./middlewares/morgan");
 const swaggerDocs = require("./utils/swagger");
-const { CURRENT_ENV } = require("./config/appConfig");
+const { CURRENT_ENV, API_VERSION } = require("./config/appConfig");
 
-const userRoutes = require("./routes/userRoutes");
-const adminRoutes = require("./routes/adminRoute");
 const app = express();
 
 // configure swagger docs
@@ -61,11 +59,10 @@ if (CURRENT_ENV.toLocaleLowerCase() === "production") {
   app.use("/api", limiter);
 }
 
-// Routes
-app.use("/api/v1/users", userRoutes);
-app.use("/api/v1/admin", adminRoutes);
+// routes
+app.use(`/api/${API_VERSION}`, require("./routes/index"));
 
-//welcome page with the welcome message and env
+
 app.get("/", (req, res) => {
   res.status(200).json({
     status: "success",

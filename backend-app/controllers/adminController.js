@@ -132,6 +132,9 @@ exports.authorizeOrRestrict = async (req, res, next) => {
       );
     const user = await userModel.findById(userId);
     if (!user) throw new AppError(404, 'fail', 'No user found with this id');
+    // if the user is a super admin, he can't be restricted
+    if (user.roles?.includes("SUPER_ADMIN"))
+      throw new AppError(400, "fail", "User is a super admin");
     const existingAuthorities = user.authorities;
     const existingRestrictions = user.restrictions;
     user.authorities = Array.from(

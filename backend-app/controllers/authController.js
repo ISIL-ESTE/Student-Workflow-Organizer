@@ -157,6 +157,15 @@ exports.protect = async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
+    // check if the token is expired
+    if (err.name === 'TokenExpiredError') {
+      return next(
+        new AppError(401, 'fail', 'Your token is expired'),
+        req,
+        res,
+        next
+      );
+    }
     next(err);
   }
 };
@@ -164,9 +173,12 @@ exports.protect = async (req, res, next) => {
 // Authorization check if the user have rights to do this action
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
+    const roleExist = roles.some((role) => {
+      return req.user.roles.includes(role);
+    });
+    if (!roleExist) {
       return next(
-        new AppError(403, 'fail', 'You are not allowed to do this action'),
+        new AppError(403, "fail", "You are not allowed to do this action"),
         req,
         res,
         next
