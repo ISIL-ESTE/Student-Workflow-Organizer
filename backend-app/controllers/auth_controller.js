@@ -187,11 +187,11 @@ exports.updatePassword = async (req, res, next) => {
     const user = await User.findOne({ email }).select("+password");
 
     if (!resetKey) {
-      return next(new AppError(404, "fail", "Please provide reset key"));
+      return next(new AppError(400, "fail", "Please provide reset key"));
     }
 
     if (resetKey !== user.resetKey) {
-      return next(new AppError(404, "fail", "Invalid reset key"));
+      return next(new AppError(400, "fail", "Invalid reset key"));
     }
 
     user.password = password;
@@ -217,7 +217,7 @@ exports.forgotPassword = async (req, res, next) => {
     const { email } = req.body;
 
     if (!email) {
-      return next(new AppError(404, "fail", "Please provide email"));
+      return next(new AppError(400, "fail", "Please provide email"));
     }
 
     const user = await User.findOne({ email });
