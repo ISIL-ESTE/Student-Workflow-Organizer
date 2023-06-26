@@ -77,3 +77,5 @@ ios/build/
 create-node-api.sh
 
 
+
+docs/api_docs/*

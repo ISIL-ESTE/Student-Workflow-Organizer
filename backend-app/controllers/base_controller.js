@@ -8,7 +8,12 @@ const APIFeatures = require('../utils/api_features');
  */
 exports.deleteOne = (Model) => async (req, res, next) => {
   try {
-    const doc = await Model.findByIdAndDelete(req.params.id);
+    const doc = await Model.findByIdAndUpdate(req.params.id, {
+      deleted: true,
+      ...(req.user && { deletedBy: req.user._id }),
+      deletedAt: Date.now(),
+    });
+    
 
     if (!doc) {
       return next(
@@ -35,6 +40,9 @@ exports.deleteOne = (Model) => async (req, res, next) => {
  */
 exports.updateOne = (Model) => async (req, res, next) => {
   try {
+    // get the user who is updating the document
+    const userid = req.user._id;
+    req.body.updatedBy = userid;
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,

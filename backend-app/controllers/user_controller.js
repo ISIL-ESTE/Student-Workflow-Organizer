@@ -13,7 +13,9 @@ exports.getMe = (req, res, next) => {
 exports.deleteMe = async (req, res, next) => {
   try {
     await User.findByIdAndUpdate(req.user.id, {
-      active: false,
+      deleted: true,
+      deletedAt: Date.now(),
+      deletedBy: req.user.id,
     });
 
     res.status(204).json({

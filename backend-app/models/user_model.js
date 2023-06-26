@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const Actions = require('../constants/actions');
+const metaData = require('../constants/meta_data');
+const {REQUIRE_ACTIVATION} = require('../config/app_config');
+
+
 
 const userSchema = new mongoose.Schema(
   {
@@ -12,7 +16,6 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: [true, 'Please fill your email'],
-      unique: true,
       lowercase: true,
       validate: [validator.isEmail, ' Please provide a valid email'],
     },
@@ -52,22 +55,31 @@ const userSchema = new mongoose.Schema(
     },
     active: {
       type: Boolean,
-      default: true,
+      default: !REQUIRE_ACTIVATION,
+      select: false,
+    },
+    activationKey: {
+      type: String,
       select: false,
     },
     accessRestricted: {
       type: Boolean,
       default: false,
-    },
+    }
   },
-  { timestamps: true }
+  {timestamps: true}
 );
+metaData.enableMetaData(userSchema);
 
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
+  console.log('pre save');
+  if (!this.isModified('password') || this.password === undefined) {
+    console.log('password not modified');
+    // console.log(this);
     return next();
   }
-
+  console.log('password modified');
+  // console.log(this);
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });
@@ -78,6 +90,27 @@ userSchema.methods.correctPassword = async function (
 ) {
   return await bcrypt.compare(typedPassword, originalPassword);
 };
+
+
+userSchema.index(
+  { email: 1 },
+  { unique: true, partialFilterExpression: { deleted: false } }
+);
+
+userSchema.pre("find", function () {
+  this.where({ deleted: false });
+});
+
+userSchema.pre("findOne", function () {
+  this.where({ deleted: false });
+});
+
+
+
+
+
+
+
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;

@@ -27,7 +27,7 @@ const register = async (tag, routePath) => {
   const jsYaml = require('js-yaml');
   const yamlData = jsYaml.dump(s.paths);
   // save to swagger2.yaml
-  fs.writeFileSync(`./docs/${tag}.yaml`, yamlData);
+  fs.writeFileSync(`./docs/api_docs/${tag}.yaml`, yamlData);
   fs.unlinkSync(outputFile);
   Logger.info(`Swagger docs for route [ ${tag} ] generated successfully`);
 };
