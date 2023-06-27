@@ -1,4 +1,5 @@
 const { promisify } = require('util');
+const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user_model');
 const AppError = require('../utils/app_error');
@@ -128,12 +129,28 @@ exports.activateAccount = async (req, res, next) => {
         next
       );
     }
+    if (!id) {
+      return next(
+        new AppError(400, 'fail', 'Please provide user id'),
+        req,
+        res,
+        next
+      );
+    }
 
-    // find user by activation key
+    // check if a valid id  
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return next(
+        new AppError(400, 'fail', 'Please provide a valid user id'),
+        req,
+        res,
+        next
+      );
+    }
 
     const user = await User.findOne({
       _id: id,
-    });
+    }).select('+activationKey');
 
     if (!user) {
       return next(
@@ -143,8 +160,7 @@ exports.activateAccount = async (req, res, next) => {
         next
       );
     }
-
-    if (!user.activationKey) {
+    if (user.active) {
       return next(
         new AppError(409, 'fail', 'User is already active'),
         req,
@@ -153,9 +169,10 @@ exports.activateAccount = async (req, res, next) => {
       );
     }
 
+    // verify activation key
     if (activationKey !== user.activationKey) {
       return next(
-        new AppError(400, 'fail', 'Please provide correct activation key'),
+        new AppError(400, 'fail', 'Invalid activation key'),
         req,
         res,
         next

@@ -28,19 +28,24 @@ module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   // If the error dosent have a message, set it to 'Internal Server Error'
   err.message = err.message || httpStatus.getStatusText(err.statusCode);
-  console.log(CURRENT_ENV);
+  // descreption
+  let message;
+  if (err.statusCode >= 500) {
+    if (CURRENT_ENV === "development") {
+      message = err.message;
+    } else {
+      message =
+        "We're sorry, something went wrong. Please try again later.";
+    }
+  } else {
+    message = err.message;
+  }
   res.status(err.statusCode).json({
     status: err.statusCode,
     title: httpStatus.getStatusText(err.statusCode),
     details: {
       ...(err.path && { path: err.path }),
-      description:
-        // check if status code is server error
-        err.statusCode >= 500
-          ? CURRENT_ENV === "development"
-            ? err.message
-            : "We're sorry, something went wrong. Please try again later."
-            : err.message,
+      description: message,
       ...(CURRENT_ENV === "development" && {
         error: " Do not Forget to remove this in production! \n " + err.stack,
       }),

@@ -13,6 +13,6 @@ exports.ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@gmail.com";
 exports.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 exports.JWT_SECRET = process.env.JWT_SECRET || "sdfsdf";
 exports.JWT_EXPIRES_IN = "360000";
-exports.REQUIRE_ACTIVATION = process.env.REQUIRE_ACTIVATION || false;
+exports.REQUIRE_ACTIVATION = process.env.REQUIRE_ACTIVATION || true;
 // RATE_LIMIT_PER_HOUR
 exports.RATE_LIMIT_PER_HOUR = process.env.RATE_LIMIT_PER_HOUR || 500;
