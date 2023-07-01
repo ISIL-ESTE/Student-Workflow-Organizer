@@ -15,6 +15,7 @@ const createAdminUser = async () => {
         roles: [SUPER_ADMIN.type],
         authorities: SUPER_ADMIN.authorities,
         restrictions: SUPER_ADMIN.restrictions,
+        active: true,
       });
     }
   } catch (err) {

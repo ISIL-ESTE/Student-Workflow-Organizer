@@ -5,7 +5,7 @@ const YAML = require('yamljs');
 const mergeYamlFiles = require('./merge_yaml_files');
 const { application } = require('express');
 // Path to the swagger annotations directory
-const docsDirPath = path.join(__dirname, '../../docs');
+const docsDirPath = path.join(__dirname, '../../docs/api_docs/');
 // Path to the swagger.yaml file
 const swaggerSpecPath = path.join(__dirname, '../../swagger.yaml');
 // Load the swagger.yaml file

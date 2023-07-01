@@ -1,6 +1,7 @@
 const httpStatus = require('http-status-codes');
-const currentEnv = process.env.NODE_ENV || 'development';
+const { CURRENT_ENV } = require("../config/app_config");
 const AppError = require('../utils/app_error');
+const { Logger } = require('winston');
 require('../utils/logger');
 
 /**
@@ -27,16 +28,22 @@ module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   // If the error dosent have a message, set it to 'Internal Server Error'
   err.message = err.message || httpStatus.getStatusText(err.statusCode);
-
+  console.log(CURRENT_ENV);
   res.status(err.statusCode).json({
     status: err.statusCode,
     title: httpStatus.getStatusText(err.statusCode),
     details: {
       ...(err.path && { path: err.path }),
-      description: err.message,
+      description:
+        // check if status code is server error
+        err.statusCode >= 500
+          ? CURRENT_ENV === "development"
+            ? err.message
+            : "We're sorry, something went wrong. Please try again later."
+            : err.message,
+      ...(CURRENT_ENV === "development" && {
+        error: " Do not Forget to remove this in production! \n " + err.stack,
+      }),
     },
-    ...(currentEnv === 'development' && {
-      error: ' Do not Forget to remove this in production! \n ' + err.stack,
-    }),
   });
 };

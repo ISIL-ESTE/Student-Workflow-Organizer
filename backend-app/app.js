@@ -72,7 +72,7 @@ app.get('/', (req, res) => {
 
 // handle undefined Routes
 app.use('*', (req, res, next) => {
-  const err = new AppError(404, 'fail', 'Route Not Found', req.path);
+  const err = new AppError(404, 'fail', 'Route Not Found', req.originalUrl);
   next(err, req, res, next);
 });
 

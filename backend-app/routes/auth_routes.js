@@ -5,6 +5,9 @@ const router = express.Router();
 
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
+router.get("/activate", authController.activateAccount);
+router.patch('/updateMyPassword', authController.updatePassword);
+router.patch('/forgotPassword', authController.forgotPassword);
 
 // make this file so i can use it with authRoutes(router) in index.js
 const authRoutes = (mainrouter) => {

@@ -2,7 +2,7 @@
  * @description This file contains the morgan middleware for logging requests
  */
 const morgan = require('morgan');
-const currentEnv = process.env.NODE_ENV || 'development';
+const {CURRENT_ENV} = require('../config/app_config');
 
 // Create a stream object with a 'write' function that will be used by `morgan`
 const stream = {
@@ -11,8 +11,8 @@ const stream = {
 
 // Setup the logger
 const Morgan = morgan(
-  ':method :url :status :res[content-length] - :response-time ms',
-  { stream, skip: () => currentEnv.toLowerCase() === 'production' }
+  ":method :url :status :res[content-length] - :response-time ms",
+  { stream, skip: () => CURRENT_ENV.toLowerCase() === "production" }
 );
 
 // Export the logger
