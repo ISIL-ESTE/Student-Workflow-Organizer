@@ -19,7 +19,6 @@ exports.deleteMe = async (req, res, next) => {
     });
 
     res.status(204).json({
-      status: 'success',
       data: null,
     });
   } catch (error) {
@@ -31,29 +30,19 @@ exports.updateMe = async (req, res, next) => {
   try {
     // 1) Create error if user POSTs password data
     if (req.body.password || req.body.passwordConfirm) {
-      return next(
-        new AppError(
+      return next(new AppError(
           400,
           'fail',
           'This route is not for password updates. Please use /updateMyPassword'
-        ),
-        req,
-        res,
-        next
-      );
+        ));
     }
     // create error if user tries to update role
     if (req.body.roles) {
-      return next(
-        new AppError(
+      return next(new AppError(
           400,
           'fail',
           'This route is not for role updates. Please use /updateRole'
-        ),
-        req,
-        res,
-        next
-      );
+        ));
     }
     // 2) Filtered out unwanted fields names that are not allowed to be updated
     const filteredBody = Object.keys(req.body).filter(
@@ -66,16 +55,10 @@ exports.updateMe = async (req, res, next) => {
       runValidators: true,
     });
     if (!doc) {
-      return next(
-        new AppError(404, 'fail', 'No document found with that id'),
-        req,
-        res,
-        next
-      );
+      return next(new AppError(404, 'fail', 'No document found with that id'));
     }
 
     res.status(200).json({
-      status: 'success',
       data: {
         doc,
       },
