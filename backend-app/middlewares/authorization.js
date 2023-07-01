@@ -38,8 +38,7 @@ const restrictTo =
           )
         );
     } else
-      next(
-        new AppError(
+      next(new AppError(
           403,
           'fail',
           'You do not have permission to perform this action'

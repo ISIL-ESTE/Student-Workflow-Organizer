@@ -55,8 +55,7 @@ const userSchema = new mongoose.Schema(
     },
     active: {
       type: Boolean,
-      default: !REQUIRE_ACTIVATION,
-      select: false,
+      default: !REQUIRE_ACTIVATION
     },
     activationKey: {
       type: String,
@@ -72,14 +71,9 @@ const userSchema = new mongoose.Schema(
 metaData.enableMetaData(userSchema);
 
 userSchema.pre('save', async function (next) {
-  console.log('pre save');
   if (!this.isModified('password') || this.password === undefined) {
-    console.log('password not modified');
-    // console.log(this);
     return next();
   }
-  console.log('password modified');
-  // console.log(this);
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });

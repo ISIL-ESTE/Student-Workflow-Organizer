@@ -14,36 +14,51 @@ require('../utils/logger');
  * Express automatically knows that this entire function is an error handling middleware by specifying 4 parameters
  */
 module.exports = (err, req, res, next) => {
+  // Set default values if not provided
   err.path = err.path || req.path;
+  err.statusCode = err.statusCode || 500;
+  err.message = err.message || httpStatus.getStatusText(err.statusCode);
+
+  // Handle duplicate key errors
   if (err.code === 11000) {
     Object.keys(err.keyValue).forEach((key) => {
-      err.message = `Duplicate value for the field : [${key}] Please use another value!`;
+      err.message = `Duplicate value for the field: [${key}]. Please use another value!`;
     });
     err.statusCode = 409;
   }
-  if (err.name === 'ValidationError') {
-    err = new AppError(400, 'fail', err.message);
+
+  // Handle validation errors
+  if (err.name === "ValidationError") {
+    err = new AppError(400, "fail", err.message);
   }
-  // If the error dosent have a status code, set it to 500
-  err.statusCode = err.statusCode || 500;
-  // If the error dosent have a message, set it to 'Internal Server Error'
-  err.message = err.message || httpStatus.getStatusText(err.statusCode);
-  console.log(CURRENT_ENV);
-  res.status(err.statusCode).json({
+
+  // Determine the description based on error status code and environment
+  let description;
+  if (err.statusCode >= 500) {
+    if (CURRENT_ENV === "development") {
+      description = err.message;
+    } else {
+      description =
+        "We're sorry, something went wrong. Please try again later.";
+    }
+  } else {
+    description = err.message;
+  }
+
+  // Construct the response object
+  const response = {
     status: err.statusCode,
     title: httpStatus.getStatusText(err.statusCode),
     details: {
       ...(err.path && { path: err.path }),
-      description:
-        // check if status code is server error
-        err.statusCode >= 500
-          ? CURRENT_ENV === "development"
-            ? err.message
-            : "We're sorry, something went wrong. Please try again later."
-            : err.message,
+      description,
       ...(CURRENT_ENV === "development" && {
-        error: " Do not Forget to remove this in production! \n " + err.stack,
+        error: "Do not forget to remove this in production!\n" + err.stack,
       }),
     },
-  });
+  };
+
+  // Send the response
+  res.status(err.statusCode).json(response);
 };
+

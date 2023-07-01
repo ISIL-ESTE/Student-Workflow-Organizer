@@ -26,7 +26,6 @@ exports.addAdmin = async (req, res, next) => {
     );
     await user.save();
     res.status(200).json({
-      status: 'success',
       message: 'User is now an admin',
     });
   } catch (err) {
@@ -49,7 +48,6 @@ exports.removeAdmin = async (req, res, next) => {
     user.restrictions = Roles.USER.restrictions;
     await user.save();
     res.status(200).json({
-      status: 'success',
       message: 'User is no longer an admin',
     });
   } catch (err) {
@@ -75,7 +73,6 @@ exports.addSuperAdmin = async (req, res, next) => {
     );
     await user.save();
     res.status(200).json({
-      status: 'success',
       message: 'User is now a super admin',
     });
   } catch (err) {
@@ -101,7 +98,6 @@ exports.removeSuperAdmin = async (req, res, next) => {
     user.restrictions = Roles.ADMIN.restrictions;
     await user.save();
     res.status(200).json({
-      status: 'success',
       message: 'User is no longer a super admin',
     });
   } catch (err) {
@@ -145,7 +141,6 @@ exports.authorizeOrRestrict = async (req, res, next) => {
     );
     await user.save();
     res.status(200).json({
-      status: 'success',
       message: 'User authorities and restrictions updated',
     });
   } catch (err) {
@@ -169,7 +164,6 @@ exports.banUser = async (req, res, next) => {
     user.accessRestricted = true;
     await user.save();
     res.status(200).json({
-      status: 'success',
       message: 'User is now banned',
     });
   } catch (err) {
@@ -188,7 +182,6 @@ exports.unbanUser = async (req, res, next) => {
     user.accessRestricted = false;
     await user.save();
     res.status(200).json({
-      status: 'success',
       message: 'User is now unbanned',
     });
   } catch (err) {
@@ -202,7 +195,6 @@ exports.createRole = async (req, res, next) => {
       throw new AppError(400, 'fail', 'Role already exists');
     const createdRole = await role.createRole(name, authorities, restrictions);
     res.status(201).json({
-      status: 'success',
       message: 'Role created',
       data: createdRole,
     });
@@ -214,7 +206,6 @@ exports.getRoles = async (req, res, next) => {
   try {
     const roles = await role.getRoles();
     res.status(200).json({
-      status: 'success',
       message: 'Roles retrieved',
       data: roles,
     });
@@ -227,7 +218,6 @@ exports.getRole = async (req, res, next) => {
   try {
     const singleRole = await role.getRoleByName(name);
     res.status(200).json({
-      status: 'success',
       message: 'Role retrieved',
       data: singleRole,
     });
@@ -240,7 +230,6 @@ exports.deleteRole = async (req, res, next) => {
   try {
     const deletedRole = await role.deleteRoleByName(name);
     res.status(200).json({
-      status: 'success',
       message: 'Role deleted',
       data: deletedRole,
     });
@@ -258,7 +247,6 @@ exports.updateRole = async (req, res, next) => {
       restrictions
     );
     res.status(200).json({
-      status: 'success',
       message: 'Role updated',
       data: updatedRole,
     });
@@ -284,7 +272,6 @@ exports.assignRoleToUser = async (req, res, next) => {
     );
     await user.save();
     res.status(200).json({
-      status: 'success',
       message: 'Role assigned to user',
     });
   } catch (err) {
@@ -309,7 +296,6 @@ exports.removeRoleFromUser = async (req, res, next) => {
     );
     await user.save();
     res.status(200).json({
-      status: 'success',
       message: 'Role removed from user',
     });
   } catch (err) {

@@ -1,4 +1,5 @@
 const { promisify } = require('util');
+const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user_model');
 const AppError = require('../utils/app_error');
@@ -33,12 +34,7 @@ exports.login = async (req, res, next) => {
 
     // 1) check if email and password existos
     if (!email || !password) {
-      return next(
-        new AppError(404, 'fail', 'Please provide email or password'),
-        req,
-        res,
-        next
-      );
+      return next(new AppError(404, 'fail', 'Please provide email or password'));
     }
 
     // 2) check if user exist and password is correct
@@ -54,12 +50,7 @@ exports.login = async (req, res, next) => {
       );
 
     if (!user || !(await user.correctPassword(password, user.password))) {
-      return next(
-        new AppError(401, 'fail', 'Email or Password is wrong'),
-        req,
-        res,
-        next
-      );
+      return next(new AppError(401, 'fail', 'Email or Password is wrong'));
     }
 
     // 3) All correct, send jwt to client
@@ -69,7 +60,6 @@ exports.login = async (req, res, next) => {
     user.password = undefined;
 
     res.status(200).json({
-      status: 'success',
       token,
       data: {
         user,
@@ -105,7 +95,6 @@ exports.signup = async (req, res, next) => {
       );
       
     res.status(201).json({
-      status: 'success',
       token,
       data: {
         user,
@@ -121,45 +110,31 @@ exports.activateAccount = async (req, res, next) => {
     const { id,activationKey } = req.query;
 
     if (!activationKey) {
-      return next(
-        new AppError(400, 'fail', 'Please provide activation key'),
-        req,
-        res,
-        next
-      );
+      return next(new AppError(400, 'fail', 'Please provide activation key'));
+    }
+    if (!id) {
+      return next(new AppError(400, 'fail', 'Please provide user id'));
     }
 
-    // find user by activation key
+    // check if a valid id  
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return next(new AppError(400, 'fail', 'Please provide a valid user id'));
+    }
 
     const user = await User.findOne({
       _id: id,
-    });
+    }).select('+activationKey');
 
     if (!user) {
-      return next(
-        new AppError(404, 'fail', 'User does not exist'),
-        req,
-        res,
-        next
-      );
+      return next(new AppError(404, 'fail', 'User does not exist'));
+    }
+    if (user.active) {
+      return next(new AppError(409, 'fail', 'User is already active'));
     }
 
-    if (!user.activationKey) {
-      return next(
-        new AppError(409, 'fail', 'User is already active'),
-        req,
-        res,
-        next
-      );
-    }
-
+    // verify activation key
     if (activationKey !== user.activationKey) {
-      return next(
-        new AppError(400, 'fail', 'Please provide correct activation key'),
-        req,
-        res,
-        next
-      );
+      return next(new AppError(400, 'fail', 'Invalid activation key'));
     }
     // activate user
     user.active = true;
@@ -169,7 +144,6 @@ exports.activateAccount = async (req, res, next) => {
     user.password = undefined;
 
     res.status(200).json({
-      status: 'success',
       data: {
         user,
       },
@@ -223,8 +197,7 @@ exports.forgotPassword = async (req, res, next) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return next(
-        new AppError(404, "fail", "User with this email does not exist")
+      return next(new AppError(404, "fail", "User with this email does not exist")
       );
     }
 
@@ -262,16 +235,11 @@ exports.protect = async (req, res, next) => {
       token = req.headers.authorization.split(' ')[1];
     }
     if (!token) {
-      return next(
-        new AppError(
+      return next(new AppError(
           401,
           'fail',
           'You are not logged in! Please login in to continue'
-        ),
-        req,
-        res,
-        next
-      );
+        ));
     }
 
     // 2) Verify token
@@ -280,18 +248,12 @@ exports.protect = async (req, res, next) => {
     // 3) check if the user is exist (not deleted)
     const user = await User.findById(decode.id);
     if (!user) {
-      return next(
-        new AppError(401, 'fail', 'This user is no longer exist'),
-        req,
-        res,
-        next
-      );
+      return next(new AppError(401, 'fail', 'This user is no longer exist'));
     }
 
     // Check if the account is banned
     if (user?.accessRestricted)
-      return next(
-        new AppError(
+      return next(new AppError(
           403,
           'fail',
           'Your account has been banned. Please contact the admin for more information.'
@@ -300,8 +262,7 @@ exports.protect = async (req, res, next) => {
     req.user = user;
     // check if account is active
     if (!user.active)
-      return next(
-        new AppError(
+      return next(new AppError(
           403,
           'fail',
           'Your account is not active. Please activate your account to continue.'
@@ -312,12 +273,7 @@ exports.protect = async (req, res, next) => {
   } catch (err) {
     // check if the token is expired
     if (err.name === 'TokenExpiredError') {
-      return next(
-        new AppError(401, 'fail', 'Your token is expired'),
-        req,
-        res,
-        next
-      );
+      return next(new AppError(401, 'fail', 'Your token is expired'));
     }
     next(err);
   }
@@ -330,12 +286,7 @@ exports.restrictTo = (...roles) => {
       return req.user.roles.includes(role);
     });
     if (!roleExist) {
-      return next(
-        new AppError(403, 'fail', 'You are not allowed to do this action'),
-        req,
-        res,
-        next
-      );
+      return next(new AppError(403, 'fail', 'You are not allowed to do this action'));
     }
     next();
   };
