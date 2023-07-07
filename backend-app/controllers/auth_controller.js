@@ -8,7 +8,12 @@ const {
   JWT_SECRET,
   JWT_EXPIRES_IN,
   REQUIRE_ACTIVATION,
-} = require("../config/app_config");
+} = require('../config/app_config');
+const {
+  getGithubOAuthUser,
+  getGithubOAuthToken,
+  getGithubOAuthUserPrimaryEmail,
+} = require('../utils/authorization/github');
 const role = new Role();
 
 const createToken = (id) => {
@@ -28,13 +33,50 @@ const generateActivationKey = async () => {
   return activationKey;
 };
 
+exports.githubHandler = async (req, res, next) => {
+  try {
+    const Roles = await role.getRoles();
+    const { code } = req.query;
+    if (!code) throw new AppError(400, 'fail', 'Please provide code');
+    const { access_token } = await getGithubOAuthToken(code);
+    if (!access_token) throw new AppError(400, 'fail', 'Invalid code');
+    const githubUser = await getGithubOAuthUser(access_token);
+    const primaryEmail = await getGithubOAuthUserPrimaryEmail(access_token);
+    const exists = await User.findOne({ email: primaryEmail });
+    if (exists)
+      return res.status(200).json({
+        token: createToken(exists.id),
+      });
+    if (!githubUser) throw new AppError(400, 'fail', 'Invalid access token');
+    const createdUser = await User.create({
+      name: githubUser.name,
+      email: primaryEmail,
+      password: null,
+      address: githubUser.location,
+      roles: [Roles.USER.type],
+      authorities: Roles.USER.authorities,
+      restrictions: Roles.USER.restrictions,
+      githubOauthAccessToken: access_token,
+      active: true,
+    });
+    const token = createToken(createdUser.id);
+    res.status(201).json({
+      user: createdUser,
+      token,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
     // 1) check if email and password existos
     if (!email || !password) {
-      return next(new AppError(404, 'fail', 'Please provide email or password'));
+      return next(
+        new AppError(404, 'fail', 'Please provide email or password')
+      );
     }
 
     // 2) check if user exist and password is correct
@@ -85,15 +127,14 @@ exports.signup = async (req, res, next) => {
     });
     const token = createToken(user.id);
 
-    
     // Remove the password and activation key from the output
     user.password = undefined;
     user.activationKey = undefined;
-    
+
     Logger.info(
       `User ${user._id} with email ${user.email} has been created with activation key ${activationKey}`
-      );
-      
+    );
+
     res.status(201).json({
       token,
       data: {
@@ -107,7 +148,7 @@ exports.signup = async (req, res, next) => {
 
 exports.activateAccount = async (req, res, next) => {
   try {
-    const { id,activationKey } = req.query;
+    const { id, activationKey } = req.query;
 
     if (!activationKey) {
       return next(new AppError(400, 'fail', 'Please provide activation key'));
@@ -116,7 +157,7 @@ exports.activateAccount = async (req, res, next) => {
       return next(new AppError(400, 'fail', 'Please provide user id'));
     }
 
-    // check if a valid id  
+    // check if a valid id
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return next(new AppError(400, 'fail', 'Please provide a valid user id'));
     }
@@ -153,19 +194,18 @@ exports.activateAccount = async (req, res, next) => {
   }
 };
 
-
 exports.updatePassword = async (req, res, next) => {
   try {
     const { email, resetKey, password } = req.body;
 
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email }).select('+password');
 
     if (!resetKey) {
-      return next(new AppError(400, "fail", "Please provide reset key"));
+      return next(new AppError(400, 'fail', 'Please provide reset key'));
     }
 
     if (resetKey !== user.resetKey) {
-      return next(new AppError(400, "fail", "Invalid reset key"));
+      return next(new AppError(400, 'fail', 'Invalid reset key'));
     }
 
     user.password = password;
@@ -176,7 +216,7 @@ exports.updatePassword = async (req, res, next) => {
     user.password = undefined;
 
     res.status(200).json({
-      status: "success",
+      status: 'success',
       token,
       data: { user },
     });
@@ -185,19 +225,19 @@ exports.updatePassword = async (req, res, next) => {
   }
 };
 
-
 exports.forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
 
     if (!email) {
-      return next(new AppError(400, "fail", "Please provide email"));
+      return next(new AppError(400, 'fail', 'Please provide email'));
     }
 
     const user = await User.findOne({ email });
 
     if (!user) {
-      return next(new AppError(404, "fail", "User with this email does not exist")
+      return next(
+        new AppError(404, 'fail', 'User with this email does not exist')
       );
     }
 
@@ -212,17 +252,12 @@ exports.forgotPassword = async (req, res, next) => {
     // TODO: send email with reset key
 
     res.status(200).json({
-      status: "success",
+      status: 'success',
     });
   } catch (err) {
     next(err);
   }
 };
-      
-    
-    
-    
-
 
 exports.protect = async (req, res, next) => {
   try {
@@ -235,25 +270,30 @@ exports.protect = async (req, res, next) => {
       token = req.headers.authorization.split(' ')[1];
     }
     if (!token) {
-      return next(new AppError(
+      return next(
+        new AppError(
           401,
           'fail',
           'You are not logged in! Please login in to continue'
-        ));
+        )
+      );
     }
 
     // 2) Verify token
     const decode = await promisify(jwt.verify)(token, JWT_SECRET);
 
     // 3) check if the user is exist (not deleted)
-    const user = await User.findById(decode.id);
+    const user = await User.findById(decode.id).select(
+      '+githubOauthAccessToken'
+    );
     if (!user) {
       return next(new AppError(401, 'fail', 'This user is no longer exist'));
     }
 
     // Check if the account is banned
     if (user?.accessRestricted)
-      return next(new AppError(
+      return next(
+        new AppError(
           403,
           'fail',
           'Your account has been banned. Please contact the admin for more information.'
@@ -262,13 +302,14 @@ exports.protect = async (req, res, next) => {
     req.user = user;
     // check if account is active
     if (!user.active)
-      return next(new AppError(
+      return next(
+        new AppError(
           403,
           'fail',
           'Your account is not active. Please activate your account to continue.'
         )
       );
-    
+
     next();
   } catch (err) {
     // check if the token is expired
@@ -286,7 +327,9 @@ exports.restrictTo = (...roles) => {
       return req.user.roles.includes(role);
     });
     if (!roleExist) {
-      return next(new AppError(403, 'fail', 'You are not allowed to do this action'));
+      return next(
+        new AppError(403, 'fail', 'You are not allowed to do this action')
+      );
     }
     next();
   };
