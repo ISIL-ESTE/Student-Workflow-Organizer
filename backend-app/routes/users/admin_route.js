@@ -1,10 +1,7 @@
 const express = require('express');
+const swaggergenerator = require('../../utils/swagger/swaggergenerator');
 const {
-  addSuperAdmin,
-  removeSuperAdmin,
   authorizeOrRestrict,
-  addAdmin,
-  removeAdmin,
   banUser,
   unbanUser,
   createRole,
@@ -14,65 +11,26 @@ const {
   deleteRole,
   assignRoleToUser,
   removeRoleFromUser,
-} = require('../controllers/adminController');
-const { protect } = require('../controllers/authController');
-const { restrictTo } = require('../middlewares/authorization');
+} = require('../../controllers/admin_controller');
+const authController = require('../../controllers/auth_controller');
+const { restrictTo } = require('../../middlewares/authorization');
 const router = express.Router();
-const Actions = require('../constants/Actions');
-const Roles = require('../constants/defaultRoles');
+const Actions = require('../../constants/actions');
+const Roles = require('../../constants/default_roles');
+const userController = require('../../controllers/user_controller');
 
 /**
  * Below all routes are protected
  */
-router.use(protect);
 
-/**
- * @protected
- * @route PUT /api/v1/admin/add-super-admin/:userId
- * @description Add super admin role to a user
- * @access Super Admin
- * @param {string} userId - Id of the user to add super admin role to
- */
-router.put(
-  '/add-super-admin/:userId',
-  restrictTo(Actions.UPDATE_USER),
-  addSuperAdmin
-);
+router.use(authController.restrictTo('ADMIN', 'SUPER_ADMIN'));
 
-/*
- * @protected
- * @route PUT /api/v1/admin/remove-super-admin/:userId
- * @description Remove super admin role from a user
- * @access Super Admin
- * @param {string} userId - Id of the user to remove super admin role from
- **/
-router.put(
-  '/remove-super-admin/:userId',
-  restrictTo(Actions.UPDATE_USER, Actions.REMOVE_SUPER_ADMIN),
-  removeSuperAdmin
-);
-
-/**
- * @protected
- * @route PUT /api/v1/admin/add-admin/:userId
- * @description Add admin role to a user
- * @access Super Admin
- * @param {string} userId - Id of the user to add admin role to
- */
-router.put('/add-admin/:userId', restrictTo(Actions.UPDATE_USER), addAdmin);
-
-/**
- * @protected
- * @route PUT /api/v1/admin/remove-admin/:userId
- * @description Remove admin role from a user
- * @access Super Admin
- * @param {string} userId - Id of the user to remove admin role from
- */
-router.put(
-  '/remove-admin/:userId',
-  restrictTo(Actions.UPDATE_USER),
-  removeAdmin
-);
+router
+  .route('/user/:id')
+  .get(userController.getUser)
+  .patch(userController.updateUser)
+  .delete(userController.deleteUser);
+router.get('/users', userController.getAllUsers);
 
 /**
  * @protected
@@ -184,4 +142,9 @@ router.put(
   restrictTo(Actions.MANAGE_ROLES),
   removeRoleFromUser
 );
-module.exports = router;
+
+adminRoutes = (mainrouter) => {
+  swaggergenerator.register('admin', './routes/users/admin_route.js');
+  mainrouter.use('/admin', router);
+};
+module.exports = adminRoutes;

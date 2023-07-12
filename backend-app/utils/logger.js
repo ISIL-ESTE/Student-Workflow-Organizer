@@ -3,7 +3,7 @@
  */
 const { createLogger, transports } = require('winston');
 const DailyRotateFile = require('winston-daily-rotate-file');
-const { fileOptions, consoleOptions } = require('../config/loggerConfig');
+const { fileOptions, consoleOptions } = require('../config/logger_config');
 
 // Define the transport for the logger
 const consoleTransport = new transports.Console(consoleOptions);

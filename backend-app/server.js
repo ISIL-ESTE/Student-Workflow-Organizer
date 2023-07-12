@@ -1,12 +1,11 @@
 const mongoose = require('mongoose');
-require('./utils/Logger');
-const { DATABASE, PORT } = require('./config/appConfig');
-const createRoles = require('./utils/authorization/role/createRoles');
+require('./utils/logger');
+const { DATABASE, PORT } = require('./config/app_config');
+const createRoles = require('./utils/authorization/role/create_roles');
 
 process.on('uncaughtException', (err) => {
-  console.log(err.name, err.message, err.stack);
   Logger.error('UNCAUGHT EXCEPTION!!!  shutting down ...');
-  Logger.error(`${err.name}, ${err.message}`);
+  Logger.error(`${err.name}, ${err.message}, ${err.stack}`);
   process.exit(1);
 });
 
@@ -36,11 +35,11 @@ const expServer = app.listen(PORT, async () => {
 });
 
 // create the admin user if not exists
-require('./utils/authorization/createAdminUser');
+require('./utils/create_default_user')();
 
 process.on('unhandledRejection', (err) => {
   Logger.error('UNHANDLED REJECTION!!!  shutting down ...');
-  Logger.error(`${err.name}, ${err.message}`);
+  Logger.error(`${err.name}, ${err.message}, ${err.stack}`);
   expServer.close(() => {
     process.exit(1);
   });

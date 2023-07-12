@@ -1,6 +1,6 @@
-const AppError = require('../../appError');
-const roleModel = require('../../../models/roleModel');
-const Actions = require('../../../constants/Actions');
+const AppError = require('../../app_error');
+const roleModel = require('../../../models/role_model');
+const Actions = require('../../../constants/actions');
 class Role {
   roleModel = roleModel;
 

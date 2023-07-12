@@ -1,4 +1,4 @@
-const Actions = require('./Actions');
+const Actions = require('./actions');
 const Roles = {
   SUPER_ADMIN: {
     type: 'SUPER_ADMIN',

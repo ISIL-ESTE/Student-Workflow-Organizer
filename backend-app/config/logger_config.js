@@ -1,7 +1,7 @@
 const { addColors, format } = require('winston');
-const { logFilePath } = require('./appConfig');
+const { logFilePath } = require('./app_config');
 // Define the current environment
-const currentEnv = process.env.NODE_ENV || 'development';
+const {CURRENT_ENV} = require('./app_config');
 
 // Define log colors
 const colors = {
@@ -27,7 +27,7 @@ const formatLogMessage = format.printf(
  * when the log level is debug, debug and all the levels above it will be logged.
  * when the log level is warn, warn and all the levels above it will be logged.
  */
-const logLevel = currentEnv.toLowerCase() === 'development' ? 'debug' : 'warn';
+const logLevel = CURRENT_ENV.toLowerCase() === "development" ? "debug" : "warn";
 
 /**
  * @description - This is the configuration for the logger
@@ -63,4 +63,4 @@ const fileOptions = {
 module.exports = {
   fileOptions,
   consoleOptions,
-}
+};

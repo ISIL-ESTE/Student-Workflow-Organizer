@@ -1,11 +1,11 @@
 const swaggerUi = require('swagger-ui-express');
-const { PORT, CURRENT_ENV } = require('../../config/appConfig');
+const { PORT, CURRENT_ENV } = require('../../config/app_config');
 const path = require('path');
 const YAML = require('yamljs');
-const mergeYamlFiles = require('./mergeYamlFiles');
+const mergeYamlFiles = require('./merge_yaml_files');
 const { application } = require('express');
 // Path to the swagger annotations directory
-const docsDirPath = path.join(__dirname, '../../docs');
+const docsDirPath = path.join(__dirname, '../../docs/api_docs/');
 // Path to the swagger.yaml file
 const swaggerSpecPath = path.join(__dirname, '../../swagger.yaml');
 // Load the swagger.yaml file
@@ -18,6 +18,19 @@ swaggerSpec.servers = [
     description: 'Development server',
   },
 ];
+const swaggerUiOptions = {
+  swaggerOptions: {
+    tryItOutEnabled: true,
+    // Show the request duration (in ms) in the responses
+    displayRequestDuration: true,
+    // other advanced settings
+    showExtensions: true,
+    filter: true,
+    showCommonExtensions: true,
+    layout: 'BaseLayout',
+    deepLinking: true,
+  },
+};
 /**
  * This function configures the swagger documentation
  * @param { application } app - The express application
@@ -25,7 +38,11 @@ swaggerSpec.servers = [
  */
 const swaggerDocs = (app) => {
   if (CURRENT_ENV.toLowerCase() === 'production') return;
-  app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.use(
+    '/docs',
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec, swaggerUiOptions)
+  );
   // Get docs in JSON format
   app.get('/docs-json', (_, res) => {
     res.setHeader('Content-Type', 'application/json');
