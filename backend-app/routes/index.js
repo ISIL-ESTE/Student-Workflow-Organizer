@@ -5,6 +5,7 @@ const userRoutes = require('./users/user_route');
 const adminRoutes = require('./users/admin_route');
 const superAdminRoutes = require('./users/super_admin_route');
 const authRoutes = require('./auth_routes');
+const githubRoutes = require('./github_routes');
 const authController = require('../controllers/auth_controller');
 
 // public routes
@@ -16,5 +17,5 @@ router.use(authController.protect);
 userRoutes(router);
 adminRoutes(router);
 superAdminRoutes(router);
-
+githubRoutes(router);
 module.exports = router;
