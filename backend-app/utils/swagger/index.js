@@ -37,7 +37,7 @@ const swaggerUiOptions = {
  * @returns {void}
  */
 const swaggerDocs = (app) => {
-  if (CURRENT_ENV.toLowerCase() === 'production') return;
+  if (CURRENT_ENV === 'production') return;
   app.use(
     '/docs',
     swaggerUi.serve,

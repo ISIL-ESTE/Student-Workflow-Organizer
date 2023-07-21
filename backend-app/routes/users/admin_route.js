@@ -144,7 +144,7 @@ router.put(
 );
 
 adminRoutes = (mainrouter) => {
-  swaggergenerator.register('admin', './routes/users/admin_route.js');
+  // swaggergenerator.register('admin', './routes/users/admin_route.js');
   mainrouter.use('/admin', router);
 };
 module.exports = adminRoutes;

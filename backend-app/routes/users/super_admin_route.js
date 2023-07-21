@@ -62,10 +62,10 @@ router.put(
 );
 
 superAdminRoutes = (mainrouter) => {
-  swaggergenerator.register(
-    'super_admin',
-    './routes/users/super_admin_route.js'
-  );
+  // swaggergenerator.register(
+  //   'super_admin',
+  //   './routes/users/super_admin_route.js'
+  // );
   mainrouter.use('/super_admin', router);
 };
 module.exports = superAdminRoutes;

@@ -10,7 +10,7 @@ router
   .patch(userController.updateMe);
 
 userRoutes = (mainrouter) => {
-  swaggergenerator.register('user', './routes/users/user_route.js');
+  // swaggergenerator.register('user', './routes/users/user_route.js');
   mainrouter.use('/users', router);
 };
 

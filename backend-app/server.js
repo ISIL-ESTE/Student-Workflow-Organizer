@@ -20,7 +20,7 @@ mongoose
     Logger.info('DB Connected Successfully!');
   })
   .catch((err) => {
-    Logger.error('DB Connection Failed! \n\tException : ' + err);
+    Logger.error('DB Connection Failed! \n\tException : ' + err + '\n' + err.stack);
   }); //Now all the errors of mongo will be handled by the catch block
 
 // When the connection is disconnected

@@ -17,6 +17,7 @@ const app = express();
 // configure swagger docs
 swaggerDocs(app);
 
+
 // use json as default format
 app.use(express.json());
 
@@ -54,7 +55,7 @@ app.use(hpp());
 // Compress all responses
 app.use(compression());
 
-if (CURRENT_ENV.toLocaleLowerCase() === 'production') {
+if (CURRENT_ENV === 'production') {
   //Limiting request form same IP
   app.use('/api', limiter);
 }
