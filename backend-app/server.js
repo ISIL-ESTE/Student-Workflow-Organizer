@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 require('./utils/logger');
+const fs = require('fs');
 const { DATABASE, PORT } = require('./config/app_config');
 const createRoles = require('./utils/authorization/role/create_roles');
 
@@ -30,6 +31,7 @@ mongoose.connection.on('disconnected', () => {
 
 // Start the server
 const expServer = app.listen(PORT, async () => {
+  if(!fs.existsSync('.env')) Logger.warn('.env file not found, using .env.example file');
   Logger.info(`App running on port ${PORT}`);
   await createRoles();
 });

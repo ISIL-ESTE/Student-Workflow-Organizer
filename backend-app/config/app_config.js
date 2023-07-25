@@ -4,7 +4,6 @@ const fs = require('fs');
 
 // load env file
 const envFile = fs.existsSync('.env') ?  '.env' : '.env.example';
-if(envFile === '.env.example') console.log('.env file not found, using .example.env file instead');
 dotenv.config( { path: join(__dirname, `../${envFile}`) } );
 
 exports.logFilePath = join(__dirname, '../server-logs');
