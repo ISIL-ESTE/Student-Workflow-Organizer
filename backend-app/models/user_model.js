@@ -3,9 +3,7 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const Actions = require('../constants/actions');
 const metaData = require('../constants/meta_data');
-const {REQUIRE_ACTIVATION} = require('../config/app_config');
-
-
+const { REQUIRE_ACTIVATION } = require('../config/app_config');
 
 const userSchema = new mongoose.Schema(
   {
@@ -25,7 +23,7 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, 'Please fill your password'],
+      allowNull: true,
       minLength: 6,
       select: false,
     },
@@ -55,7 +53,7 @@ const userSchema = new mongoose.Schema(
     },
     active: {
       type: Boolean,
-      default: !REQUIRE_ACTIVATION
+      default: !REQUIRE_ACTIVATION,
     },
     activationKey: {
       type: String,
@@ -64,14 +62,23 @@ const userSchema = new mongoose.Schema(
     accessRestricted: {
       type: Boolean,
       default: false,
-    }
+    },
+    githubOauthAccessToken: {
+      type: String,
+      select: false,
+      default: null,
+    },
   },
-  {timestamps: true}
+  { timestamps: true }
 );
 metaData.enableMetaData(userSchema);
 
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password') || this.password === undefined) {
+  if (
+    !this.isModified('password') ||
+    this.password === undefined ||
+    (this.password == null && this.githubOauthAccessToken != null)
+  ) {
     return next();
   }
   this.password = await bcrypt.hash(this.password, 12);
@@ -100,20 +107,13 @@ userSchema.index(
   { unique: true, partialFilterExpression: { deleted: false } }
 );
 
-userSchema.pre("find", function () {
+userSchema.pre('find', function () {
   this.where({ deleted: false });
 });
 
-userSchema.pre("findOne", function () {
+userSchema.pre('findOne', function () {
   this.where({ deleted: false });
 });
-
-
-
-
-
-
-
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;

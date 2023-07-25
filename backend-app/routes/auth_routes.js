@@ -5,9 +5,10 @@ const router = express.Router();
 
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
-router.get("/activate", authController.activateAccount);
+router.get('/activate', authController.activateAccount);
 router.patch('/updateMyPassword', authController.updatePassword);
 router.patch('/forgotPassword', authController.forgotPassword);
+router.get('/github/callback', authController.githubHandler);
 
 // make this file so i can use it with authRoutes(router) in index.js
 const authRoutes = (mainrouter) => {
@@ -15,4 +16,3 @@ const authRoutes = (mainrouter) => {
   mainrouter.use('/auth', router);
 };
 module.exports = authRoutes;
-
