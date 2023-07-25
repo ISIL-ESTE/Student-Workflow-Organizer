@@ -6,6 +6,7 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
+![Open Pull Requests][open-pr-shield] ![Closed Pull Requests][closed-pr-shield]
 [![MIT License][license-shield]][license-url]
 
 </div>
@@ -70,3 +71,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 [issues-url]: https://github.com/ISIL-ESTE/Student-Workflow-Organizer/issues
 [license-shield]: https://img.shields.io/github/license/ISIL-ESTE/Student-Workflow-Organizer.svg?style=for-the-badge
 [license-url]: https://github.com/ISIL-ESTE/Student-Workflow-Organizer/blob/master/LICENSE.txt
+[closed-pr-shield]: https://img.shields.io/github/issues-pr-closed/ISIL-ESTE/Student-Workflow-Organizer.svg?style=for-the-badge
+[closed-pr-url]: https://github.com/ISIL-ESTE/Student-Workflow-Organizer/pulls?q=is%3Apr+is%3Aclosed
+[open-pr-shield]: https://img.shields.io/github/issues-pr-raw/ISIL-ESTE/Student-Workflow-Organizer.svg?style=for-the-badge
+[open-pr-url]: https://github.com/ISIL-ESTE/Student-Workflow-Organizer/pulls
