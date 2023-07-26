@@ -92,6 +92,16 @@ userSchema.methods.correctPassword = async function (
   return await bcrypt.compare(typedPassword, originalPassword);
 };
 
+
+// verify if the user is authorized or restricted from an action
+userSchema.methods.isAuthorizedTo = function (action) {
+  return this.authorities.includes(action);
+};
+userSchema.methods.isRestrictedFrom = function (action) {
+  return this.restrictions.includes(action);
+};
+
+
 userSchema.index(
   { email: 1 },
   { unique: true, partialFilterExpression: { deleted: false } }

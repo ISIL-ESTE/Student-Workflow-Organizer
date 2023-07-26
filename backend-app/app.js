@@ -17,6 +17,7 @@ const app = express();
 // configure swagger docs
 swaggerDocs(app);
 
+
 // use json as default format
 app.use(express.json());
 
@@ -54,10 +55,21 @@ app.use(hpp());
 // Compress all responses
 app.use(compression());
 
-if (CURRENT_ENV.toLocaleLowerCase() === 'production') {
+if (CURRENT_ENV === 'production') {
   //Limiting request form same IP
-  app.use('/api', limiter);
+  app.use(limiter);
 }
+
+// check if no version is provided if so use the default version
+// example api/auth/user/signup => api/v1/auth/user/signup
+app.use((req, res, next) => {
+  if (req.originalUrl.startsWith('/api')) {
+    req.originalUrl = `/api/${API_VERSION}${req.originalUrl}`;
+  }
+  console.log("req.originalUrl", req.originalUrl);
+  next();
+});
+
 
 // routes
 app.use(`/api/${API_VERSION}`, require('./routes/index'));
