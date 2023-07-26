@@ -66,7 +66,6 @@ app.use((req, res, next) => {
   if (req.originalUrl.startsWith('/api')) {
     req.originalUrl = `/api/${API_VERSION}${req.originalUrl}`;
   }
-  console.log("req.originalUrl", req.originalUrl);
   next();
 });
 

@@ -57,7 +57,10 @@ module.exports = (err, req, res, next) => {
       }),
     },
   };
-
+  // if 500 error, log error to console
+  if (err.statusCode >= 500) {
+    console.log(err);
+  }
   // Send the response
   res.status(err.statusCode).json(response);
 };

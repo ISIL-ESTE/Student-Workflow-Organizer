@@ -10,7 +10,7 @@ const user_model = require('../../models/user_model');
 const { log } = require('winston');
 beforeAll(async () => {
   mongoose.set("strictQuery", false);
-  await mongoose.connect('mongodb://localhost:27017/testdb', {
+  await mongoose.connect(process.env.MONGO_URI_TEST, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
@@ -18,7 +18,7 @@ beforeAll(async () => {
   await createDefaultUser();
   await request(app).post('/api/v1/auth/signup').send({
     name: 'Admin',
-    email: 'admin1@gmail.com',
+    email: 'admin@gmail.com',
     password: 'admin123',
   });
 });
@@ -125,8 +125,8 @@ describe('User API', () => {
       const response = await request(app)
         .post("/api/v1/auth/login")
         .send({
-          email: "admin1@gmail.com",
-          password: "admin123",
+          email: userEmail,
+          password: userPassword,
         })
         .expect(200);
       expect(response.body.token).toBeDefined();
@@ -136,7 +136,7 @@ describe('User API', () => {
       await request(app)
         .post("/api/v1/auth/login")
         .send({
-          email: "admin1@gmail.com",
+          email: "random@gmail.com",
           password: "admin123424",
         })
         .expect(401);
@@ -147,10 +147,11 @@ describe('User API', () => {
     let token;
     beforeAll(async () => {
       const response = await request(app).post('/api/v1/auth/login').send({
-        email: 'admin@gmail.com',
-        password: 'admin123',
+        email: userEmail,
+        password: userPassword,
       });
       token = response.body.token;
+      console.log(response.body);
     });
     it("should return 401 if user is not logged in", async () => {
       await request(app)
@@ -163,14 +164,14 @@ describe('User API', () => {
     });
     // if user is logged in
     it("should update the user if user is logged in", async () => {
+      console.log(token);
       await request(app)
         .patch("/api/v1/users/me")
         .set("Authorization", `Bearer ${token}`)
         .send({
           name: "John Doe",
-          email: "abdo@gmail.com",
         })
-        .expect(200);
+        .expect(200)
     });
     // if user tries to update password
     it("should return 400 if user tries to update password", async () => {
@@ -180,7 +181,7 @@ describe('User API', () => {
         .send({
           password: "123456789",
         })
-        .expect(400);
+        .expect(400)
     });
     // if user tries to update roles
     it("should return 400 if user tries to update roles", async () => {

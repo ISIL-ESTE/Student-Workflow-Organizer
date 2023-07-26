@@ -8,6 +8,11 @@ const YAML = require('yamljs');
  */
 const mergeYamlFiles = (directoryPath) => {
   const mergedYamlObject = {};
+  // check directory exists
+  if (!fs.existsSync(directoryPath)) {
+    Logger.error(`Directory ${directoryPath} does not exist`);
+    fs.mkdirSync(directoryPath);
+  }
   const files = fs.readdirSync(directoryPath);
   files.forEach((file) => {
     if (path.extname(file) !== '.yaml')
