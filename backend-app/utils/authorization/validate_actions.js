@@ -6,6 +6,6 @@ const Actions = require('../../constants/actions');
  * @returns boolean
  */
 const validateActions = (actions) =>
-  actions.every((action) => Object.values(Actions).includes(action));
+    actions.every((action) => Object.values(Actions).includes(action));
 
 module.exports = validateActions;

@@ -13,23 +13,23 @@ const swaggerSpec = YAML.load(swaggerSpecPath);
 // Merge the swagger.yaml file with the swagger annotations
 swaggerSpec.paths = mergeYamlFiles(docsDirPath);
 swaggerSpec.servers = [
-  {
-    url: `http://localhost:${PORT}/api/v1`,
-    description: 'Development server',
-  },
+    {
+        url: `http://localhost:${PORT}/api/v1`,
+        description: 'Development server',
+    },
 ];
 const swaggerUiOptions = {
-  swaggerOptions: {
-    tryItOutEnabled: true,
-    // Show the request duration (in ms) in the responses
-    displayRequestDuration: true,
-    // other advanced settings
-    showExtensions: true,
-    filter: true,
-    showCommonExtensions: true,
-    layout: 'BaseLayout',
-    deepLinking: true,
-  },
+    swaggerOptions: {
+        tryItOutEnabled: true,
+        // Show the request duration (in ms) in the responses
+        displayRequestDuration: true,
+        // other advanced settings
+        showExtensions: true,
+        filter: true,
+        showCommonExtensions: true,
+        layout: 'BaseLayout',
+        deepLinking: true,
+    },
 };
 /**
  * This function configures the swagger documentation
@@ -37,21 +37,23 @@ const swaggerUiOptions = {
  * @returns {void}
  */
 const swaggerDocs = (app) => {
-  if (CURRENT_ENV === 'production') return;
-  app.use(
-    '/docs',
-    swaggerUi.serve,
-    swaggerUi.setup(swaggerSpec, swaggerUiOptions)
-  );
-  // Get docs in JSON format
-  app.get('/docs-json', (_, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.send(swaggerSpec);
-  });
-  global.Logger.info(`Swagger docs available at http://localhost:${PORT}/docs`);
-  global.Logger.info(
-    `Swagger docs JSON format available at http://localhost:${PORT}/docs-json`
-  );
+    if (CURRENT_ENV === 'production') return;
+    app.use(
+        '/docs',
+        swaggerUi.serve,
+        swaggerUi.setup(swaggerSpec, swaggerUiOptions)
+    );
+    // Get docs in JSON format
+    app.get('/docs-json', (_, res) => {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(swaggerSpec);
+    });
+    global.Logger.info(
+        `Swagger docs available at http://localhost:${PORT}/docs`
+    );
+    global.Logger.info(
+        `Swagger docs JSON format available at http://localhost:${PORT}/docs-json`
+    );
 };
 
 module.exports = swaggerDocs;
