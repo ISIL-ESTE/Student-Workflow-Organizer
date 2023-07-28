@@ -71,6 +71,8 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// add meta data to the schema
 metaData.enableMetaData(userSchema);
 
 userSchema.pre('save', async function (next) {
