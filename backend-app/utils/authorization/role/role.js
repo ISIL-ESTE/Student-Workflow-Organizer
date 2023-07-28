@@ -1,5 +1,5 @@
 const AppError = require('../../app_error');
-const roleModel = require('../../../models/role_model');
+const roleModel = require('../../../models/user/role_model');
 const Actions = require('../../../constants/actions');
 class Role {
     constructor() {

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Actions = require('../constants/actions');
+const Actions = require('../../constants/actions');
 const validator = require('validator');
 const roleSchema = new mongoose.Schema(
     {
