@@ -3,8 +3,8 @@ const dotenv = require('dotenv');
 const fs = require('fs');
 
 // load env file
-const envFile = fs.existsSync('.env') ?  '.env' : '.env.example';
-dotenv.config( { path: join(__dirname, `../${envFile}`) } );
+const envFile = fs.existsSync('.env') ? '.env' : '.env.example';
+dotenv.config({ path: join(__dirname, `../${envFile}`) });
 
 exports.logFilePath = join(__dirname, '../server-logs');
 exports.CURRENT_ENV = process.env.NODE_ENV ?.toLowerCase();
@@ -21,4 +21,5 @@ exports.GITHUB_OAUTH_REDIRECT_URL = process.env.GITHUB_OAUTH_REDIRECT_URL;
 exports.ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 exports.ACCESS_TOKEN_EXPIRY_TIME = process.env.ACCESS_TOKEN_EXPIRY_TIME;
 exports.REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || 'sdfsdf';
-exports.REFRESH_TOKEN_EXPIRY_TIME = process.env.REFRESH_TOKEN_EXPIRY_TIME || '1d';
+exports.REFRESH_TOKEN_EXPIRY_TIME =
+    process.env.REFRESH_TOKEN_EXPIRY_TIME || '1d';

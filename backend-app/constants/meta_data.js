@@ -1,17 +1,15 @@
-
-
-const enableMetaData = (model)   => {
+const enableMetaData = (model) => {
     model.add({
         deleted: {
             type: Boolean,
-            default: false
+            default: false,
         },
         UpdatedBy: {
             type: String,
         },
         createdBy: {
             type: String,
-            default: 'System'
+            default: 'System',
         },
         deletedBy: {
             type: String,
@@ -19,9 +17,7 @@ const enableMetaData = (model)   => {
         deletedAt: {
             type: Date,
         },
-    }) 
+    });
 };
-
-
 
 exports.enableMetaData = enableMetaData;
