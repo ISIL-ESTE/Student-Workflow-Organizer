@@ -9,7 +9,7 @@
         "prod": "node server.js NODE_ENV=PRODUCTION",
         "start": "nodemon server.js",
         "test": "jest",
-        "prepare": "cd .. && husky install backend-app/.husky"
+        "prepare": "cd .. && husky install"
     },
     "author": "Bella Abdelouahab",
     "license": "ISC",
