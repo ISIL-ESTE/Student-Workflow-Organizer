@@ -1,19 +1,17 @@
-const express = require("express");
-const rateLimit = require("express-rate-limit");
-const compression = require("compression");
-const helmet = require("helmet");
-const mongoSanitize = require("express-mongo-sanitize");
-const xss = require("xss-clean");
-const hpp = require("hpp");
-const cors = require("cors");
-const morgan = require("./middlewares/morgan");
-const swaggerDocs = require("./utils/swagger");
-const { CURRENT_ENV } = require("./config/appConfig");
+const globalErrHandler = require('./middlewares/global_error_handler');
+const AppError = require('./utils/app_error');
+const express = require('express');
+const limiter = require('./middlewares/rate_limit');
+const compression = require('compression');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
+const cors = require('cors');
+const morgan = require('./middlewares/morgan');
+const swaggerDocs = require('./utils/swagger');
+const { CURRENT_ENV, API_VERSION } = require('./config/app_config');
 
-const userRoutes = require("./routes/userRoutes");
-const adminRoutes = require("./routes/adminRoute");
-const globalErrHandler = require("./middlewares/globalErrorHandler");
-const AppError = require("./utils/appError");
 const app = express();
 
 // configure swagger docs
@@ -32,25 +30,19 @@ app.use(cors());
 app.use(helmet());
 
 // Limit request from the same API
-const limiter = rateLimit({
-  max: 150,
-  windowMs: 60 * 60 * 1000,
-  message: "Too Many Request from this IP, please try again in an hour",
-});
-app.use("/api", limiter);
 
 // Body parser, reading data from body into req.body
 app.use(
-  express.json({
-    limit: "15kb",
-  })
+    express.json({
+        limit: '15kb',
+    })
 );
 
 // Data sanitization against Nosql query injection
 app.use(
-  mongoSanitize({
-    replaceWith: "_",
-  })
+    mongoSanitize({
+        replaceWith: '_',
+    })
 );
 
 // Data sanitization against XSS(clean user input from malicious HTML code)
@@ -62,14 +54,35 @@ app.use(hpp());
 // Compress all responses
 app.use(compression());
 
-// Routes
-app.use("/api/v1/users", userRoutes);
-app.use("/api/v1/admin", adminRoutes);
+if (CURRENT_ENV === 'production') {
+    //Limiting request form same IP
+    app.use(limiter);
+}
+
+// check if no version is provided if so use the default version
+// example api/auth/user/signup => api/v1/auth/user/signup
+app.use((req, res, next) => {
+  if (req.originalUrl.startsWith('/api')) {
+    req.originalUrl = `/api/${API_VERSION}${req.originalUrl}`;
+  }
+  next();
+});
+
+// routes
+app.use(`/api/${API_VERSION}`, require('./routes/index'));
+
+app.get('/', (req, res) => {
+    res.status(200).json({
+        status: 'success',
+        message: 'Welcome to the backend app',
+        env: CURRENT_ENV,
+    });
+});
 
 // handle undefined Routes
-app.use("*", (req, res, next) => {
-  const err = new AppError(404, "fail", "Route Not Found", req.path);
-  next(err, req, res, next);
+app.use('*', (req, res, next) => {
+    const err = new AppError(404, 'fail', 'Route Not Found', req.originalUrl);
+    next(err, req, res, next);
 });
 
 app.use(globalErrHandler);
