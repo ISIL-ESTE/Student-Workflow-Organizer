@@ -1,15 +1,15 @@
 const { addColors, format } = require('winston');
 const { logFilePath } = require('./app_config');
 // Define the current environment
-const {CURRENT_ENV} = require('./app_config');
+const { CURRENT_ENV } = require('./app_config');
 
 // Define log colors
 const colors = {
-  error: 'red',
-  warn: 'yellow',
-  info: 'cyan',
-  http: 'magenta',
-  debug: 'green',
+    error: 'red',
+    warn: 'yellow',
+    info: 'cyan',
+    http: 'magenta',
+    debug: 'green',
 };
 addColors(colors);
 
@@ -18,7 +18,7 @@ addColors(colors);
  * @param {string} info - The log message
  */
 const formatLogMessage = format.printf(
-  (info) => `[${info.timestamp} - ${info.level} ] ${info.message}`
+    (info) => `[${info.timestamp} - ${info.level} ] ${info.message}`
 );
 
 /**
@@ -27,7 +27,7 @@ const formatLogMessage = format.printf(
  * when the log level is debug, debug and all the levels above it will be logged.
  * when the log level is warn, warn and all the levels above it will be logged.
  */
-const logLevel = CURRENT_ENV.toLowerCase() === "development" ? "debug" : "warn";
+const logLevel = CURRENT_ENV === 'development' ? 'debug' : 'warn';
 
 /**
  * @description - This is the configuration for the logger
@@ -37,30 +37,30 @@ const logLevel = CURRENT_ENV.toLowerCase() === "development" ? "debug" : "warn";
  * @param {string} formatLogMessage - The format of the log message
  */
 const consoleOptions = {
-  level: logLevel,
-  format: format.combine(
-    format.timestamp({
-      format: 'MMM-DD-YYYY HH:mm:ss',
-    }),
-    format.colorize({ all: true }),
-    format.timestamp(),
-    formatLogMessage
-  ),
+    level: logLevel,
+    format: format.combine(
+        format.timestamp({
+            format: 'MMM-DD-YYYY HH:mm:ss',
+        }),
+        format.colorize({ all: true }),
+        format.timestamp(),
+        formatLogMessage
+    ),
 };
 
 const fileOptions = {
-  logLevel,
-  dirname: logFilePath,
-  filename: '%DATE%.log',
-  datePattern: 'YYYY-MM-DD',
-  zippedArchive: true,
-  handleExceptions: true,
-  json: true,
-  maxSize: '20m',
-  maxFiles: '15d',
+    logLevel,
+    dirname: logFilePath,
+    filename: '%DATE%.log',
+    datePattern: 'YYYY-MM-DD',
+    zippedArchive: true,
+    handleExceptions: true,
+    json: true,
+    maxSize: '20m',
+    maxFiles: '15d',
 };
 
 module.exports = {
-  fileOptions,
-  consoleOptions,
+    fileOptions,
+    consoleOptions,
 };

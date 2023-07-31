@@ -1,16 +1,16 @@
 const express = require('express');
 const swaggergenerator = require('../../utils/swagger/swaggergenerator');
 const {
-  authorizeOrRestrict,
-  banUser,
-  unbanUser,
-  createRole,
-  updateRole,
-  getRole,
-  getRoles,
-  deleteRole,
-  assignRoleToUser,
-  removeRoleFromUser,
+    authorizeOrRestrict,
+    banUser,
+    unbanUser,
+    createRole,
+    updateRole,
+    getRole,
+    getRoles,
+    deleteRole,
+    assignRoleToUser,
+    removeRoleFromUser,
 } = require('../../controllers/admin_controller');
 const authController = require('../../controllers/auth_controller');
 const { restrictTo } = require('../../middlewares/authorization');
@@ -26,10 +26,10 @@ const userController = require('../../controllers/user_controller');
 router.use(authController.restrictTo('ADMIN', 'SUPER_ADMIN'));
 
 router
-  .route('/user/:id')
-  .get(userController.getUser)
-  .patch(userController.updateUser)
-  .delete(userController.deleteUser);
+    .route('/user/:id')
+    .get(userController.getUser)
+    .patch(userController.updateUser)
+    .delete(userController.deleteUser);
 router.get('/users', userController.getAllUsers);
 
 /**
@@ -42,9 +42,9 @@ router.get('/users', userController.getAllUsers);
  * @param {string[]} restrictions - List of restrictions to add to the user
  */
 router.put(
-  '/authorize-or-restrict/:userId',
-  restrictTo(Actions.UPDATE_USER),
-  authorizeOrRestrict
+    '/authorize-or-restrict/:userId',
+    restrictTo(Actions.UPDATE_USER),
+    authorizeOrRestrict
 );
 
 /**
@@ -55,9 +55,9 @@ router.put(
  * @param {string} userId - Id of the user to ban
  **/
 router.put(
-  '/ban-user/:userId',
-  restrictTo(Actions.UPDATE_USER, Actions.BAN_USER),
-  banUser
+    '/ban-user/:userId',
+    restrictTo(Actions.UPDATE_USER, Actions.BAN_USER),
+    banUser
 );
 
 /**
@@ -68,9 +68,9 @@ router.put(
  * @param {string} userId - Id of the user to unban
  **/
 router.put(
-  '/unban-user/:userId',
-  restrictTo(Actions.UPDATE_USER, Actions.BAN_USER),
-  unbanUser
+    '/unban-user/:userId',
+    restrictTo(Actions.UPDATE_USER, Actions.BAN_USER),
+    unbanUser
 );
 
 /**
@@ -125,9 +125,9 @@ router.delete('/role/:name', restrictTo(Actions.MANAGE_ROLES), deleteRole);
  * @param {string} userId - Id of the user to assign the role to
  * */
 router.put(
-  '/assign-role/:name/:userId',
-  restrictTo(Actions.MANAGE_ROLES),
-  assignRoleToUser
+    '/assign-role/:name/:userId',
+    restrictTo(Actions.MANAGE_ROLES),
+    assignRoleToUser
 );
 /**
  * @protected
@@ -138,13 +138,13 @@ router.put(
  * @param {string} userId - Id of the user to remove the role from
  * */
 router.put(
-  '/remove-role/:name/:userId',
-  restrictTo(Actions.MANAGE_ROLES),
-  removeRoleFromUser
+    '/remove-role/:name/:userId',
+    restrictTo(Actions.MANAGE_ROLES),
+    removeRoleFromUser
 );
 
 adminRoutes = (mainrouter) => {
-  swaggergenerator.register('admin', './routes/users/admin_route.js');
-  mainrouter.use('/admin', router);
+    // swaggergenerator.register('admin', './routes/users/admin_route.js');
+    mainrouter.use('/admin', router);
 };
 module.exports = adminRoutes;

@@ -12,7 +12,7 @@ router.get('/github/callback', authController.githubHandler);
 
 // make this file so i can use it with authRoutes(router) in index.js
 const authRoutes = (mainrouter) => {
-  swaggergenerator.register('auth', './routes/auth_routes.js');
-  mainrouter.use('/auth', router);
+    // swaggergenerator.register('auth', './routes/auth_routes.js');
+    mainrouter.use('/auth', router);
 };
 module.exports = authRoutes;

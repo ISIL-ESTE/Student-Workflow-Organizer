@@ -1,6 +1,4 @@
 {
-  "ext": ".js , .json , .yaml",
-  "ignore": [
-    "./docs/**/*"
-  ]
+    "ext": ".js , .json , .yaml",
+    "ignore": ["./docs/**/*"]
 }

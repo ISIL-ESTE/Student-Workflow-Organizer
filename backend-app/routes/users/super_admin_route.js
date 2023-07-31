@@ -5,10 +5,10 @@ const { restrictTo } = require('../../middlewares/authorization');
 const swaggergenerator = require('../../utils/swagger/swaggergenerator');
 const Actions = require('../../constants/actions');
 const {
-  addSuperAdmin,
-  removeSuperAdmin,
-  addAdmin,
-  removeAdmin,
+    addSuperAdmin,
+    removeSuperAdmin,
+    addAdmin,
+    removeAdmin,
 } = require('../../controllers/admin_controller');
 
 router.use(authController.restrictTo('SUPER_ADMIN'));
@@ -21,9 +21,9 @@ router.use(authController.restrictTo('SUPER_ADMIN'));
  * @param {string} userId - Id of the user to add super admin role to
  */
 router.put(
-  '/add-super-admin/:userId',
-  restrictTo(Actions.UPDATE_USER),
-  addSuperAdmin
+    '/add-super-admin/:userId',
+    restrictTo(Actions.UPDATE_USER),
+    addSuperAdmin
 );
 
 /*
@@ -34,9 +34,9 @@ router.put(
  * @param {string} userId - Id of the user to remove super admin role from
  **/
 router.put(
-  '/remove-super-admin/:userId',
-  restrictTo(Actions.UPDATE_USER, Actions.REMOVE_SUPER_ADMIN),
-  removeSuperAdmin
+    '/remove-super-admin/:userId',
+    restrictTo(Actions.UPDATE_USER, Actions.REMOVE_SUPER_ADMIN),
+    removeSuperAdmin
 );
 
 /**
@@ -56,17 +56,16 @@ router.put('/add-admin/:userId', restrictTo(Actions.UPDATE_USER), addAdmin);
  * @param {string} userId - Id of the user to remove admin role from
  */
 router.put(
-  '/remove-admin/:userId',
-  restrictTo(Actions.UPDATE_USER),
-  removeAdmin
+    '/remove-admin/:userId',
+    restrictTo(Actions.UPDATE_USER),
+    removeAdmin
 );
 
 superAdminRoutes = (mainrouter) => {
-  swaggergenerator.register(
-    'super_admin',
-    './routes/users/super_admin_route.js'
-  );
-  mainrouter.use('/super_admin', router);
+    // swaggergenerator.register(
+    //   'super_admin',
+    //   './routes/users/super_admin_route.js'
+    // );
+    mainrouter.use('/super_admin', router);
 };
 module.exports = superAdminRoutes;
-
