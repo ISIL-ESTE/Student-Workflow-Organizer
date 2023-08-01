@@ -3,6 +3,7 @@ const swaggergenerator = require('../../utils/swagger/swaggergenerator');
 const userController = require('../../controllers/user_controller');
 const router = express.Router();
 
+router.delete('/logout', userController.logout);
 router
     .route('/me')
     .get(userController.getMe)

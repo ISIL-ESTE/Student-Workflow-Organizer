@@ -5,7 +5,7 @@
     "main": "app.js",
     "scripts": {
         "debug": "ndb server.js",
-        "dev": "nodemon server.js NODE_ENV=DEVELOPMENT ",
+        "dev": " NODE_ENV=DEVELOPMENT nodemon server.js",
         "prod": "node server.js NODE_ENV=PRODUCTION",
         "start": "nodemon server.js",
         "test": "jest",

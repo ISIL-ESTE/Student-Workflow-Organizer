@@ -19,7 +19,7 @@ const createAdminUser = async () => {
             });
         }
     } catch (err) {
-        Logger.error(err);
+        Logger.error(err.stack);
     }
 };
 

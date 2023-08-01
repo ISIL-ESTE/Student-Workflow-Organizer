@@ -31,7 +31,6 @@ const generateTokens = async (id) => {
         });
         return { accessToken, refreshToken };
     } catch (err) {
-        console.log(err);
         throw new AppError(
             500,
             'fail',

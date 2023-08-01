@@ -1,11 +1,12 @@
 const { promisify } = require('util');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
-const User = require('../models/user_model');
+const User = require('../models/user/user_model');
 const AppError = require('../utils/app_error');
 const Role = require('../utils/authorization/role/role');
 const {
     ACCESS_TOKEN_SECRET,
+    REFRESH_TOKEN_SECRET,
     REQUIRE_ACTIVATION,
 } = require('../config/app_config');
 const {
@@ -135,7 +136,45 @@ exports.signup = async (req, res, next) => {
             },
         });
     } catch (err) {
-        console.log(err);
+        next(err);
+    }
+};
+
+exports.tokenRefresh = async (req, res, next) => {
+    try {
+        const { accessToken, refreshToken } = req.body;
+        if (!refreshToken)
+            throw new AppError(400, 'fail', 'Please provide refresh token');
+        if (!accessToken)
+            throw new AppError(400, 'fail', 'Please provide access token');
+        const accessTokenPayload = await promisify(jwt.verify)(
+            accessToken,
+            ACCESS_TOKEN_SECRET
+        );
+        const refreshTokenPayload = await promisify(jwt.verify)(
+            refreshToken,
+            REFRESH_TOKEN_SECRET
+        );
+        if (
+            accessTokenPayload?.id?.toString() !==
+            refreshTokenPayload?.id?.toString()
+        )
+            throw new AppError(400, 'fail', 'Invalid access or refresh token');
+        const tokenRecord = await TokenModel.findOne({
+            userId: accessTokenPayload.id,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+        });
+        //the issued tokens should exist in the database
+        if (!tokenRecord)
+            throw new AppError(400, 'fail', 'Invalid access or refresh token');
+
+        const tokens = await generateTokens(accessTokenPayload.id);
+        res.status(200).json({
+            message: 'Token issued.',
+            tokens,
+        });
+    } catch (err) {
         next(err);
     }
 };
@@ -247,6 +286,7 @@ exports.forgotPassword = async (req, res, next) => {
         );
 
         // send email with reset key
+        // eslint-disable-next-line no-warning-comments
         // TODO: send email with reset key
 
         res.status(200).json({
@@ -257,7 +297,7 @@ exports.forgotPassword = async (req, res, next) => {
     }
 };
 
-exports.protect = async (req, res, next) => {
+exports.protect = async (req, _res, next) => {
     try {
         // 1) check if the token is there
         let token;
@@ -327,7 +367,7 @@ exports.protect = async (req, res, next) => {
 // Authorization check if the user have rights to do this action
 exports.restrictTo =
     (...roles) =>
-    (req, res, next) => {
+    (req, _res, next) => {
         const roleExist = roles.some((role) => req.user.roles.includes(role));
         if (!roleExist) {
             return next(
