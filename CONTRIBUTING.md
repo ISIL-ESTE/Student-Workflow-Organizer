@@ -14,18 +14,18 @@ Before you submit your issue search the [archive](https://github.com/ISIL-ESTE/S
 
 ### [Submitting a Pull Request](https://opensource.guide/how-to-contribute/#opening-a-pull-request)
 
-Before you submit your pull request consider the following guidelines:
+Before you submit your pull request, consider the following guidelines:
 
 - Search [GitHub](https://github.com/ISIL-ESTE/Student-Workflow-Organizer/pulls?utf8=%E2%9C%93&q=is%3Apr) for an open or closed Pull Request
   that relates to your submission.
-- If you want to modify the project code structure please start a discution about it first
+- If you want to modify the project code structure, please start a discussion about it first
 - Make your changes in a new git branch
 
   ```shell
   git checkout -b my-fix-branch main
   ```
 
-- Create your patch, **including appropriate test cases**, Note: if you aren't able to create tests consider adding **need tests** label 
+- Create your patch, **including appropriate test cases**, Note: if you aren't able to create tests, consider adding **need tests** label 
 - Commit your changes using a descriptive commit message.
 
 - Push your branch to GitHub:
@@ -35,7 +35,7 @@ Before you submit your pull request consider the following guidelines:
   ```
 
   - In GitHub, send a pull request to `ISIL-ESTE/Student-Workflow-Organizer:main`.
-  - if your pr includes mutiple tasks create a draft pull request with a task list in order for other members to track the issue progress 
+  - if your pr includes multiple tasks and you're not done yet, consider creating a draft pull request with a task list to allow other members to track the issue's progress 
 - If we suggest changes, then
   - Make the required updates.
   - Make sure the tests are still passing
@@ -63,13 +63,12 @@ Sometimes your PR will have merge conflicts with the upstream repository's main 
   git rebase upstream/main
   ```
 
-- Git will stop rebasing at the first merge conflict and indicate which file is in conflict. Edit the file, resolve the conflict then
+- Git will stop rebasing at the first merge conflict and indicate which file is in conflict. Edit the file, resolve the conflict then 
 
   ```shell
   git add <the file that was in conflict>
   git rebase --continue
   ```
-
 - The rebase will continue up to the next conflict. Repeat the previous step until all files are merged and the rebase ends successfully.
 - Force push to your GitHub repository (this will update your Pull Request)
 
