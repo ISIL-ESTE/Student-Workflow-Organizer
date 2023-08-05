@@ -1,4 +1,4 @@
-const User = require('../models/user_model');
+const User = require('../models/user/user_model');
 const axios = require('axios');
 const AppError = require('../utils/app_error');
 

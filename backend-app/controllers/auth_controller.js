@@ -1,7 +1,7 @@
 const { promisify } = require('util');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
-const User = require('../models/user_model');
+const User = require('../models/user/user_model');
 const AppError = require('../utils/app_error');
 const Role = require('../utils/authorization/role/role');
 const {

@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
-const Actions = require('../constants/actions');
-const metaData = require('../constants/meta_data');
-const { REQUIRE_ACTIVATION } = require('../config/app_config');
+const Actions = require('../../constants/actions');
+const metaData = require('../../constants/meta_data');
+const { REQUIRE_ACTIVATION } = require('../../config/app_config');
 
 const userSchema = new mongoose.Schema(
     {
@@ -77,7 +77,7 @@ const userSchema = new mongoose.Schema(
 );
 
 // add meta data to the schema
-metaData.enableMetaData(userSchema);
+metaData.apply(userSchema);
 
 userSchema.pre('save', async function (next) {
     if (

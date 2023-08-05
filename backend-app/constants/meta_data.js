@@ -1,4 +1,4 @@
-const enableMetaData = (model) => {
+const apply = (model) => {
     model.add({
         deleted: {
             type: Boolean,
@@ -20,4 +20,4 @@ const enableMetaData = (model) => {
     });
 };
 
-exports.enableMetaData = enableMetaData;
+exports.apply = apply;

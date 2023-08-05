@@ -1,4 +1,4 @@
-const User = require('../models/user_model');
+const User = require('../models/user/user_model');
 const base = require('./base_controller');
 const AppError = require('../utils/app_error');
 
