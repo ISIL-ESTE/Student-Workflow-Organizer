@@ -16,9 +16,8 @@ const setDefaultAPIVersion = (req, res, next) => {
         res.redirect(req.url)
         return
     }
-    else{
-        next(); // Call next to pass the request to the next middleware or route handler
-    }   
+    else    
+        next();
 };
 
 
