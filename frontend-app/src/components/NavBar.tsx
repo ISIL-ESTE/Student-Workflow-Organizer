@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import Link from "next/link";
 import HomeIcon from '@mui/icons-material/Home';
@@ -53,7 +55,7 @@ const NavBar = () => {
                     </div>
                 </div>
             </div>
-        </nav>
+        </nav><br /><br />
 
         <div className={`z-50 my-4 ${divHidden ? 'hidden' : ''} absolute top-11 right-2 h-58 w-64 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600`} id="dropdown-user">
             <div className="px-4 py-3" role="none">
@@ -66,7 +68,7 @@ const NavBar = () => {
             </div>
             <ul className="py-1" role="none">
                 <li>
-                <Link href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Dashboard</Link>
+                <Link href="/home" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Dashboard</Link>
                 </li>
                 <li>
                 <Link href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Settings</Link>
@@ -84,7 +86,7 @@ const NavBar = () => {
             <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
                 <ul className="space-y-2 font-medium">
                     <li>
-                        <Link href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                        <Link href="/home" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                             <HomeIcon className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"/>
                             <span className="flex-1 ml-3 whitespace-nowrap">Dashboard</span>
                         </Link>
@@ -123,7 +125,7 @@ const NavBar = () => {
                     </li>
                     
                     <li>
-                        <Link href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                        <Link href="/calendar" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                             <CalendarMonthIcon className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"/>
                             <span className="flex-1 ml-3 whitespace-nowrap">Calendar</span>
                         </Link>
