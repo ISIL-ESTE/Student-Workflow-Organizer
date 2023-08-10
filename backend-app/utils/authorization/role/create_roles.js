@@ -19,8 +19,17 @@ const user = {
 
 const createRoles = async () => {
     const role = new Role();
+    const roleArr = Object.keys(await role.getRoles());
     try {
-        await role.deleteDefaultRoles();
+        if (
+            roleArr.length > 2 &&
+            roleArr.includes(superAdmin.type) &&
+            roleArr.includes(admin.type) &&
+            roleArr.includes(user.type)
+        ) {
+            Logger.info('DEFAULT ROLE [ADMIN, SUPER_ADMIN, USER] DETECTED!');
+            return;
+        }
         await role.createRole(
             superAdmin.type,
             superAdmin.authorities,

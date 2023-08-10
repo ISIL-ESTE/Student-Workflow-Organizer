@@ -9,8 +9,14 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const cors = require('cors');
 const morgan = require('./middlewares/morgan');
+const setDefaultAPIVersion = require('./middlewares/api_version_controll');
 const swaggerDocs = require('./utils/swagger');
-const { CURRENT_ENV, API_VERSION } = require('./config/app_config');
+const {
+    COOKIE_SECRET,
+    CURRENT_ENV,
+    API_VERSION,
+} = require('./config/app_config');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
@@ -19,6 +25,8 @@ swaggerDocs(app);
 
 // use json as default format
 app.use(express.json());
+//configure cookie parser
+app.use(cookieParser(COOKIE_SECRET));
 
 // use morgan for logging
 app.use(morgan);
@@ -59,17 +67,8 @@ if (CURRENT_ENV === 'production') {
     app.use(limiter);
 }
 
-// check if no version is provided if so use the default version
-// example api/auth/user/signup => api/v1/auth/user/signup
-app.use((req, res, next) => {
-  if (req.originalUrl.startsWith('/api')) {
-    req.originalUrl = `/api/${API_VERSION}${req.originalUrl}`;
-  }
-  next();
-});
-
-// routes
-app.use(`/api/${API_VERSION}`, require('./routes/index'));
+// if no version is specified, use the default version
+app.use(setDefaultAPIVersion);
 
 app.get('/', (req, res) => {
     res.status(200).json({
@@ -78,6 +77,9 @@ app.get('/', (req, res) => {
         env: CURRENT_ENV,
     });
 });
+
+// routes
+app.use(`/api`, require('./routes/index'));
 
 // handle undefined Routes
 app.use('*', (req, res, next) => {

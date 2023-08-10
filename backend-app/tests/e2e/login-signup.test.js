@@ -6,7 +6,7 @@ const app = require('../../app');
 const createRoles = require('../../utils/authorization/role/create_roles');
 const createDefaultUser = require('../../utils/create_default_user');
 const { REQUIRE_ACTIVATION } = require('../../config/app_config');
-const user_model = require('../../models/user_model');
+const user_model = require('../../models/user/user_model');
 const { log } = require('winston');
 beforeAll(async () => {
   mongoose.set("strictQuery", false);
