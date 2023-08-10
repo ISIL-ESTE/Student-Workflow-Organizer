@@ -5,11 +5,11 @@
     "main": "app.js",
     "scripts": {
         "debug": "ndb server.js",
-        "dev": "nodemon server.js NODE_ENV=DEVELOPMENT ",
+        "dev": " NODE_ENV=DEVELOPMENT nodemon server.js",
         "prod": "node server.js NODE_ENV=PRODUCTION",
         "start": "nodemon server.js",
         "test": "jest",
-        "prepare": "cd .. && husky install backend-app/.husky"
+        "prepare": "cd .. && husky install"
     },
     "author": "Bella Abdelouahab",
     "license": "ISC",
@@ -17,6 +17,7 @@
         "axios": "^1.4.0",
         "bcryptjs": "^2.4.3",
         "compression": "^1.7.4",
+        "cookie-parser": "1.4.6",
         "cors": "^2.8.5",
         "dotenv": "^16.0.3",
         "express": "^4.18.2",

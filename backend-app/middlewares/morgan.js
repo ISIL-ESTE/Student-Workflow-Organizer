@@ -12,7 +12,7 @@ const stream = {
 // Setup the logger
 const Morgan = morgan(
     ':method :url :status :res[content-length] - :response-time ms',
-    { stream, skip: () => CURRENT_ENV.toLowerCase() === 'production' }
+    { stream, skip: () => CURRENT_ENV === 'production' }
 );
 
 // Export the logger

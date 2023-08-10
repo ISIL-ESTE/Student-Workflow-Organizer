@@ -1,6 +1,6 @@
 // create admin user if not exists
 
-const User = require('../models/user_model');
+const User = require('../models/user/user_model');
 const { ADMIN_EMAIL, ADMIN_PASSWORD } = require('../config/app_config');
 const { SUPER_ADMIN } = require('../constants/default_roles');
 
@@ -19,7 +19,7 @@ const createAdminUser = async () => {
             });
         }
     } catch (err) {
-        Logger.error(err);
+        Logger.error(err.stack);
     }
 };
 

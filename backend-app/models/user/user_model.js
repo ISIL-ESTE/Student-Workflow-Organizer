@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
-const Actions = require('../constants/actions');
-const metaData = require('../constants/meta_data');
-const { REQUIRE_ACTIVATION } = require('../config/app_config');
+const Actions = require('../../constants/actions');
+const metaData = require('../../constants/meta_data');
+const { REQUIRE_ACTIVATION } = require('../../config/app_config');
 
 const userSchema = new mongoose.Schema(
     {

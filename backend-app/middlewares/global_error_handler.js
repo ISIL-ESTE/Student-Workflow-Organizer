@@ -1,7 +1,6 @@
 const httpStatus = require('http-status-codes');
 const { CURRENT_ENV } = require('../config/app_config');
 const AppError = require('../utils/app_error');
-const { Logger } = require('winston');
 require('../utils/logger');
 
 /**
