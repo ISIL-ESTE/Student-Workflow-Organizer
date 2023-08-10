@@ -1,7 +1,6 @@
 const User = require('../models/user/user_model');
 const base = require('./base_controller');
 const AppError = require('../utils/app_error');
-const TokenModel = require('../models/token_model.js');
 
 exports.getMe = (req, res, next) => {
     // return data of the current user

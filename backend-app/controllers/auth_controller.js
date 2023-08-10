@@ -1,6 +1,5 @@
 const { promisify } = require('util');
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
 const User = require('../models/user/user_model');
 const AppError = require('../utils/app_error');
 const Role = require('../utils/authorization/role/role');
@@ -12,6 +11,7 @@ const {
 } = require('../utils/authorization/github');
 const role = new Role();
 const AuthUtils = require('../utils/authorization/auth_utils');
+const searchCookies = require('../utils/searchCookie');
 
 const generateActivationKey = async () => {
     const randomBytesPromiseified = promisify(require('crypto').randomBytes);
@@ -156,9 +156,9 @@ exports.signup = async (req, res, next) => {
 
 exports.tokenRefresh = async (req, res, next) => {
     try {
-        const { refreshToken } = req.signedCookies;
+        const refreshToken = searchCookies(req, 'refresh_token');
         if (!refreshToken)
-            throw new AppError(400, 'fail', 'Please provide refresh token');
+            throw new AppError(400, 'fail', 'You have to login to continue.');
         const refreshTokenPayload = await AuthUtils.verifyRefreshToken(
             refreshToken
         );
@@ -176,7 +176,7 @@ exports.tokenRefresh = async (req, res, next) => {
 };
 exports.logout = async (req, res, next) => {
     try {
-        const { accessToken } = req.signCookies;
+        const accessToken = searchCookies(req, 'access_token');
         if (!accessToken)
             throw new AppError(400, 'fail', 'Please provide access token');
         const accessTokenPayload = await AuthUtils.verifyAccessToken(
@@ -310,7 +310,7 @@ exports.forgotPassword = async (req, res, next) => {
 
 exports.protect = async (req, res, next) => {
     try {
-        const { accessToken } = req.signCookies;
+        const accessToken = searchCookies(req, 'access_token');
         if (!accessToken)
             return next(new AppError(401, 'fail', 'Please login to continue'));
 

@@ -40,7 +40,7 @@ class AuthUtils {
             httpOnly: true,
             secure: true,
             sameSite: 'strict',
-            maxAge: ACCESS_TOKEN_COOKIE_EXPIRY_TIME * 1000,
+            maxAge: ACCESS_TOKEN_COOKIE_EXPIRY_TIME,
         });
         return this;
     }
@@ -49,7 +49,7 @@ class AuthUtils {
             httpOnly: true,
             secure: true,
             sameSite: 'strict',
-            maxAge: REFRESH_TOKEN_COOKIE_EXPIRY_TIME * 1000,
+            maxAge: REFRESH_TOKEN_COOKIE_EXPIRY_TIME,
         });
         return this;
     }

@@ -18,14 +18,14 @@ const {
 const cookieParser = require('cookie-parser');
 
 const app = express();
-//configure cookie parser
-app.use(cookieParser(COOKIE_SECRET));
 
 // configure swagger docs
 swaggerDocs(app);
 
 // use json as default format
 app.use(express.json());
+//configure cookie parser
+app.use(cookieParser(COOKIE_SECRET));
 
 // use morgan for logging
 app.use(morgan);
