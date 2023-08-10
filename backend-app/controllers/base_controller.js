@@ -2,7 +2,7 @@ const AppError = require('../utils/app_error');
 const APIFeatures = require('../utils/api_features');
 
 /**
- * Delete a document by ID
+ * Delete a document by ID (soft delete)
  * @param {Model} Model - The mongoose model
  * @returns {Function} - Express middleware function
  */
@@ -66,6 +66,9 @@ exports.updateOne = (Model) => async (req, res, next) => {
  */
 exports.createOne = (Model) => async (req, res, next) => {
     try {
+        // get the user who is creating the document
+        const userid = req.user._id;
+        req.body.createdBy = userid;
         const doc = await Model.create(req.body);
 
         res.status(201).json({

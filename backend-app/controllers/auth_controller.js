@@ -105,6 +105,14 @@ exports.login = async (req, res, next) => {
     }
 };
 
+/**
+ * 
+ * @description Signup a new user
+ * @param {Request} req
+ * @param {Response} res
+ * @param {NextFunction} next
+ * @returns {Promise<void>}
+ */
 exports.signup = async (req, res, next) => {
     try {
         const activationKey = await generateActivationKey();
