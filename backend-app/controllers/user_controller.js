@@ -78,14 +78,6 @@ exports.updateMe = async (req, res, next) => {
         next(error);
     }
 };
-exports.logout = async (req, res, next) => {
-    try {
-        await TokenModel.findOneAndDelete({ userId: req.user._id });
-        res.sendStatus(204);
-    } catch (err) {
-        next(err);
-    }
-};
 
 exports.getAllUsers = base.getAll(User);
 exports.getUser = base.getOne(User);

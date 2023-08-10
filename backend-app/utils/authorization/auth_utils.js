@@ -11,13 +11,13 @@ const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 
 class AuthUtils {
-    static generateAccessToken(payload) {
-        return jwt.sign(payload, ACCESS_TOKEN_SECRET, {
+    static generateAccessToken(id) {
+        return jwt.sign({ id }, ACCESS_TOKEN_SECRET, {
             expiresIn: ACCESS_TOKEN_EXPIRY_TIME,
         });
     }
-    static generateRefreshToken(payload) {
-        return jwt.sign(payload, REFRESH_TOKEN_SECRET, {
+    static generateRefreshToken(id) {
+        return jwt.sign({ id }, REFRESH_TOKEN_SECRET, {
             expiresIn: REFRESH_TOKEN_EXPIRY_TIME,
         });
     }
@@ -42,6 +42,7 @@ class AuthUtils {
             sameSite: 'strict',
             maxAge: ACCESS_TOKEN_COOKIE_EXPIRY_TIME * 1000,
         });
+        return this;
     }
     static setRefreshTokenCookie(res, refreshToken) {
         res.cookie('refresh_token', refreshToken, {
@@ -50,6 +51,7 @@ class AuthUtils {
             sameSite: 'strict',
             maxAge: REFRESH_TOKEN_COOKIE_EXPIRY_TIME * 1000,
         });
+        return this;
     }
 }
 module.exports = AuthUtils;
