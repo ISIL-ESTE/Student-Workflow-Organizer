@@ -1,27 +1,92 @@
-/*
-| - calendarId: int                    |
-| - calendarName: string               |
-| - calendarType: CalendarType         |
-| - isPublic: bool                     |
-| - isShared: bool                     |
-| - owner: User                        |
-| - participants: List<User>           |
-| - events: List<Event>                |
-| - reminders: List<Reminder>          |
-| - permissions: List<Permission>      |
-| - creationDate: DateTime             |
-| - createdBy: User                    |
-| - lastModifiedDate: DateTime         |
-| - lastModifiedBy: User               |
-| - description: string                |
-| - accessCode: string                 |
-| - privacySettings: PrivacySettings   |
-| - isSyncEnabled: bool                |
-| - attachment: byte[]                 |
-| - tags: List<string>                 |
-| - categories: List<Category>         |
-| - permissions: List<Permission>      |
-| - allowedUsers: List<User>           |
-| - deniedUsers: List<User>            |
-// option to add an event to google calendar
-*/
+
+
+const mongoose = require('mongoose');
+const validator = require('validator');
+const metaData = require('../constants/meta_data');
+
+const calendarSchema = new mongoose.Schema(
+    {
+        calendarName: {
+            type: String,
+            required: [true, 'Please fill your calendar name'],
+        },
+        calendarType: {
+            type: String,
+            required: [true, 'Please fill your calendar type'],
+            validate: {
+                validator: function (el) {
+                    return el === 'Personal' || el === 'Group';
+                }
+            }
+        },
+        isPublic: {
+            type: Boolean,
+            default: false,
+        },
+        isShared: {
+            type: Boolean,
+            default: false,
+        },
+        participants: [
+            {
+                type: mongoose.Schema.ObjectId,
+                ref: 'User',
+            },
+        ],
+        events: [
+            {
+                type: mongoose.Schema.ObjectId,
+                ref: 'Event',
+            },
+        ],
+        // reminders: [
+        //     {
+        //         type: mongoose.Schema.ObjectId,
+        //         ref: 'Reminder',
+        //     },
+        // ],
+        creationDate: {
+            type: Date,
+            default: Date.now(),
+        },
+        description: {
+            type: String,
+        },
+        accessCode: {
+            type: String,
+        },
+        // attachment: {
+        //     type: Buffer,
+        // },
+        tags: [
+            {
+                type: String,
+            },
+        ],
+        // categories: [
+        //     {
+        //         type: mongoose.Schema.ObjectId,
+        //         ref: 'Category',
+        //     },
+        // ],
+        allowedUsers: [
+            {
+                type: mongoose.Schema.ObjectId,
+                ref: 'User',
+            },
+        ],
+        deniedUsers: [
+            {
+                type: mongoose.Schema.ObjectId,
+                ref: 'User',
+            },
+        ],
+    },
+    {
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true },
+    }
+);
+
+metaData.apply(calendarSchema);
+
