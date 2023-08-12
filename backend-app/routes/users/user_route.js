@@ -1,5 +1,4 @@
 const express = require('express');
-const swaggergenerator = require('../../utils/swagger/swaggergenerator');
 const userController = require('../../controllers/user_controller');
 const router = express.Router();
 
@@ -11,7 +10,7 @@ router
 
 userRoutes = (mainrouter) => {
     // swaggergenerator.register('user', './routes/users/user_route.js');
-    mainrouter.use('/users', router);
+    mainrouter.use('/v1/users', router);
 };
 
 module.exports = userRoutes;

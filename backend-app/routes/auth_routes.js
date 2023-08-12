@@ -1,5 +1,4 @@
 const authController = require('../controllers/auth_controller');
-const swaggergenerator = require('../utils/swagger/swaggergenerator');
 const express = require('express');
 const router = express.Router();
 
@@ -15,6 +14,6 @@ router.get('/github/callback', authController.githubHandler);
 // make this file so i can use it with authRoutes(router) in index.js
 const authRoutes = (mainrouter) => {
     // swaggergenerator.register('auth', './routes/auth_routes.js');
-    mainrouter.use('/auth', router);
+    mainrouter.use('/v1/auth', router);
 };
 module.exports = authRoutes;

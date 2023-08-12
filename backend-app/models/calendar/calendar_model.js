@@ -1,5 +1,3 @@
-
-
 const mongoose = require('mongoose');
 const metaData = require('../constants/meta_data');
 
@@ -15,8 +13,8 @@ const calendarSchema = new mongoose.Schema(
             validate: {
                 validator: function (el) {
                     return el === 'Personal' || el === 'Group';
-                }
-            }
+                },
+            },
         },
         isPublic: {
             type: Boolean,
@@ -78,4 +76,3 @@ metaData.apply(calendarSchema);
 const Calendar = mongoose.model('Calendar', calendarSchema);
 
 module.exports = Calendar;
-

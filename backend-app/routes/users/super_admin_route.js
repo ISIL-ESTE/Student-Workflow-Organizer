@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../../controllers/auth_controller');
 const { restrictTo } = require('../../middlewares/authorization');
-const swaggergenerator = require('../../utils/swagger/swaggergenerator');
 const Actions = require('../../constants/actions');
 const {
     addSuperAdmin,
@@ -66,6 +65,6 @@ superAdminRoutes = (mainrouter) => {
     //   'super_admin',
     //   './routes/users/super_admin_route.js'
     // );
-    mainrouter.use('/super_admin', router);
+    mainrouter.use('/v1/super_admin', router);
 };
 module.exports = superAdminRoutes;

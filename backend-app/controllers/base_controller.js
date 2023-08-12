@@ -50,9 +50,7 @@ exports.updateOne = (Model) => async (req, res, next) => {
         }
 
         res.status(200).json({
-            data: {
-                doc,
-            },
+            doc,
         });
     } catch (error) {
         next(error);
@@ -72,9 +70,7 @@ exports.createOne = (Model) => async (req, res, next) => {
         const doc = await Model.create(req.body);
 
         res.status(201).json({
-            data: {
-                doc,
-            },
+            doc,
         });
     } catch (error) {
         next(error);
@@ -96,9 +92,7 @@ exports.getOne = (Model) => async (req, res, next) => {
         }
 
         res.status(200).json({
-            data: {
-                doc,
-            },
+            doc,
         });
     } catch (error) {
         next(error);
@@ -112,7 +106,7 @@ exports.getOne = (Model) => async (req, res, next) => {
  */
 exports.getAll = (Model) => async (req, res, next) => {
     try {
-        const s = req.body.search;
+        // const s = req.body.search;
         const features = new APIFeatures(Model.find(), req.query)
             .sort()
             .paginate();
@@ -121,9 +115,7 @@ exports.getAll = (Model) => async (req, res, next) => {
 
         res.status(200).json({
             results: doc.length,
-            data: {
-                data: doc,
-            },
+            data: doc,
         });
     } catch (error) {
         next(error);

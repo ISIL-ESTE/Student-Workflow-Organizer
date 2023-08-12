@@ -2,7 +2,7 @@ const User = require('../models/user/user_model');
 const base = require('./base_controller');
 const AppError = require('../utils/app_error');
 
-exports.getMe = (req, res, next) => {
+exports.getMe = (req, res) => {
     // return data of the current user
     res.status(200).json({
         status: 'success',
@@ -69,9 +69,7 @@ exports.updateMe = async (req, res, next) => {
         }
 
         res.status(200).json({
-            data: {
-                doc,
-            },
+            doc,
         });
     } catch (error) {
         next(error);

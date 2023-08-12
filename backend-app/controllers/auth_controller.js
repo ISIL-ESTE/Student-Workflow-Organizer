@@ -106,9 +106,8 @@ exports.login = async (req, res, next) => {
         user.password = undefined;
 
         res.status(200).json({
-            data: {
-                user,
-            },
+            accessToken,
+            user,
         });
     } catch (err) {
         next(err);
@@ -144,10 +143,8 @@ exports.signup = async (req, res, next) => {
         );
 
         res.status(201).json({
-            tokens: tokens,
-            data: {
-                user,
-            },
+            accessToken,
+            user,
         });
     } catch (err) {
         next(err);
@@ -233,9 +230,7 @@ exports.activateAccount = async (req, res, next) => {
         user.password = undefined;
 
         res.status(200).json({
-            data: {
-                user,
-            },
+            user,
         });
     } catch (err) {
         next(err);
@@ -266,7 +261,7 @@ exports.updatePassword = async (req, res, next) => {
         res.status(200).json({
             status: 'success',
             token,
-            data: { user },
+            user,
         });
     } catch (err) {
         next(err);
@@ -310,7 +305,7 @@ exports.forgotPassword = async (req, res, next) => {
 
 exports.protect = async (req, res, next) => {
     try {
-        const accessToken = searchCookies(req, 'access_token');
+        const accessToken = searchCookies(req, 'access_token') || req.token;
         if (!accessToken)
             return next(new AppError(401, 'fail', 'Please login to continue'));
 
@@ -321,7 +316,7 @@ exports.protect = async (req, res, next) => {
             throw new AppError(401, 'fail', 'Invalid access token');
         // 3) check if the user is exist (not deleted)
         const user = await User.findById(accessTokenPayload.id).select(
-            '+githubOauthAccessToken'
+            'accessRestricted active'
         );
         if (!user) {
             return next(

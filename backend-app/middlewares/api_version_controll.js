@@ -13,12 +13,8 @@ const setDefaultAPIVersion = (req, res, next) => {
     if (!apiVersion) {
         const url = req.url.replace('/api', '');
         req.url = `/api/${API_VERSION}${url}`;
-        res.redirect(req.url)
-        return
-    }
-    else    
-        next();
+        res.redirect(req.url);
+    } else next();
 };
-
 
 module.exports = setDefaultAPIVersion;
