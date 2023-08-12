@@ -2,6 +2,7 @@ const globalErrHandler = require('./middlewares/global_error_handler');
 const AppError = require('./utils/app_error');
 const express = require('express');
 const limiter = require('./middlewares/rate_limit');
+const bearerToken = require('express-bearer-token');
 const compression = require('compression');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
@@ -69,6 +70,9 @@ if (CURRENT_ENV === 'production') {
 
 // if no version is specified, use the default version
 app.use(setDefaultAPIVersion);
+
+// handle bearer token
+app.use(bearerToken());
 
 app.get('/', (req, res) => {
     res.status(200).json({
