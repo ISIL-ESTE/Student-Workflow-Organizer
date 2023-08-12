@@ -48,12 +48,7 @@ const swaggerDocs = (app) => {
         res.setHeader('Content-Type', 'application/json');
         res.send(swaggerSpec);
     });
-    global.Logger.info(
-        `Swagger docs available at http://localhost:${PORT}/docs`
-    );
-    global.Logger.info(
-        `Swagger docs JSON format available at http://localhost:${PORT}/docs-json`
-    );
+    global.Logger.info(`Swagger available at /docs  /docs-json`);
 };
 
 module.exports = swaggerDocs;

@@ -11,18 +11,10 @@ const hpp = require('hpp');
 const cors = require('cors');
 const morgan = require('./middlewares/morgan');
 const setDefaultAPIVersion = require('./middlewares/api_version_controll');
-const swaggerDocs = require('./utils/swagger');
-const {
-    COOKIE_SECRET,
-    CURRENT_ENV,
-    API_VERSION,
-} = require('./config/app_config');
+const { COOKIE_SECRET, CURRENT_ENV } = require('./config/app_config');
 const cookieParser = require('cookie-parser');
 
 const app = express();
-
-// configure swagger docs
-swaggerDocs(app);
 
 // use json as default format
 app.use(express.json());
