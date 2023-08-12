@@ -46,8 +46,12 @@ const eventSchema = new mongoose.Schema(
         eventRecurringEndDate: {
             type: Date,
         },
-        eventRecurringTime: {
-            type: String,
-        },
+        
     })
+
+metaData.apply(eventSchema);
+
+const Event = mongoose.model('Event', eventSchema);
+
+module.exports = Event;
 
