@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
-// const { MONGO_URI_TEST } = require('../config/config');
+const { testUserCredentials } = require('./testConstants');
+const request = require('supertest');
+const app = require('../app');
 
-beforeAll(() => {
+beforeAll(async () => {
     // check if db isn't already connected
     if (mongoose.connection.readyState === 0) {
         mongoose.set('strictQuery', false);
@@ -11,6 +13,11 @@ beforeAll(() => {
             useUnifiedTopology: true,
         });
     }
+    const res = await request(app).post('/api/auth/signup').send({
+        name: testUserCredentials.userName,
+        email: testUserCredentials.userEmail,
+        password: testUserCredentials.userPassword,
+    });
 });
 afterAll(async () => {
     await mongoose.disconnect();

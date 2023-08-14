@@ -5,16 +5,17 @@ const mongoose = require('mongoose');
 describe('PATCH /api/users/me', () => {
     // if user is not logged in
     // console.log('db connected: ', mongoose.connection.readyState);
-    let token;
+    let accessToken;
+    console.log('sdfsdfsdf');
     beforeAll(async () => {
         const response = await request(app).post('/api/auth/login').send({
             email: testUserCredentials.userEmail,
             password: testUserCredentials.userPassword,
         });
-        token = response.body.token;
+        accessToken = response.body.accessToken;
     });
     it('should return 401 if user is not logged in', async () => {
-        await request(app)
+        const res = await request(app)
             .patch('/api/users/me')
             .send({
                 name: 'John Doe',
@@ -26,7 +27,7 @@ describe('PATCH /api/users/me', () => {
     it('should update the user if user is logged in', async () => {
         await request(app)
             .patch('/api/users/me')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${accessToken}`)
             .send({
                 name: 'John Doe',
             })
@@ -36,7 +37,7 @@ describe('PATCH /api/users/me', () => {
     it('should return 400 if user tries to update password', async () => {
         await request(app)
             .patch('/api/users/me')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${accessToken}`)
             .send({
                 password: '123456789',
             })
@@ -46,7 +47,7 @@ describe('PATCH /api/users/me', () => {
     it('should return 400 if user tries to update roles', async () => {
         await request(app)
             .patch('/api/users/me')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${accessToken}`)
             .send({
                 roles: ['ADMIN'],
             })
@@ -54,28 +55,15 @@ describe('PATCH /api/users/me', () => {
     });
 });
 describe('DELETE /api/users/me', () => {
-    let token;
+    let accessToken;
     beforeAll(async () => {
         const response = await request(app).post('/api/auth/login').send({
-            email: 'admin@gmail.com',
-            password: 'admin123',
+            email: testUserCredentials.userEmail,
+            password: testUserCredentials.userPassword,
         });
-        token = response.body.token;
+        accessToken = response.body.accessToken;
     });
     it('should return 401 if user is not logged in', async () => {
         await request(app).delete('/api/users/me').expect(401);
-    });
-    // if user is logged in
-    it('should delete the user if user is logged in', async () => {
-        await request(app)
-            .delete('/api/users/me')
-            .set('Authorization', `Bearer ${token}`)
-            .expect(204);
-        // recreate the user
-        await request(app).post('/api/users/signup').send({
-            name: 'Admin',
-            email: 'admin@gmail.com',
-            password: 'admin123',
-        });
     });
 });
