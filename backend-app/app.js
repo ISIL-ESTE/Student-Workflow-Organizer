@@ -80,7 +80,7 @@ app.get('/', (req, res) => {
 app.use(
     `/api`,
     routesVersioning({
-        '1.0.0': require('./routes/v1.0.0/index'),
+        '1.0.0': require('./routes/index'),
     })
 );
 
