@@ -10,7 +10,7 @@ router
 
 userRoutes = (mainrouter) => {
     // swaggergenerator.register('user', './routes/users/user_route.js');
-    mainrouter.use('/v1/users', router);
+    mainrouter.use('/users', router);
 };
 
 module.exports = userRoutes;

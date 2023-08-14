@@ -10,9 +10,11 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const cors = require('cors');
 const morgan = require('./middlewares/morgan');
-const setDefaultAPIVersion = require('./middlewares/api_version_controll');
+const swaggerDocs = require('./utils/swagger');
+const handleAPIVersion = require('./middlewares/api_version_controll');
 const { COOKIE_SECRET, CURRENT_ENV } = require('./config/app_config');
 const cookieParser = require('cookie-parser');
+const routesVersioning = require('express-routes-versioning')();
 
 const app = express();
 
@@ -61,7 +63,7 @@ if (CURRENT_ENV === 'production') {
 }
 
 // if no version is specified, use the default version
-app.use(setDefaultAPIVersion);
+app.use(handleAPIVersion);
 
 // handle bearer token
 app.use(bearerToken());
@@ -75,7 +77,15 @@ app.get('/', (req, res) => {
 });
 
 // routes
-app.use(`/api`, require('./routes/index'));
+app.use(
+    `/api`,
+    routesVersioning({
+        '1.0.0': require('./routes/v1.0.0/index'),
+    })
+);
+
+// configure swagger docs
+swaggerDocs(app);
 
 // handle undefined Routes
 app.use('*', (req, res, next) => {

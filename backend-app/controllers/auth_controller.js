@@ -118,16 +118,17 @@ exports.signup = async (req, res, next) => {
     try {
         const activationKey = await generateActivationKey();
         const Roles = await role.getRoles();
-        const user = await User.create({
+        const userpayload = {
             name: req.body.name,
             email: req.body.email,
             password: req.body.password,
             roles: [Roles.USER.type],
             authorities: Roles.USER.authorities,
+            active: !REQUIRE_ACTIVATION,
             restrictions: Roles.USER.restrictions,
             ...(REQUIRE_ACTIVATION && { activationKey }),
-        });
-
+        };
+        const user = await User.create(userpayload);
         const accessToken = AuthUtils.generateAccessToken(user._id);
         const refreshToken = AuthUtils.generateRefreshToken(user._id);
         AuthUtils.setAccessTokenCookie(res, accessToken).setRefreshTokenCookie(
@@ -137,10 +138,6 @@ exports.signup = async (req, res, next) => {
         // Remove the password and activation key from the output
         user.password = undefined;
         user.activationKey = undefined;
-
-        Logger.info(
-            `User ${user._id} with email ${user.email} has been created with activation key ${activationKey}`
-        );
 
         res.status(201).json({
             accessToken,

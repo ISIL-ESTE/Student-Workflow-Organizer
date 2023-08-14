@@ -3,7 +3,6 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const Actions = require('../../constants/actions');
 const metaData = require('../../constants/meta_data');
-const { REQUIRE_ACTIVATION } = require('../../config/app_config');
 
 const userSchema = new mongoose.Schema(
     {
@@ -57,7 +56,7 @@ const userSchema = new mongoose.Schema(
         },
         active: {
             type: Boolean,
-            default: !REQUIRE_ACTIVATION,
+            default: true,
         },
         activationKey: {
             type: String,
@@ -83,7 +82,7 @@ userSchema.pre('save', async function (next) {
     if (
         !this.isModified('password') ||
         this.password === undefined ||
-        (this.password == null && this.githubOauthAccessToken != null)
+        (this.password === null && this.githubOauthAccessToken !== null)
     ) {
         return next();
     }
@@ -91,11 +90,11 @@ userSchema.pre('save', async function (next) {
     next();
 });
 
-userSchema.methods.correctPassword = async function (
+userSchema.methods.correctPassword = function (
     typedPassword,
     originalPassword
 ) {
-    return await bcrypt.compare(typedPassword, originalPassword);
+    return bcrypt.compare(typedPassword, originalPassword);
 };
 
 // verify if the user is authorized or restricted from an action

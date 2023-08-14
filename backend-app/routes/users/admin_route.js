@@ -32,7 +32,7 @@ router.get('/users', userController.getAllUsers);
 
 /**
  * @protected
- * @route PUT /api/v1/admin/remove-super-admin/:userId
+ * @route PUT /api/admin/remove-super-admin/:userId
  * @description Add authorizations and restrictions to a user
  * @access Super Admin
  * @param {string} userId - Id of the user to add authorizations and restrictions
@@ -47,7 +47,7 @@ router.put(
 
 /**
  * @protected
- * @route PUT /api/v1/admin/ban-user/:userId
+ * @route PUT /api/admin/ban-user/:userId
  * @description ban a user
  * @access Super Admin
  * @param {string} userId - Id of the user to ban
@@ -60,7 +60,7 @@ router.put(
 
 /**
  * @protected
- * @route PUT /api/v1/admin/unban-user/:userId
+ * @route PUT /api/admin/unban-user/:userId
  * @description unban a user
  * @access Super Admin
  * @param {string} userId - Id of the user to unban
@@ -73,7 +73,7 @@ router.put(
 
 /**
  * @protected
- * @route PUT /api/v1/admin/role
+ * @route PUT /api/admin/role
  * @description Get all roles
  * @access Super Admin
  **/
@@ -81,7 +81,7 @@ router.put('/role', restrictTo(Actions.MANAGE_ROLES), getRoles);
 
 /**
  * @protected
- * @route PUT /api/v1/admin/role/:name
+ * @route PUT /api/admin/role/:name
  * @description Get a single role
  * @access Super Admin
  * @param {string} name - Name of the role to find
@@ -90,7 +90,7 @@ router.put('/role/:name', restrictTo(Actions.MANAGE_ROLES), getRole);
 
 /**
  * @protected
- * @route POST /api/v1/admin/role
+ * @route POST /api/admin/role
  * @description Create a role
  * @access Super Admin
  **/
@@ -98,7 +98,7 @@ router.post('/role', restrictTo(Actions.MANAGE_ROLES), createRole);
 
 /**
  * @protected
- * @route PUT /api/v1/admin/role/:name
+ * @route PUT /api/admin/role/:name
  * @description Update a role
  * @access Super Admin
  * @param {string} name - Name of the role to update
@@ -107,7 +107,7 @@ router.put('/role/:name', restrictTo(Actions.MANAGE_ROLES), updateRole);
 
 /**
  * @protected
- * @route DELETE /api/v1/admin/role/:name
+ * @route DELETE /api/admin/role/:name
  * @description Delete a role
  * @access Super Admin
  * @param {string} name - Name of the role to delete
@@ -116,7 +116,7 @@ router.delete('/role/:name', restrictTo(Actions.MANAGE_ROLES), deleteRole);
 
 /**
  * @protected
- * @route PUT /api/v1/admin/assign-role/:name/:userId
+ * @route PUT /api/admin/assign-role/:name/:userId
  * @description Assign a role to a user
  * @access Super Admin
  * @param {string} name - Name of the role to assign
@@ -129,7 +129,7 @@ router.put(
 );
 /**
  * @protected
- * @route PUT /api/v1/admin/remove-role/:name/:userId
+ * @route PUT /api/admin/remove-role/:name/:userId
  * @description Remove a role from a user
  * @access Super Admin
  * @param {string} name - Name of the role to remove
@@ -143,6 +143,6 @@ router.put(
 
 adminRoutes = (mainrouter) => {
     // swaggergenerator.register('admin', './routes/users/admin_route.js');
-    mainrouter.use('/v1/admin', router);
+    mainrouter.use('/admin', router);
 };
 module.exports = adminRoutes;

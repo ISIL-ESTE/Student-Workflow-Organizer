@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 require('./utils/logger');
 const fs = require('fs');
-const swaggerDocs = require('./utils/swagger');
 const { DATABASE, PORT } = require('./config/app_config');
 const createRoles = require('./utils/authorization/role/create_roles');
 
@@ -18,7 +17,7 @@ mongoose.set('strictQuery', true);
 // Connect the database
 mongoose
     .connect(DATABASE, { useNewUrlParser: true })
-    .then((con) => {
+    .then(() => {
         Logger.info('DB Connected Successfully!');
     })
     .catch((err) => {
@@ -37,8 +36,6 @@ const expServer = app.listen(PORT, async () => {
     if (!fs.existsSync('.env'))
         Logger.warn('.env file not found, using .env.example file');
     Logger.info(`App running on  http://localhost:${PORT}`);
-    // configure swagger docs
-    swaggerDocs(app);
     await createRoles();
 });
 

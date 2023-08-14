@@ -6,7 +6,7 @@ router.get('/recent-repo', githubController.getRecentRepo);
 
 const githubRoutes = (mainrouter) => {
     // swaggergenerator.register('github', './routes/github_routes.js');
-    mainrouter.use('/v1/github', router);
+    mainrouter.use('/github', router);
 };
 
 module.exports = githubRoutes;
