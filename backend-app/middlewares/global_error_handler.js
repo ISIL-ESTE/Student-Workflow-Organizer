@@ -38,7 +38,8 @@ module.exports = (err, req, res, next) => {
             description = err.message;
         } else {
             description =
-                "We're sorry, something went wrong. Please try again later.";
+                "We're sorry, something went wrong. Please try again later." +
+                err;
         }
     } else {
         description = err.message;

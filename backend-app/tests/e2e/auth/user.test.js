@@ -1,9 +1,10 @@
 const request = require('supertest');
 const app = require('../../../app');
 const { testUserCredentials } = require('../../testConstants');
-
+const mongoose = require('mongoose');
 describe('PATCH /api/users/me', () => {
     // if user is not logged in
+    // console.log('db connected: ', mongoose.connection.readyState);
     let token;
     beforeAll(async () => {
         const response = await request(app).post('/api/auth/login').send({

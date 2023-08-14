@@ -3,6 +3,9 @@ const app = require('../../../app');
 const { REQUIRE_ACTIVATION } = require('../../../config/app_config');
 const { testUserCredentials } = require('../../testConstants');
 const { user_model } = require('../../../models/user/user_model');
+const mongoose = require('mongoose');
+
+// console.log('db connected: ', mongoose.connection.readyState);
 
 if (REQUIRE_ACTIVATION)
     describe('GET /api/auth/activate', () => {

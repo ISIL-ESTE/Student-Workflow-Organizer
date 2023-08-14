@@ -7,12 +7,13 @@ const { API_VERSION } = require('../config/app_config');
  * @param {Object} res - Express response object.
  * @param {Function} next - Express next function to pass control to the next middleware or route handler.
  */
-const handleAPIVersion = (req) => {
+const handleAPIVersion = (req, res, next) => {
     req.version = req.headers['accept-version'];
     if (!req.version) {
         req.version = API_VERSION;
         req.headers['accept-version'] = API_VERSION;
     }
+    next();
 };
 
 module.exports = handleAPIVersion;

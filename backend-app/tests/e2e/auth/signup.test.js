@@ -1,8 +1,12 @@
 const request = require('supertest');
 const app = require('../../../app');
 const { testUserCredentials } = require('../../testConstants');
+const mongoose = require('mongoose');
 
 describe('POST /api/auth/signup', () => {
+    // check db connection
+    // console.log('db connected: ', mongoose.connection.readyState);
+
     it('should create a new user', async () => {
         const response = await request(app)
             .post('/api/auth/signup')

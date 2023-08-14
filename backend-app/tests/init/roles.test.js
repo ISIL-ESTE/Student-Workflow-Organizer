@@ -1,6 +1,3 @@
-// do import and then create test to see if user can update roles
-require('dotenv').config();
-require('../../utils/logger');
 describe('Role tests', () => {
     test('should create roles', async () => {
         // await createRoles();
