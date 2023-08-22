@@ -1,5 +1,6 @@
 const AppError = require('../utils/app_error');
 const APIFeatures = require('../utils/api_features');
+const { sanitizeRequestBody } = require('../utils/sanitize_request_body');
 
 /**
  * Delete a document by ID (soft delete)
@@ -38,10 +39,16 @@ exports.updateOne = (Model) => async (req, res, next) => {
         // get the user who is updating the document
         const userid = req.user._id;
         req.body.updatedBy = userid;
-        const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true,
-        });
+
+        const sanitizedBody = sanitizeRequestBody(Model.schema, req.body);
+        const doc = await Model.findByIdAndUpdate(
+            req.params.id,
+            sanitizedBody,
+            {
+                new: true,
+                runValidators: true,
+            }
+        );
 
         if (!doc) {
             return next(
@@ -67,6 +74,9 @@ exports.createOne = (Model) => async (req, res, next) => {
         // get the user who is creating the document
         const userid = req.user._id;
         req.body.createdBy = userid;
+        // validate the request body
+        const sanitizedBody = sanitizeRequestBody(Model.schema, req.body);
+
         const doc = await Model.create(req.body);
 
         res.status(201).json({

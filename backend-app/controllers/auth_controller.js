@@ -77,6 +77,10 @@ exports.login = async (req, res, next) => {
             );
         }
 
+        if (!validator.isEmail(email)) {
+            return next(new AppError(400, 'fail', 'Invalid email format'));
+        }
+
         // 2) check if user exist and password is correct
         const user = await User.findOne({
             email,
@@ -239,7 +243,6 @@ exports.updatePassword = async (req, res, next) => {
     try {
         const { email, resetKey, password } = req.body;
 
-        // sanitize email
         if (!validator.isEmail(email)) {
             return next(new AppError(400, 'fail', 'Invalid email format'));
         }
@@ -277,6 +280,10 @@ exports.forgotPassword = async (req, res, next) => {
 
         if (!email) {
             return next(new AppError(400, 'fail', 'Please provide email'));
+        }
+
+        if (!validator.isEmail(email)) {
+            return next(new AppError(400, 'fail', 'Invalid email format'));
         }
 
         const user = await User.findOne({ email });

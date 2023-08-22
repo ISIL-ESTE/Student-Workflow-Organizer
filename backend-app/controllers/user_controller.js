@@ -1,6 +1,7 @@
 const User = require('../models/user/user_model');
 const base = require('./base_controller');
 const AppError = require('../utils/app_error');
+const sanitizeRequestBody = require('../utils/sanitize_request_body');
 
 exports.getMe = (req, res) => {
     // return data of the current user
@@ -56,6 +57,9 @@ exports.updateMe = async (req, res, next) => {
         filteredfields.forEach((el) => {
             filteredBody[el] = req.body[el];
         });
+
+        // validate the request body
+        const sanitizedBody = sanitizeRequestBody(User.schema, filteredBody);
 
         // 3) Update user document
         const doc = await User.findByIdAndUpdate(req.user.id, filteredBody, {
