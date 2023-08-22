@@ -1,5 +1,6 @@
 const { promisify } = require('util');
 const mongoose = require('mongoose');
+const validator = require('validator');
 const User = require('../models/user/user_model');
 const AppError = require('../utils/app_error');
 const Role = require('../utils/authorization/role/role');
@@ -237,6 +238,11 @@ exports.activateAccount = async (req, res, next) => {
 exports.updatePassword = async (req, res, next) => {
     try {
         const { email, resetKey, password } = req.body;
+
+        // sanitize email
+        if (!validator.isEmail(email)) {
+            return next(new AppError(400, 'fail', 'Invalid email format'));
+        }
 
         const user = await User.findOne({ email }).select('+password');
 
