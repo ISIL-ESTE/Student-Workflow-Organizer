@@ -6,7 +6,7 @@ const adminRoutes = require('./users/admin_route');
 const superAdminRoutes = require('./users/super_admin_route');
 const authRoutes = require('./auth_routes');
 const githubRoutes = require('./github_routes');
-const authController = require('../controllers/auth_controller');
+const authController = require('../controllers/auth_controllers/auth_controller');
 
 // public routes
 authRoutes(router);

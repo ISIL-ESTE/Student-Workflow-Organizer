@@ -10,8 +10,8 @@ const {
     deleteRole,
     assignRoleToUser,
     removeRoleFromUser,
-} = require('../../controllers/admin_controller');
-const authController = require('../../controllers/auth_controller');
+} = require('../../controllers/users_controllers/admin_controller');
+const authController = require('../../controllers/auth_controllers/auth_controller');
 const { restrictTo } = require('../../middlewares/authorization');
 const router = express.Router();
 const Actions = require('../../constants/actions');

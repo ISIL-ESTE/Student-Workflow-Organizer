@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const authController = require('../../controllers/auth_controller');
+const authController = require('../../controllers/auth_controllers/auth_controller');
 const { restrictTo } = require('../../middlewares/authorization');
 const Actions = require('../../constants/actions');
 const {
@@ -8,7 +8,7 @@ const {
     removeSuperAdmin,
     addAdmin,
     removeAdmin,
-} = require('../../controllers/admin_controller');
+} = require('../../controllers/users_controllers/admin_controller');
 
 router.use(authController.restrictTo('SUPER_ADMIN'));
 

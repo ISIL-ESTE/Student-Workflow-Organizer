@@ -1,18 +1,18 @@
 const { promisify } = require('util');
 const mongoose = require('mongoose');
 const validator = require('validator');
-const User = require('../models/user/user_model');
-const AppError = require('../utils/app_error');
-const Role = require('../utils/authorization/role/role');
-const { REQUIRE_ACTIVATION } = require('../config/app_config');
+const User = require('../../models/user/user_model');
+const AppError = require('../../utils/app_error');
+const Role = require('../../utils/authorization/role/role');
+const { REQUIRE_ACTIVATION } = require('../../config/app_config');
 const {
     getGithubOAuthUser,
     getGithubOAuthToken,
     getGithubOAuthUserPrimaryEmail,
-} = require('../utils/authorization/github');
+} = require('../../utils/authorization/github');
 const role = new Role();
-const AuthUtils = require('../utils/authorization/auth_utils');
-const searchCookies = require('../utils/searchCookie');
+const AuthUtils = require('../../utils/authorization/auth_utils');
+const searchCookies = require('../../utils/searchCookie');
 
 const generateActivationKey = async () => {
     const randomBytesPromiseified = promisify(require('crypto').randomBytes);

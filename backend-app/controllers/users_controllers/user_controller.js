@@ -1,7 +1,7 @@
-const User = require('../models/user/user_model');
-const base = require('./base_controller');
-const AppError = require('../utils/app_error');
-const sanitizeRequestBody = require('../utils/sanitize_request_body');
+const User = require('../../models/user/user_model');
+const base = require('../base_controller');
+const AppError = require('../../utils/app_error');
+const sanitizeRequestBody = require('../../utils/sanitize_request_body');
 
 exports.getMe = (req, res) => {
     // return data of the current user

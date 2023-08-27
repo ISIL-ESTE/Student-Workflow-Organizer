@@ -1,4 +1,4 @@
-const AppError = require('../utils/app_error');
+const AppError = require('../../utils/app_error');
 const calendar_validators = require('./calendar_validators');
 
 exports.updateCalendar = async (req, res, next) => {

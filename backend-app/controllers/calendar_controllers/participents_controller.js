@@ -1,4 +1,4 @@
-const AppError = require('../utils/app_error');
+const AppError = require('../../utils/app_error');
 const validator = require('validator');
 const calendar_validators = require('./calendar_validators');
 

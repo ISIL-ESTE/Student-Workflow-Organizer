@@ -1,5 +1,5 @@
 const axios = require('axios');
-const AppError = require('../utils/app_error');
+const AppError = require('../../utils/app_error');
 
 exports.getRecentRepo = async (req, res, next) => {
     const { githubOauthAccessToken } = req.user;

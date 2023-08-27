@@ -1,4 +1,4 @@
-const calendarModel = require('../models/calendar/calendar_model');
+const calendarModel = require('../../models/calendar/calendar_model');
 
 exports.validateCalendar = async function validateCalendar(req) {
     const calendarid = req.params.calendarid;
