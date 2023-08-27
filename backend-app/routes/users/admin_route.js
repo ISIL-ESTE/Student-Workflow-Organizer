@@ -15,7 +15,7 @@ const authController = require('../../controllers/auth_controller');
 const { restrictTo } = require('../../middlewares/authorization');
 const router = express.Router();
 const Actions = require('../../constants/actions');
-const userController = require('../../controllers/user_controller');
+const userController = require('../../controllers/users_controllers/user_controller');
 
 /**
  * Below all routes are protected

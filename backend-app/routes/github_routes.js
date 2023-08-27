@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const router = Router();
-const githubController = require('../controllers/github_controller');
+const githubController = require('../controllers/auth_controllers/github_controller');
 
 router.get('/recent-repo', githubController.getRecentRepo);
 
