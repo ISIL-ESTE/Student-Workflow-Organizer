@@ -1,7 +1,7 @@
 const express = require('express');
 const base = require('./base_controller');
 const calendarModel = require('../models/calendar/calendar_model');
-const authController = require('../controllers/auth_controller');
+const authController = require('../controllers/auth_controllers/auth_controller');
 const router = express.Router();
 
 router.post('/', base.createOne(calendarModel));

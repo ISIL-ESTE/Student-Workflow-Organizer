@@ -5,7 +5,7 @@ exports.updateCalendar = async (req, res, next) => {
     const calendar = await calendar_validators.validateCalendar(req);
     // check if user is not admin nor the owner of the calendar
     if (
-        calendar.createdBy !== req.user.id ||
+        calendar.createdBy !== req.user.id.toString() ||
         !req.user.roles.includes('ADMIN') ||
         !req.user.roles.includes('SUPER_ADMIN')
     ) {
@@ -20,8 +20,7 @@ exports.deleteCalendar = async (req, res, next) => {
     const calendar = await calendar_validators.validateCalendar(req);
     // check if user is not admin nor the owner of the calendar
     if (
-        calendar.createdBy !== req.user.id ||
-        !req.user.roles.includes('ADMIN') ||
+        calendar.createdBy !== req.user.id.toString() ||
         !req.user.roles.includes('SUPER_ADMIN')
     ) {
         return next(

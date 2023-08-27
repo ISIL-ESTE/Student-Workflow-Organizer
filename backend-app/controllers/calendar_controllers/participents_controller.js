@@ -9,11 +9,13 @@ exports.inviteUsersByEmail = async (req, res) => {
     const userid = req.user._id;
     if (calendar.createdBy.toString() !== userid.toString()) {
         // check if user is a participant and the calendar is shareable
-        if (!calendar.participants.includes(userid) && !calendar.isShareAble) {
+        if (!calendar.participants.includes(userid))
             throw new AppError(
                 'You do not have permission to invite users to this calendar',
                 403
             );
+        if (!calendar.isShareAble) {
+            throw new AppError('This calendar is not shareable', 403);
         }
     }
     // get emails from request body
