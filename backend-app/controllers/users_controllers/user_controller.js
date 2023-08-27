@@ -62,7 +62,7 @@ exports.updateMe = async (req, res, next) => {
         const sanitizedBody = sanitizeRequestBody(User.schema, filteredBody);
 
         // 3) Update user document
-        const doc = await User.findByIdAndUpdate(req.user.id, filteredBody, {
+        const doc = await User.findByIdAndUpdate(req.user.id, sanitizedBody, {
             new: true,
             runValidators: true,
         });
