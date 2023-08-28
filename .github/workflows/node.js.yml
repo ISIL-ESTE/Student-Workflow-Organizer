@@ -7,14 +7,15 @@ on:
   pull_request:
     branches:
       - main
-defaults:
-  run:
-    working-directory: ./backend-app
-
+      
 jobs:
   build:
 
     runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./backend-app
 
     strategy:
       matrix:
