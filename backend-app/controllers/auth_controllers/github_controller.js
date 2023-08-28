@@ -1,6 +1,5 @@
-const User = require('../models/user/user_model');
 const axios = require('axios');
-const AppError = require('../utils/app_error');
+const AppError = require('../../utils/app_error');
 
 exports.getRecentRepo = async (req, res, next) => {
     const { githubOauthAccessToken } = req.user;
@@ -37,9 +36,7 @@ exports.getRecentRepo = async (req, res, next) => {
 
         const recentRepository = sortedRepository[0];
         res.status(200).json({
-            data: {
-                recentRepository,
-            },
+            recentRepository,
         });
     } catch (err) {
         next(err);

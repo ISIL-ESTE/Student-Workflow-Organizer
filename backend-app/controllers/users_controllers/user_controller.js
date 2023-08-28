@@ -1,8 +1,9 @@
-const User = require('../models/user/user_model');
-const base = require('./base_controller');
-const AppError = require('../utils/app_error');
+const User = require('../../models/user/user_model');
+const base = require('../base_controller');
+const AppError = require('../../utils/app_error');
+const sanitizeRequestBody = require('../../utils/sanitize_request_body');
 
-exports.getMe = (req, res, next) => {
+exports.getMe = (req, res) => {
     // return data of the current user
     res.status(200).json({
         status: 'success',
@@ -57,8 +58,11 @@ exports.updateMe = async (req, res, next) => {
             filteredBody[el] = req.body[el];
         });
 
+        // validate the request body
+        const sanitizedBody = sanitizeRequestBody(User.schema, filteredBody);
+
         // 3) Update user document
-        const doc = await User.findByIdAndUpdate(req.user.id, filteredBody, {
+        const doc = await User.findByIdAndUpdate(req.user.id, sanitizedBody, {
             new: true,
             runValidators: true,
         });
@@ -69,9 +73,7 @@ exports.updateMe = async (req, res, next) => {
         }
 
         res.status(200).json({
-            data: {
-                doc,
-            },
+            doc,
         });
     } catch (error) {
         next(error);

@@ -1,21 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const authController = require('../../controllers/auth_controller');
+const authController = require('../../controllers/auth_controllers/auth_controller');
 const { restrictTo } = require('../../middlewares/authorization');
-const swaggergenerator = require('../../utils/swagger/swaggergenerator');
 const Actions = require('../../constants/actions');
 const {
     addSuperAdmin,
     removeSuperAdmin,
     addAdmin,
     removeAdmin,
-} = require('../../controllers/admin_controller');
+} = require('../../controllers/users_controllers/admin_controller');
 
 router.use(authController.restrictTo('SUPER_ADMIN'));
 
 /**
  * @protected
- * @route PUT /api/v1/admin/add-super-admin/:userId
+ * @route PUT /api/admin/add-super-admin/:userId
  * @description Add super admin role to a user
  * @access Super Admin
  * @param {string} userId - Id of the user to add super admin role to
@@ -28,7 +27,7 @@ router.put(
 
 /*
  * @protected
- * @route PUT /api/v1/admin/remove-super-admin/:userId
+ * @route PUT /api/admin/remove-super-admin/:userId
  * @description Remove super admin role from a user
  * @access Super Admin
  * @param {string} userId - Id of the user to remove super admin role from
@@ -41,7 +40,7 @@ router.put(
 
 /**
  * @protected
- * @route PUT /api/v1/admin/add-admin/:userId
+ * @route PUT /api/admin/add-admin/:userId
  * @description Add admin role to a user
  * @access Super Admin
  * @param {string} userId - Id of the user to add admin role to
@@ -50,7 +49,7 @@ router.put('/add-admin/:userId', restrictTo(Actions.UPDATE_USER), addAdmin);
 
 /**
  * @protected
- * @route PUT /api/v1/admin/remove-admin/:userId
+ * @route PUT /api/admin/remove-admin/:userId
  * @description Remove admin role from a user
  * @access Super Admin
  * @param {string} userId - Id of the user to remove admin role from

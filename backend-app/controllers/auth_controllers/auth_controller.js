@@ -1,17 +1,18 @@
 const { promisify } = require('util');
 const mongoose = require('mongoose');
-const User = require('../models/user/user_model');
-const AppError = require('../utils/app_error');
-const Role = require('../utils/authorization/role/role');
-const { REQUIRE_ACTIVATION } = require('../config/app_config');
+const validator = require('validator');
+const User = require('../../models/user/user_model');
+const AppError = require('../../utils/app_error');
+const Role = require('../../utils/authorization/role/role');
+const { REQUIRE_ACTIVATION } = require('../../config/app_config');
 const {
     getGithubOAuthUser,
     getGithubOAuthToken,
     getGithubOAuthUserPrimaryEmail,
-} = require('../utils/authorization/github');
+} = require('../../utils/authorization/github');
 const role = new Role();
-const AuthUtils = require('../utils/authorization/auth_utils');
-const searchCookies = require('../utils/searchCookie');
+const AuthUtils = require('../../utils/authorization/auth_utils');
+const searchCookies = require('../../utils/searchCookie');
 
 const generateActivationKey = async () => {
     const randomBytesPromiseified = promisify(require('crypto').randomBytes);
@@ -76,6 +77,10 @@ exports.login = async (req, res, next) => {
             );
         }
 
+        if (!validator.isEmail(email)) {
+            return next(new AppError(400, 'fail', 'Invalid email format'));
+        }
+
         // 2) check if user exist and password is correct
         const user = await User.findOne({
             email,
@@ -106,9 +111,8 @@ exports.login = async (req, res, next) => {
         user.password = undefined;
 
         res.status(200).json({
-            data: {
-                user,
-            },
+            accessToken,
+            user,
         });
     } catch (err) {
         next(err);
@@ -119,16 +123,17 @@ exports.signup = async (req, res, next) => {
     try {
         const activationKey = await generateActivationKey();
         const Roles = await role.getRoles();
-        const user = await User.create({
+        const userpayload = {
             name: req.body.name,
             email: req.body.email,
             password: req.body.password,
             roles: [Roles.USER.type],
             authorities: Roles.USER.authorities,
+            active: !REQUIRE_ACTIVATION,
             restrictions: Roles.USER.restrictions,
             ...(REQUIRE_ACTIVATION && { activationKey }),
-        });
-
+        };
+        const user = await User.create(userpayload);
         const accessToken = AuthUtils.generateAccessToken(user._id);
         const refreshToken = AuthUtils.generateRefreshToken(user._id);
         AuthUtils.setAccessTokenCookie(res, accessToken).setRefreshTokenCookie(
@@ -139,15 +144,9 @@ exports.signup = async (req, res, next) => {
         user.password = undefined;
         user.activationKey = undefined;
 
-        Logger.info(
-            `User ${user._id} with email ${user.email} has been created with activation key ${activationKey}`
-        );
-
         res.status(201).json({
-            tokens: tokens,
-            data: {
-                user,
-            },
+            accessToken,
+            user,
         });
     } catch (err) {
         next(err);
@@ -233,9 +232,7 @@ exports.activateAccount = async (req, res, next) => {
         user.password = undefined;
 
         res.status(200).json({
-            data: {
-                user,
-            },
+            user,
         });
     } catch (err) {
         next(err);
@@ -245,6 +242,10 @@ exports.activateAccount = async (req, res, next) => {
 exports.updatePassword = async (req, res, next) => {
     try {
         const { email, resetKey, password } = req.body;
+
+        if (!validator.isEmail(email)) {
+            return next(new AppError(400, 'fail', 'Invalid email format'));
+        }
 
         const user = await User.findOne({ email }).select('+password');
 
@@ -266,7 +267,7 @@ exports.updatePassword = async (req, res, next) => {
         res.status(200).json({
             status: 'success',
             token,
-            data: { user },
+            user,
         });
     } catch (err) {
         next(err);
@@ -279,6 +280,10 @@ exports.forgotPassword = async (req, res, next) => {
 
         if (!email) {
             return next(new AppError(400, 'fail', 'Please provide email'));
+        }
+
+        if (!validator.isEmail(email)) {
+            return next(new AppError(400, 'fail', 'Invalid email format'));
         }
 
         const user = await User.findOne({ email });
@@ -310,7 +315,7 @@ exports.forgotPassword = async (req, res, next) => {
 
 exports.protect = async (req, res, next) => {
     try {
-        const accessToken = searchCookies(req, 'access_token');
+        const accessToken = searchCookies(req, 'access_token') || req.token;
         if (!accessToken)
             return next(new AppError(401, 'fail', 'Please login to continue'));
 
@@ -321,7 +326,7 @@ exports.protect = async (req, res, next) => {
             throw new AppError(401, 'fail', 'Invalid access token');
         // 3) check if the user is exist (not deleted)
         const user = await User.findById(accessTokenPayload.id).select(
-            '+githubOauthAccessToken'
+            'accessRestricted active'
         );
         if (!user) {
             return next(

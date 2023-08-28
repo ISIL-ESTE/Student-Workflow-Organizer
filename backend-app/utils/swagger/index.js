@@ -3,7 +3,6 @@ const { PORT, CURRENT_ENV } = require('../../config/app_config');
 const path = require('path');
 const YAML = require('yamljs');
 const mergeYamlFiles = require('./merge_yaml_files');
-const { application } = require('express');
 // Path to the swagger annotations directory
 const docsDirPath = path.join(__dirname, '../../docs/api_docs/');
 // Path to the swagger.yaml file
@@ -14,7 +13,7 @@ const swaggerSpec = YAML.load(swaggerSpecPath);
 swaggerSpec.paths = mergeYamlFiles(docsDirPath);
 swaggerSpec.servers = [
     {
-        url: `http://localhost:${PORT}/api/v1`,
+        url: `http://localhost:${PORT}/api`,
         description: 'Development server',
     },
 ];
@@ -48,12 +47,7 @@ const swaggerDocs = (app) => {
         res.setHeader('Content-Type', 'application/json');
         res.send(swaggerSpec);
     });
-    global.Logger.info(
-        `Swagger docs available at http://localhost:${PORT}/docs`
-    );
-    global.Logger.info(
-        `Swagger docs JSON format available at http://localhost:${PORT}/docs-json`
-    );
+    global.Logger.info(`Swagger available at /docs  /docs-json`);
 };
 
 module.exports = swaggerDocs;

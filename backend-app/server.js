@@ -17,7 +17,7 @@ mongoose.set('strictQuery', true);
 // Connect the database
 mongoose
     .connect(DATABASE, { useNewUrlParser: true })
-    .then((con) => {
+    .then(() => {
         Logger.info('DB Connected Successfully!');
     })
     .catch((err) => {
@@ -35,7 +35,7 @@ mongoose.connection.on('disconnected', () => {
 const expServer = app.listen(PORT, async () => {
     if (!fs.existsSync('.env'))
         Logger.warn('.env file not found, using .env.example file');
-    Logger.info(`App running on port ${PORT}`);
+    Logger.info(`App running on  http://localhost:${PORT}`);
     await createRoles();
 });
 

@@ -26,10 +26,8 @@ const createRoles = async () => {
             roleArr.includes(superAdmin.type) &&
             roleArr.includes(admin.type) &&
             roleArr.includes(user.type)
-        ) {
-            Logger.info('DEFAULT ROLE [ADMIN, SUPER_ADMIN, USER] DETECTED!');
+        )
             return;
-        }
         await role.createRole(
             superAdmin.type,
             superAdmin.authorities,

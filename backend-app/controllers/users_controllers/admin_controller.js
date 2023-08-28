@@ -1,8 +1,8 @@
-const userModel = require('../models/user/user_model');
-const Actions = require('../constants/actions');
-const validateActions = require('../utils/authorization/validate_actions');
-const Role = require('../utils/authorization/role/role');
-const AppError = require('../utils/app_error');
+const userModel = require('../../models/user/user_model');
+const Actions = require('../../constants/actions');
+const validateActions = require('../../utils/authorization/validate_actions');
+const Role = require('../../utils/authorization/role/role');
+const AppError = require('../../utils/app_error');
 const role = new Role();
 
 exports.addAdmin = async (req, res, next) => {

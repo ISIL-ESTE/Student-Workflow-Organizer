@@ -6,14 +6,18 @@ const fs = require('fs');
 const envFile = fs.existsSync('.env') ? '.env' : '.env.example';
 dotenv.config({ path: join(__dirname, `../${envFile}`) });
 
+// parse boolean values
+const parseBoolean = (value) => value === 'true';
+
 exports.logFilePath = join(__dirname, '../server-logs');
 exports.CURRENT_ENV = process.env.NODE_ENV?.toLowerCase();
-exports.API_VERSION = process.env.API_VERSION;
+exports.API_VERSION = process.env.npm_package_version;
 exports.DATABASE = process.env.MONGO_URI;
+exports.MONGO_URI_TEST = process.env.MONGO_URI_TEST;
 exports.PORT = process.env.PORT;
 exports.ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 exports.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-exports.REQUIRE_ACTIVATION = process.env.REQUIRE_ACTIVATION;
+exports.REQUIRE_ACTIVATION = parseBoolean(process.env.REQUIRE_ACTIVATION);
 exports.RATE_LIMIT_PER_HOUR = process.env.RATE_LIMIT_PER_HOUR;
 exports.GITHUB_OAUTH_CLIENT_ID = process.env.GITHUB_OAUTH_CLIENT_ID;
 exports.GITHUB_OAUTH_CLIENT_SECRET = process.env.GITHUB_OAUTH_CLIENT_SECRET;

@@ -1,7 +1,4 @@
-
-
 const mongoose = require('mongoose');
-const validator = require('validator');
 const metaData = require('../constants/meta_data');
 
 const calendarSchema = new mongoose.Schema(
@@ -16,16 +13,17 @@ const calendarSchema = new mongoose.Schema(
             validate: {
                 validator: function (el) {
                     return el === 'Personal' || el === 'Group';
-                }
-            }
+                },
+            },
         },
         isPublic: {
             type: Boolean,
             default: false,
         },
-        isShared: {
+        isShareAble: {
             type: Boolean,
             default: false,
+            description: 'If true, the calendar can be shared with other users',
         },
         participants: [
             {
@@ -39,12 +37,6 @@ const calendarSchema = new mongoose.Schema(
                 ref: 'Event',
             },
         ],
-        // reminders: [
-        //     {
-        //         type: mongoose.Schema.ObjectId,
-        //         ref: 'Reminder',
-        //     },
-        // ],
         creationDate: {
             type: Date,
             default: Date.now(),
@@ -55,20 +47,11 @@ const calendarSchema = new mongoose.Schema(
         accessCode: {
             type: String,
         },
-        // attachment: {
-        //     type: Buffer,
-        // },
         tags: [
             {
                 type: String,
             },
         ],
-        // categories: [
-        //     {
-        //         type: mongoose.Schema.ObjectId,
-        //         ref: 'Category',
-        //     },
-        // ],
         allowedUsers: [
             {
                 type: mongoose.Schema.ObjectId,
@@ -90,3 +73,6 @@ const calendarSchema = new mongoose.Schema(
 
 metaData.apply(calendarSchema);
 
+const Calendar = mongoose.model('Calendar', calendarSchema);
+
+module.exports = Calendar;
