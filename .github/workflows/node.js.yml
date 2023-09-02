@@ -1,9 +1,10 @@
-name: Node.js API CI/CD
+name: Node.js API CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   build-and-deploy:
@@ -14,7 +15,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: 'recursive'
-          path: 'backend-api'
+          path: 'backend-app/'
 
       - name: Use Node.js
         uses: actions/setup-node@v2
@@ -22,13 +23,13 @@ jobs:
           node-version: '14.x'
 
       - name: Install dependencies
-        run: npm install
-        working-directory: ./backend-app
-
-      - name: Build
-        run: npm run build
-        working-directory: ./backend-app
+        run: |
+          cd backend-app/
+          npm install
+        working-directory: backend-app/
 
       - name: Run tests
-        run: npm test
-        working-directory: ./backend-app
+        run: |
+          cd backend-app/
+          npm test
+        working-directory: backend-app/
