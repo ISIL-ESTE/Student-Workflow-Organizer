@@ -14,17 +14,15 @@
     <img src="./backend-app/docs/logo.png" height="350" style="border-radius: 25px;" />
 </p>
 
-A website designed to help students organize their homework, exams, and projects in a timeline form. Students can easily keep track of their upcoming assignments, exams, and projects and collaborate with others.
+A website designed to help academics and students organize their work, projects and exam in a timeline form. they can easily keep track of their upcoming assignments, exams, and projects and collaborate with others, along with managing their documents.
 
 ## Features
-
-- **Dashboard:** View an overview of all upcoming assignments, exams, and projects. Also, see any incomplete assignments or missed deadlines.
 
 - **Timeline:** View assignments, exams, and projects in chronological order. Drag and drop items to re-order them on the timeline and adjust due dates as needed.
 
 - **Reminders:** Receive reminders a few days before assignments or projects are due via email, text message, or push notification.
 
-- **Collaboration:** Invite other members of a group to view the timeline and make changes to due dates or project details.
+- **Collaboration:** Invite other members of a group to view the timeline ( calendar ) and make changes to due dates or project details, This way, you can achieve the perfect time management.
 
 - **Resource Library:** Access study materials, reference books, and other resources organized by subject or topic.
 
@@ -33,9 +31,12 @@ A website designed to help students organize their homework, exams, and projects
 - **Analytics:** View performance metrics such as average grades, completion rates, and time spent on assignments.
 
 - **Applying to Schools:** Keep track of application deadlines and required documents for each school.
+
 ## Sharing and Help
 
 - **Sharing Courses:** Share your courses with other students and access courses shared by others.
+  
+- **Courses mind-map:** a unique feature in our website that allows you to link your courses, homeworks, summaries and many more so that you never get lost between your documents.
 
 ## How to Use
 
@@ -45,7 +46,7 @@ A website designed to help students organize their homework, exams, and projects
 
 3. Use the timeline to keep track of upcoming assignments and projects.
 
-4. Collaborate with others on group projects.
+4. Collaborate with others on a calendar timeline.
 
 5. Use the resource library to access study materials and resources.
 

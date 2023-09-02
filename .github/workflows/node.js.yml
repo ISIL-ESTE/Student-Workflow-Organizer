@@ -1,33 +1,35 @@
-name: Node.js CI
+name: Node.js API CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+          path: 'backend-app/'
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
 
-    - name: Install dependencies
-      run: |
-        cd backend-api
-        npm install
+      - name: Install dependencies
+        run: |
+          cd backend-app/
+          npm install
+        working-directory: backend-app/
 
-    - name: Run tests
-      run: |
-        cd backend-api
-        npm test
-
-    strategy:
-      matrix:
-        node-version: [14.x, 16.x]
+      - name: Run tests
+        run: |
+          cd backend-app/
+          npm test
+        working-directory: backend-app/
