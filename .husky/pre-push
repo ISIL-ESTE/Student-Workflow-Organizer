@@ -2,5 +2,6 @@
 . "$(dirname "$0")/_/husky.sh"
 
 cd backend-app
+# disbale jest for now as it is not working
 # npx jest
 

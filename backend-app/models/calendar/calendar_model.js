@@ -3,11 +3,11 @@ const metaData = require('../constants/meta_data');
 
 const calendarSchema = new mongoose.Schema(
     {
-        calendarName: {
+        Name: {
             type: String,
             required: [true, 'Please fill your calendar name'],
         },
-        calendarType: {
+        Type: {
             type: String,
             required: [true, 'Please fill your calendar type'],
             validate: {
@@ -37,10 +37,6 @@ const calendarSchema = new mongoose.Schema(
                 ref: 'Event',
             },
         ],
-        creationDate: {
-            type: Date,
-            default: Date.now(),
-        },
         description: {
             type: String,
         },

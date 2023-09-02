@@ -1,7 +1,7 @@
-const { addColors, format } = require('winston');
-const { logFilePath } = require('./app_config');
+import { addColors, format } from 'winston';
+import { logFilePath } from './app_config';
 // Define the current environment
-const { CURRENT_ENV } = require('./app_config');
+import { CURRENT_ENV } from './app_config';
 
 // Define log colors
 const colors = {
@@ -49,7 +49,7 @@ const consoleOptions = {
 };
 
 const fileOptions = {
-    logLevel,
+    level: logLevel,
     dirname: logFilePath,
     filename: '%DATE%.log',
     datePattern: 'YYYY-MM-DD',
@@ -60,7 +60,4 @@ const fileOptions = {
     maxFiles: '15d',
 };
 
-module.exports = {
-    fileOptions,
-    consoleOptions,
-};
+export { fileOptions, consoleOptions };

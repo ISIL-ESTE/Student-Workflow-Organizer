@@ -158,9 +158,8 @@ exports.tokenRefresh = async (req, res, next) => {
         const refreshToken = searchCookies(req, 'refresh_token');
         if (!refreshToken)
             throw new AppError(400, 'fail', 'You have to login to continue.');
-        const refreshTokenPayload = await AuthUtils.verifyRefreshToken(
-            refreshToken
-        );
+        const refreshTokenPayload =
+            await AuthUtils.verifyRefreshToken(refreshToken);
         if (!refreshTokenPayload || !refreshTokenPayload.id)
             throw new AppError(400, 'fail', 'Invalid refresh token');
         const user = await User.findById(refreshTokenPayload.id);
@@ -178,9 +177,8 @@ exports.logout = async (req, res, next) => {
         const accessToken = searchCookies(req, 'access_token');
         if (!accessToken)
             throw new AppError(400, 'fail', 'Please provide access token');
-        const accessTokenPayload = await AuthUtils.verifyAccessToken(
-            accessToken
-        );
+        const accessTokenPayload =
+            await AuthUtils.verifyAccessToken(accessToken);
         if (!accessTokenPayload || !accessTokenPayload.id)
             throw new AppError(400, 'fail', 'Invalid access token');
         res.sendStatus(204);
@@ -319,9 +317,8 @@ exports.protect = async (req, res, next) => {
         if (!accessToken)
             return next(new AppError(401, 'fail', 'Please login to continue'));
 
-        const accessTokenPayload = await AuthUtils.verifyAccessToken(
-            accessToken
-        );
+        const accessTokenPayload =
+            await AuthUtils.verifyAccessToken(accessToken);
         if (!accessTokenPayload || !accessTokenPayload.id)
             throw new AppError(401, 'fail', 'Invalid access token');
         // 3) check if the user is exist (not deleted)

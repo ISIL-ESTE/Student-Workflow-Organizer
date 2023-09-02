@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
-require('./utils/logger');
-const fs = require('fs');
-const { DATABASE, PORT } = require('./config/app_config');
-const createRoles = require('./utils/authorization/role/create_roles');
+import mongoose from 'mongoose';
+import './utils/logger';
+import fs from 'fs';
+import { DATABASE, PORT } from './config/app_config';
+import createRoles from './utils/authorization/role/create_roles';
 
 process.on('uncaughtException', (err) => {
     Logger.error('UNCAUGHT EXCEPTION!!!  shutting down ...');
@@ -10,13 +10,13 @@ process.on('uncaughtException', (err) => {
     process.exit(1);
 });
 
-const app = require('./app');
+import app from './app';
 
 mongoose.set('strictQuery', true);
 
 // Connect the database
 mongoose
-    .connect(DATABASE, { useNewUrlParser: true })
+    .connect(DATABASE, { useNewUrlParser: true } as mongoose.ConnectOptions)
     .then(() => {
         Logger.info('DB Connected Successfully!');
     })
@@ -39,10 +39,10 @@ const expServer = app.listen(PORT, async () => {
     await createRoles();
 });
 
-// create the admin user if not exists
-require('./utils/create_default_user')();
+import createDefaultUser from './utils/create_default_user';
+createDefaultUser();
 
-process.on('unhandledRejection', (err) => {
+process.on('unhandledRejection', (err: Error) => {
     Logger.error('UNHANDLED REJECTION!!!  shutting down ...');
     Logger.error(`${err.name}, ${err.message}, ${err.stack}`);
     expServer.close(() => {
@@ -52,19 +52,17 @@ process.on('unhandledRejection', (err) => {
 
 // add graceful shutdown.
 process.on('SIGTERM', () => {
-    Logger.info('SIGTERM RECEIVED. Shutting down gracefully');
-    expServer.close(() => {
-        mongoose.connection.close(false, () => {
-            Logger.info('💥 Process terminated!');
-        });
+    Logger.info('SIGINT RECEIVED. Shutting down gracefully');
+    mongoose.connection.close(false).then(() => {
+        Logger.info('💥 Process terminated!');
+        process.exit(0);
     });
 });
 
 process.on('SIGINT', () => {
     Logger.info('SIGINT RECEIVED. Shutting down gracefully');
-    expServer.close(() => {
-        mongoose.connection.close(false, () => {
-            Logger.info('💥 Process terminated!');
-        });
+    mongoose.connection.close(false).then(() => {
+        Logger.info('💥 Process terminated!');
+        process.exit(0);
     });
 });

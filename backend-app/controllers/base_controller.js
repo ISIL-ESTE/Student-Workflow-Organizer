@@ -77,7 +77,7 @@ exports.createOne = (Model) => async (req, res, next) => {
         // validate the request body
         const sanitizedBody = sanitizeRequestBody(Model.schema, req.body);
 
-        const doc = await Model.create(req.body);
+        const doc = await Model.create(sanitizedBody);
 
         res.status(201).json({
             doc,

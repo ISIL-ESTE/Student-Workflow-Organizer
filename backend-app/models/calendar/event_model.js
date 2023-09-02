@@ -2,46 +2,54 @@ const mongoose = require('mongoose');
 const metaData = require('../constants/meta_data');
 
 const eventSchema = new mongoose.Schema({
-    eventName: {
+    name: {
         type: String,
         required: [true, 'Please fill your event name'],
     },
-    eventDescription: {
+    description: {
         type: String,
     },
-    eventLocation: {
+    location: {
         type: String,
     },
-    eventStartDate: {
+    startDate: {
         type: Date,
         required: [true, 'Please fill your event start date'],
     },
-    eventEndDate: {
+    endDate: {
         type: Date,
         required: [true, 'Please fill your event end date'],
     },
-    eventStartTime: {
+    startTime: {
         type: String,
         required: [true, 'Please fill your event start time'],
     },
-    eventEndTime: {
+    endTime: {
         type: String,
         required: [true, 'Please fill your event end time'],
     },
-    eventColor: {
+    color: {
         type: String,
         required: [true, 'Please fill your event color'],
     },
-    eventRecurring: {
+    recurring: {
         type: Boolean,
         default: false,
     },
-    eventRecurringType: {
+    recurringType: {
         type: String,
         enum: ['Daily', 'Weekly', 'Monthly', 'Yearly'],
     },
-    eventRecurringEndDate: {
+    recurringEndDate: {
         type: Date,
+    },
+    reminder: {
+        type: Date,
+        validate: {
+            validator: function (el) {
+                return el < this.eventStartDate;
+            },
+        },
     },
 });
 
