@@ -31,7 +31,7 @@ module.exports = {
         'no-global-assign': 'error',
         'no-native-reassign': 'error',
         'no-implied-eval': 'error',
-        'no-invalid-this': 'error',
+        'no-invalid-this': 'warn',
         'no-iterator': 'error',
         'no-labels': 'error',
         'no-lone-blocks': 'error',
@@ -73,8 +73,15 @@ module.exports = {
         'no-unused-vars': 'warn',
         'arrow-body-style': ['error', 'as-needed'],
     },
+    parser: '@typescript-eslint/parser',
     parserOptions: {
         ecmaVersion: 2021,
+        sourceType: 'module',
+    },
+    settings: {
+        node: {
+            allowModules: ['esm', 'js', 'commonjs'],
+        },
     },
     env: {
         es6: true,

@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "target": "es6",
+        "noImplicitAny": true,
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "outDir": "dist",
+        "baseUrl": ".",
+        "allowJs": true,
+        "paths": {
+            "*": ["*", "./"] /* Map module paths to base directory */
+        }
+    },
+    "include": [
+        "**/*.ts",
+        "**/*.js" /* Include JavaScript files */,
+        "server.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts"
+    ] /* Exclude 'node_modules' directory and test files */
+}

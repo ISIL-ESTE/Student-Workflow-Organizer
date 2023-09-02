@@ -1,9 +1,9 @@
 /**
  * @description - This file contains the configuration for the logger
  */
-const { createLogger, transports } = require('winston');
-const DailyRotateFile = require('winston-daily-rotate-file');
-const { fileOptions, consoleOptions } = require('../config/logger_config');
+import { createLogger, transports } from 'winston';
+import DailyRotateFile from 'winston-daily-rotate-file';
+import { fileOptions, consoleOptions } from '../config/logger_config';
 
 // Define the transport for the logger
 const consoleTransport = new transports.Console(consoleOptions);
@@ -15,4 +15,4 @@ const Logger = createLogger({
     exitOnError: false, // do not exit on handled exceptions
 });
 // Export the logger
-global.Logger = Logger;
+globalThis.Logger = Logger;

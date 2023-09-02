@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const Actions = require('../../constants/actions');
 const metaData = require('../../constants/meta_data');
 
