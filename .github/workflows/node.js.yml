@@ -26,8 +26,10 @@ jobs:
         run: |
           cd backend-app/
           npm install
+        working-directory: backend-app/
 
       - name: Run tests
         run: |
           cd backend-app/
           npm test
+        working-directory: backend-app/
