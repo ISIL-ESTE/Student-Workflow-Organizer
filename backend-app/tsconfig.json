@@ -2,15 +2,20 @@
     "compilerOptions": {
         "module": "commonjs",
         "esModuleInterop": true,
-        "target": "es6",
+        "target": "es5",
         "noImplicitAny": true,
         "moduleResolution": "node",
         "sourceMap": true,
         "outDir": "dist",
-        "baseUrl": ".",
         "allowJs": true,
+        "baseUrl": "./",
         "paths": {
-            "*": ["*", "./"] /* Map module paths to base directory */
+            "@utils/*": ["utils/*"],
+            "@models/*": ["models/*"],
+            "@controllers/*": ["controllers/*"],
+            "@middlewares/*": ["middlewares/*"],
+            "@routes/*": ["routes/*"],
+            "@constants/*": ["constants/*"]
         }
     },
     "include": [
