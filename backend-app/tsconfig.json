@@ -2,29 +2,27 @@
     "compilerOptions": {
         "module": "commonjs",
         "esModuleInterop": true,
-        "target": "es5",
+        "target": "es6",
         "noImplicitAny": true,
         "moduleResolution": "node",
         "sourceMap": true,
         "outDir": "dist",
         "allowJs": true,
+        "strictNullChecks": true,
+        "allowUnreachableCode": false,
+        "noUnusedLocals": true,
+        "strictFunctionTypes": true,
+        "noImplicitReturns": true,
+        "noUncheckedIndexedAccess": true,
         "baseUrl": "./",
         "paths": {
-            "@utils/*": ["utils/*"],
-            "@models/*": ["models/*"],
-            "@controllers/*": ["controllers/*"],
-            "@middlewares/*": ["middlewares/*"],
-            "@routes/*": ["routes/*"],
-            "@constants/*": ["constants/*"]
+            "@utils/*": ["./utils/*"],
+            "@models/*": ["./models/*"],
+            "@controllers/*": ["./controllers/*"],
+            "@middlewares/*": ["./middlewares/*"],
+            "@constants/*": ["./constants/*"]
         }
     },
-    "include": [
-        "**/*.ts",
-        "**/*.js" /* Include JavaScript files */,
-        "server.ts"
-    ],
-    "exclude": [
-        "node_modules",
-        "**/*.spec.ts"
-    ] /* Exclude 'node_modules' directory and test files */
+    "include": ["**/*.ts", "**/*.js"],
+    "exclude": ["node_modules", "**/*.spec.ts"]
 }

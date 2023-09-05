@@ -7,7 +7,7 @@
         "debug": "ndb server.ts",
         "dev": "ts-node-dev server.ts",
         "prod": "node server.ts NODE_ENV=PRODUCTION",
-        "start": "ts-node-dev -r tsconfig-paths/register server.ts",
+        "start": "ts-node-dev server.ts",
         "test": "jest --detectOpenHandles",
         "prepare": "cd .. && husky install"
     },
