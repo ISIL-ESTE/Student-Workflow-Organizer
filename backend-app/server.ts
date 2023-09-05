@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import './utils/register_paths';
+
 import '@utils/logger';
 import fs from 'fs';
 import { DATABASE, PORT } from './config/app_config';
