@@ -1,4 +1,5 @@
 # Student Organizer Website
+- ( contribute or at least leave a star )
 
 <div align="center">
 
