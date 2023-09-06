@@ -18,7 +18,8 @@ addColors(colors);
  * @param {string} info - The log message
  */
 const formatLogMessage = format.printf(
-    (info) => `[${info.timestamp} - ${info.level} ] ${info.message}`
+    (info) =>
+        `[${info.level}] \x1b[1.4m${info.timestamp}\x1b[0m - ${info.message}`
 );
 
 /**
@@ -40,7 +41,7 @@ const consoleOptions = {
     level: logLevel,
     format: format.combine(
         format.timestamp({
-            format: 'MMM-DD-YYYY HH:mm:ss',
+            format: 'HH:mm:ss MM-DD-YYYY',
         }),
         format.colorize({ all: true }),
         format.timestamp(),

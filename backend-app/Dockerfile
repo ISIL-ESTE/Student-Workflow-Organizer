@@ -1,7 +1,7 @@
 # Use an official Node.js runtime as the base image
 FROM node:18-alpine
 
-RUN npm install --location=global nodemon
+RUN npm install --location=global ts-node-dev
 
 # Set the working directory in the container
 WORKDIR /app

@@ -1,4 +1,0 @@
-{
-    "ext": ".js , .ts , .json , .yaml",
-    "ignore": ["./docs/**/*"]
-}
