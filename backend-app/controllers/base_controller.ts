@@ -83,7 +83,16 @@ export const createOne =
     async (req: RequestWithUser, res: Response, next: NextFunction) => {
         try {
             // get the user who is creating the document
-            const userid = req.user?._id;
+            if (req.user === undefined) {
+                return next(
+                    new AppError(
+                        401,
+                        'fail',
+                        'You are not authorized to perform this action'
+                    )
+                );
+            }
+            const userid = req.user._id;
             req.body.createdBy = userid;
 
             const doc = await Model.create(req.body);
