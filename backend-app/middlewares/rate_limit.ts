@@ -1,7 +1,8 @@
-const rateLimit = require('express-rate-limit');
-const { RATE_LIMIT_PER_HOUR } = require('../config/app_config');
+import rateLimit from 'express-rate-limit';
+import { RATE_LIMIT_PER_HOUR } from '../config/app_config';
 
-module.exports = rateLimit({
+export default rateLimit({
+    // @ts-ignore
     max: RATE_LIMIT_PER_HOUR,
     windowMs: 60 * 60 * 1000,
     message: 'Too many requests from this IP, please try again in an hour!',

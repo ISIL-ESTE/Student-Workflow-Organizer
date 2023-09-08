@@ -1,12 +1,12 @@
 /**
  * @description This file contains the morgan middleware for logging requests
  */
-const morgan = require('morgan');
-const { CURRENT_ENV } = require('../config/app_config');
+import morgan from 'morgan';
+import { CURRENT_ENV } from '../config/app_config';
 
 // Create a stream object with a 'write' function that will be used by `morgan`
 const stream = {
-    write: (message) => Logger.http(message),
+    write: (message: string) => Logger.http(message),
 };
 
 // Setup the logger
@@ -14,11 +14,12 @@ const Morgan = morgan(
     ':method :url :status :res[content-length] - :response-time ms',
     {
         stream,
-        skip: (req) =>
+        skip: (req: any) =>
+            // @ts-ignore
             CURRENT_ENV.toLowerCase() === 'production' ||
             (req.originalUrl && req.originalUrl !== req.url),
     }
 );
 
 // Export the logger
-module.exports = Morgan;
+export default Morgan;

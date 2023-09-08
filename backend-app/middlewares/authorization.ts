@@ -1,23 +1,27 @@
-const AppError = require('../utils/app_error');
-const { Request, Response, NextFunction } = require('express');
-const Actions = require('../constants/actions');
+import AppError from '../utils/app_error';
+import { Request, Response, NextFunction } from 'express';
+
+interface User {
+    authorities: string[];
+    restrictions: string[];
+}
 
 /**
  *
- * @param {{authorities:string[]}} user
+ * @param {User} user
  * @param {string[]} actions
  * @returns {boolean}
  */
-const hasAuthority = (user, actions) =>
+const hasAuthority = (user: User, actions: string[]): boolean =>
     actions.every((action) => user.authorities.includes(action));
 
 /**
  *
- * @param {{restrictions:string[]}} user
+ * @param {User} user
  * @param {string[]} actions
  * @returns {boolean}
  */
-const isRestricted = (user, actions) =>
+const isRestricted = (user: User, actions: string[]): boolean =>
     actions.every((action) => !user.restrictions.includes(action))
         ? false
         : true;
@@ -27,9 +31,11 @@ const isRestricted = (user, actions) =>
  * @returns {(...actions:string[])=>(req:Request,res:Response,next:NextFunction)=>void}
  */
 const restrictTo =
-    (...actions) =>
-    (req, res, next) => {
+    (...actions: string[]) =>
+    (req: Request, res: Response, next: NextFunction): void => {
+        // @ts-ignore
         if (hasAuthority(req.user, actions)) {
+            // @ts-ignore
             if (!isRestricted(req.user, actions)) next();
             else
                 next(
@@ -49,6 +55,6 @@ const restrictTo =
             );
     };
 
-module.exports = {
+export default {
     restrictTo,
 };

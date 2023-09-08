@@ -16,6 +16,7 @@
         "noUncheckedIndexedAccess": true,
         "baseUrl": "./",
         "paths": {
+            "@config/*": ["./config/*"],
             "@utils/*": ["./utils/*"],
             "@models/*": ["./models/*"],
             "@controllers/*": ["./controllers/*"],
