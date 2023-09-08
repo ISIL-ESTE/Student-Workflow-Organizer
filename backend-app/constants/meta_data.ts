@@ -1,10 +1,10 @@
 /**
- * @param {import('mongoose').Schema} model
+ * @param {Schema<Document>} model
  * @returns {void}
  * @description Add common fields to a model
  *
  **/
-exports.apply = (model) => {
+const apply = (model: any): void => {
     model.add({
         deleted: {
             type: Boolean,
@@ -24,4 +24,8 @@ exports.apply = (model) => {
             type: Date,
         },
     });
+};
+
+export default {
+    apply,
 };

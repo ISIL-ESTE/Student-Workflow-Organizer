@@ -1,7 +1,27 @@
-const mongoose = require('mongoose');
-const metaData = require('../constants/meta_data');
+import mongoose, { Schema, Document } from 'mongoose';
+import metaData from '@constants/meta_data';
 
-const eventSchema = new mongoose.Schema({
+export interface IEvent extends Document {
+    name: string;
+    description?: string;
+    location?: string;
+    startDate: Date;
+    endDate: Date;
+    startTime: string;
+    endTime: string;
+    color: string;
+    recurring?: boolean;
+    recurringType?: 'Daily' | 'Weekly' | 'Monthly' | 'Yearly';
+    recurringEndDate?: Date;
+    reminder?: Date;
+    deleted: boolean;
+    deletedBy?: string;
+    deletedAt?: Date;
+    createdBy?: string;
+    updatedBy?: string;
+}
+
+const eventSchema: Schema = new Schema<IEvent>({
     name: {
         type: String,
         required: [true, 'Please fill your event name'],
@@ -46,8 +66,8 @@ const eventSchema = new mongoose.Schema({
     reminder: {
         type: Date,
         validate: {
-            validator: function (el) {
-                return el < this.eventStartDate;
+            validator: function (this: IEvent, el: Date) {
+                return el < this.startDate;
             },
         },
     },
@@ -55,6 +75,6 @@ const eventSchema = new mongoose.Schema({
 
 metaData.apply(eventSchema);
 
-const Event = mongoose.model('Event', eventSchema);
+const Event = mongoose.model<IEvent>('Event', eventSchema);
 
-module.exports = Event;
+export default Event;

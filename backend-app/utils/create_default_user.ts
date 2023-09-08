@@ -1,8 +1,7 @@
-// create admin user if not exists
-
 import User from '../models/user/user_model';
 import { ADMIN_EMAIL, ADMIN_PASSWORD } from '../config/app_config';
-import { SUPER_ADMIN } from '../constants/default_roles';
+import Roles from '@constants/default_roles';
+import '@utils/logger';
 
 const createAdminUser = async () => {
     try {
@@ -12,9 +11,12 @@ const createAdminUser = async () => {
                 name: 'Supper Admin',
                 email: ADMIN_EMAIL,
                 password: ADMIN_PASSWORD,
-                roles: [SUPER_ADMIN.type],
-                authorities: SUPER_ADMIN.authorities,
-                restrictions: SUPER_ADMIN.restrictions,
+                // @ts-ignore
+                roles: [Roles.SUPER_ADMIN.type],
+                // @ts-ignore
+                authorities: Roles.SUPER_ADMIN.authorities,
+                // @ts-ignore
+                restrictions: Roles.SUPER_ADMIN.restrictions,
                 active: true,
             });
         }

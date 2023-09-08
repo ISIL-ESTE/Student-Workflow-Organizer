@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import '@utils/logger';
 import mongoose from 'mongoose';
 import { promisify } from 'util';
 import validator from 'validator';
@@ -401,6 +402,7 @@ export const protect = async (
     next: NextFunction
 ) => {
     try {
+        // @ts-ignore
         const accessToken = searchCookies(req, 'access_token') || req.token;
         if (!accessToken)
             return next(new AppError(401, 'fail', 'Please login to continue'));

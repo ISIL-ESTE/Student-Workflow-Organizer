@@ -1,12 +1,20 @@
-const AppError = require('../../utils/app_error');
-const calendar_validators = require('./calendar_validators');
+import { Request, Response, NextFunction } from 'express';
+import AppError from '../../utils/app_error';
+import * as calendar_validators from './calendar_validators';
 
-exports.updateCalendar = async (req, res, next) => {
+export const updateCalendar = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
     const calendar = await calendar_validators.validateCalendar(req);
     // check if user is not admin nor the owner of the calendar
     if (
+        // @ts-ignore
         calendar.createdBy !== req.user.id.toString() ||
+        // @ts-ignore
         !req.user.roles.includes('ADMIN') ||
+        // @ts-ignore
         !req.user.roles.includes('SUPER_ADMIN')
     ) {
         return next(
@@ -16,11 +24,17 @@ exports.updateCalendar = async (req, res, next) => {
     // TODO: update calendar
 };
 
-exports.deleteCalendar = async (req, res, next) => {
+export const deleteCalendar = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
     const calendar = await calendar_validators.validateCalendar(req);
     // check if user is not admin nor the owner of the calendar
     if (
+        // @ts-ignore
         calendar.createdBy !== req.user.id.toString() ||
+        // @ts-ignore
         !req.user.roles.includes('SUPER_ADMIN')
     ) {
         return next(

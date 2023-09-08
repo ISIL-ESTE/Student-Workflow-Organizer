@@ -20,6 +20,11 @@ export interface IUser extends Document {
     resetKey?: string;
     createdAt: Date;
     updatedAt: Date;
+    deleted: boolean;
+    deletedBy?: string;
+    deletedAt?: Date;
+    createdBy?: string;
+    updatedBy?: string;
     correctPassword(
         typedPassword: string,
         originalPassword: string
@@ -56,6 +61,7 @@ const userSchema: Schema = new mongoose.Schema<IUser>(
             validate: {
                 validator: function (el: string[]) {
                     return el.every((action) =>
+                        // @ts-ignore
                         Object.values(Actions).includes(action)
                     );
                 },
@@ -68,6 +74,7 @@ const userSchema: Schema = new mongoose.Schema<IUser>(
             validate: {
                 validator: function (el: string[]) {
                     return el.every((action) =>
+                        // @ts-ignore
                         Object.values(Actions).includes(action)
                     );
                 },

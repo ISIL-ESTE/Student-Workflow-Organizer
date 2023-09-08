@@ -1,12 +1,16 @@
-const AppError = require('../../utils/app_error');
-const validator = require('validator');
-const calendar_validators = require('./calendar_validators');
+import { Request, Response } from 'express';
+import AppError from '../../utils/app_error';
+import validator from 'validator';
+import * as calendar_validators from './calendar_validators';
+import { ObjectId } from 'mongoose';
 
-exports.inviteUsersByEmail = async (req, res) => {
+export const inviteUsersByEmail = async (req: Request, res: Response) => {
     // check if calendar exists
     const calendar = await calendar_validators.validateCalendar(req);
     // check if user is the calendar owner
+    // @ts-ignore
     const userid = req.user._id;
+    // @ts-ignore
     if (calendar.createdBy.toString() !== userid.toString()) {
         // check if user is a participant and the calendar is shareable
         if (!calendar.participants.includes(userid))
@@ -24,9 +28,9 @@ exports.inviteUsersByEmail = async (req, res) => {
         throw new AppError('Emails are required', 400);
     }
     // check if emails are valid
-    const validEmails = [];
-    const invalidEmails = [];
-    emails.forEach((email) => {
+    const validEmails: string[] = [];
+    const invalidEmails: string[] = [];
+    emails.forEach((email: string) => {
         if (validator.isEmail(email)) {
             validEmails.push(email);
         } else {
@@ -41,18 +45,25 @@ exports.inviteUsersByEmail = async (req, res) => {
     });
 };
 
-exports.removeCalendarParticipants = async (req, res) => {
+export const removeCalendarParticipants = async (
+    req: Request,
+    res: Response
+) => {
     const calendar = await calendar_validators.validateCalendar(req);
+    // @ts-ignore
     const userid = req.user._id;
     // check if user is the calendar owner
+    // @ts-ignore
     if (calendar.owner.toString() === !userid.toString()) {
         throw new AppError('You are not the owner of this calendar', 403);
     }
     // get list of participants to remove from calendar
-    const listOfParticipants = req.body.participants;
+    const listOfParticipants: string[] = req.body.participants;
     // remove users from list of participants in calendar
+    // @ts-ignore
     calendar.participants = listOfParticipants.filter(
-        (participant) => !calendar.participants.includes(participant)
+        (participant: string) =>
+            !calendar.participants.includes(participant as unknown as ObjectId)
     );
     // save calendar
     await calendar.save();

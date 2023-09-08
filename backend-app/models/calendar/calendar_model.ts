@@ -1,7 +1,26 @@
-const mongoose = require('mongoose');
-const metaData = require('../constants/meta_data');
+import mongoose, { Schema, Document } from 'mongoose';
+import metaData from '@constants/meta_data';
 
-const calendarSchema = new mongoose.Schema(
+export interface ICalendar extends Document {
+    Name: string;
+    Type: string;
+    isPublic: boolean;
+    isShareAble: boolean;
+    participants: mongoose.Schema.Types.ObjectId[];
+    events: mongoose.Schema.Types.ObjectId[];
+    description?: string;
+    accessCode?: string;
+    tags: string[];
+    allowedUsers: mongoose.Schema.Types.ObjectId[];
+    deniedUsers: mongoose.Schema.Types.ObjectId[];
+    deleted: boolean;
+    deletedBy?: string;
+    deletedAt?: Date;
+    createdBy?: string;
+    updatedBy?: string;
+}
+
+const calendarSchema: Schema = new Schema<ICalendar>(
     {
         Name: {
             type: String,
@@ -11,7 +30,7 @@ const calendarSchema = new mongoose.Schema(
             type: String,
             required: [true, 'Please fill your calendar type'],
             validate: {
-                validator: function (el) {
+                validator: function (el: string) {
                     return el === 'Personal' || el === 'Group';
                 },
             },
@@ -27,13 +46,13 @@ const calendarSchema = new mongoose.Schema(
         },
         participants: [
             {
-                type: mongoose.Schema.ObjectId,
+                type: mongoose.Schema.Types.ObjectId,
                 ref: 'User',
             },
         ],
         events: [
             {
-                type: mongoose.Schema.ObjectId,
+                type: mongoose.Schema.Types.ObjectId,
                 ref: 'Event',
             },
         ],
@@ -50,13 +69,13 @@ const calendarSchema = new mongoose.Schema(
         ],
         allowedUsers: [
             {
-                type: mongoose.Schema.ObjectId,
+                type: mongoose.Schema.Types.ObjectId,
                 ref: 'User',
             },
         ],
         deniedUsers: [
             {
-                type: mongoose.Schema.ObjectId,
+                type: mongoose.Schema.Types.ObjectId,
                 ref: 'User',
             },
         ],
@@ -69,6 +88,6 @@ const calendarSchema = new mongoose.Schema(
 
 metaData.apply(calendarSchema);
 
-const Calendar = mongoose.model('Calendar', calendarSchema);
+const Calendar = mongoose.model<ICalendar>('Calendar', calendarSchema);
 
-module.exports = Calendar;
+export default Calendar;

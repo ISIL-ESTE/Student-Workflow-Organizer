@@ -1,5 +1,12 @@
-const Actions = require('./actions');
-const Roles = {
+import Actions from './actions';
+
+interface Role {
+    type: string;
+    authorities: Array<string>;
+    restrictions: Array<string>;
+}
+
+const Roles: { [key: string]: Role } = {
     SUPER_ADMIN: {
         type: 'SUPER_ADMIN',
         authorities: Object.values(Actions),
@@ -22,4 +29,4 @@ const Roles = {
 };
 Object.freeze(Roles);
 
-module.exports = Roles;
+export default Roles;

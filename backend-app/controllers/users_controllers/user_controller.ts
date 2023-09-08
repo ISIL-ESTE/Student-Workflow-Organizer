@@ -19,11 +19,11 @@ export const deleteMe = async (
     next: NextFunction
 ) => {
     try {
-        //  @ts-ignore
+        // @ts-ignore
         await User.findByIdAndUpdate(req.user.id, {
             deleted: true,
             deletedAt: Date.now(),
-            //  @ts-ignore
+            // @ts-ignore
             deletedBy: req.user.id,
         });
 
@@ -74,7 +74,7 @@ export const updateMe = async (
         const sanitizedBody = sanitizeRequestBody(User.schema, filteredBody);
 
         // 3) Update user document
-        //  @ts-ignore
+        // @ts-ignore
         const doc = await User.findByIdAndUpdate(req.user.id, sanitizedBody, {
             new: true,
             runValidators: true,
