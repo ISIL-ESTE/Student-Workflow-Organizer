@@ -22,7 +22,7 @@ export const deleteOne =
                 req.params.id,
                 {
                     deleted: true,
-                    ...(req.user && { deletedBy: req.user._id }),
+                    ...(req.user && { deletedBy: req.user?._id }),
                     deletedAt: Date.now(),
                 },
                 { new: true }
@@ -52,7 +52,7 @@ export const updateOne =
     async (req: RequestWithUser, res: Response, next: NextFunction) => {
         try {
             // get the user who is updating the document
-            const userid = req.user._id;
+            const userid = req.user?._id;
             req.body.updatedBy = userid;
             const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
                 new: true,
@@ -83,7 +83,7 @@ export const createOne =
     async (req: RequestWithUser, res: Response, next: NextFunction) => {
         try {
             // get the user who is creating the document
-            const userid = req.user._id;
+            const userid = req.user?._id;
             req.body.createdBy = userid;
 
             const doc = await Model.create(req.body);

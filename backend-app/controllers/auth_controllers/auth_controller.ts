@@ -1,18 +1,19 @@
-const { promisify } = require('util');
-const mongoose = require('mongoose');
-const validator = require('validator');
-const User = require('../../models/user/user_model');
-const AppError = require('../../utils/app_error');
-const Role = require('../../utils/authorization/role/role');
-const { REQUIRE_ACTIVATION } = require('../../config/app_config');
-const {
+import { Request, Response, NextFunction } from 'express';
+import mongoose from 'mongoose';
+import { promisify } from 'util';
+import validator from 'validator';
+import AppError from '@utils/app_error';
+import Role from '@utils/authorization/role/role';
+import { REQUIRE_ACTIVATION } from '../../config/app_config';
+import {
     getGithubOAuthUser,
     getGithubOAuthToken,
     getGithubOAuthUserPrimaryEmail,
-} = require('../../utils/authorization/github');
-const role = new Role();
-const AuthUtils = require('../../utils/authorization/auth_utils');
-const searchCookies = require('../../utils/searchCookie');
+} from '@utils/authorization/github';
+import AuthUtils from '@utils/authorization/auth_utils';
+import generateTokens from '@utils/authorization/generate_tokens';
+import searchCookies from '@utils/searchCookie';
+import User from '@models/user/user_model';
 
 const generateActivationKey = async () => {
     const randomBytesPromiseified = promisify(require('crypto').randomBytes);
@@ -20,12 +21,28 @@ const generateActivationKey = async () => {
     return activationKey;
 };
 
-exports.githubHandler = async (req, res, next) => {
+export const githubHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
-        const Roles = await role.getRoles();
+        const Roles = await Role.getRoles();
+        // check if user role exists
+        if (!Roles.USER) {
+            // send error to client
+            return next(
+                new AppError(
+                    500,
+                    'User role does not exist. Please contact the admin.'
+                )
+            );
+        }
         const { code, redirect_url } = req.query;
         if (!redirect_url)
             throw new AppError(400, 'fail', 'Please provide redirect_url');
+        if (typeof redirect_url !== 'string')
+            throw new AppError(400, 'fail', 'Invalid redirect_url');
         if (!code) throw new AppError(400, 'fail', 'Please provide code');
         const { access_token } = await getGithubOAuthToken(code);
         if (!access_token) throw new AppError(400, 'fail', 'Invalid code');
@@ -66,25 +83,42 @@ exports.githubHandler = async (req, res, next) => {
         next(err);
     }
 };
-exports.login = async (req, res, next) => {
+
+function validateCredentialsTypes(email: string, password: string) {
+    if (!email || !password) {
+        throw new AppError(404, 'fail', 'Please provide email or password');
+    }
+
+    if (!validator.isEmail(email)) {
+        throw new AppError(400, 'fail', 'Invalid email format');
+    }
+
+    // to type safty on password
+    if (typeof password !== 'string') {
+        throw new AppError(400, 'fail', 'Invalid password format');
+    }
+}
+
+export const login = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const { email, password } = req.body;
 
         // 1) check if email and password existos
-        if (!email || !password) {
-            return next(
-                new AppError(404, 'fail', 'Please provide email or password')
-            );
-        }
-
-        if (!validator.isEmail(email)) {
-            return next(new AppError(400, 'fail', 'Invalid email format'));
-        }
+        validateCredentialsTypes(email, password);
 
         // 2) check if user exist and password is correct
         const user = await User.findOne({
             email,
         }).select('+password');
+
+        // check if password exist and  it is a string
+        if (!user?.password || typeof user.password !== 'string')
+            return next(new AppError(400, 'fail', 'Invalid email or password'));
+
         // Check if the account is banned
         if (user && user?.accessRestricted)
             throw new AppError(
@@ -119,10 +153,25 @@ exports.login = async (req, res, next) => {
     }
 };
 
-exports.signup = async (req, res, next) => {
+export const signup = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const activationKey = await generateActivationKey();
-        const Roles = await role.getRoles();
+        const Roles = await Role.getRoles();
+
+        // check if user role exists
+        if (!Roles.USER) {
+            return next(
+                new AppError(
+                    500,
+                    'User role does not exist. Please contact the admin.'
+                )
+            );
+        }
+
         const userpayload = {
             name: req.body.name,
             email: req.body.email,
@@ -153,7 +202,11 @@ exports.signup = async (req, res, next) => {
     }
 };
 
-exports.tokenRefresh = async (req, res, next) => {
+export const tokenRefresh = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const refreshToken = searchCookies(req, 'refresh_token');
         if (!refreshToken)
@@ -172,7 +225,11 @@ exports.tokenRefresh = async (req, res, next) => {
         next(err);
     }
 };
-exports.logout = async (req, res, next) => {
+export const logout = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const accessToken = searchCookies(req, 'access_token');
         if (!accessToken)
@@ -187,9 +244,18 @@ exports.logout = async (req, res, next) => {
     }
 };
 
-exports.activateAccount = async (req, res, next) => {
+interface ActivationParams {
+    id: string;
+    activationKey: string;
+}
+
+export const activateAccount = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
-        const { id, activationKey } = req.query;
+        const { id, activationKey } = req.query as unknown as ActivationParams;
 
         if (!activationKey) {
             return next(
@@ -237,7 +303,11 @@ exports.activateAccount = async (req, res, next) => {
     }
 };
 
-exports.updatePassword = async (req, res, next) => {
+export const updatePassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const { email, resetKey, password } = req.body;
 
@@ -247,8 +317,18 @@ exports.updatePassword = async (req, res, next) => {
 
         const user = await User.findOne({ email }).select('+password');
 
+        if (!user) {
+            return next(
+                new AppError(404, 'fail', 'User with this email does not exist')
+            );
+        }
+
         if (!resetKey) {
             return next(new AppError(400, 'fail', 'Please provide reset key'));
+        }
+
+        if (!user.resetKey) {
+            return next(new AppError(400, 'fail', 'Invalid reset key'));
         }
 
         if (resetKey !== user.resetKey) {
@@ -259,7 +339,7 @@ exports.updatePassword = async (req, res, next) => {
         user.resetKey = undefined;
         await user.save();
 
-        const token = createToken(user.id);
+        const token = generateTokens(user.id);
         user.password = undefined;
 
         res.status(200).json({
@@ -272,7 +352,11 @@ exports.updatePassword = async (req, res, next) => {
     }
 };
 
-exports.forgotPassword = async (req, res, next) => {
+export const forgotPassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const { email } = req.body;
 
@@ -311,7 +395,11 @@ exports.forgotPassword = async (req, res, next) => {
     }
 };
 
-exports.protect = async (req, res, next) => {
+export const protect = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const accessToken = searchCookies(req, 'access_token') || req.token;
         if (!accessToken)
@@ -340,6 +428,7 @@ exports.protect = async (req, res, next) => {
                     'Your account has been banned. Please contact the admin for more information.'
                 )
             );
+        // @ts-ignore
         req.user = user;
         // check if account is active
         if (!user.active)
@@ -362,9 +451,14 @@ exports.protect = async (req, res, next) => {
 };
 
 // Authorization check if the user have rights to do this action
-exports.restrictTo =
-    (...roles) =>
-    (req, res, next) => {
+export const restrictTo =
+    (...roles: string[]) =>
+    (req: Request, res: Response, next: NextFunction) => {
+        // @ts-ignore
+        if (!req.user) {
+            return next(new AppError(401, 'fail', 'Please login to continue'));
+        }
+        // @ts-ignore
         const roleExist = roles.some((role) => req.user.roles.includes(role));
         if (!roleExist) {
             return next(
