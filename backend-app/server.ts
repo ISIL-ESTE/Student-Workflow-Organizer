@@ -18,7 +18,10 @@ mongoose.set('strictQuery', true);
 
 // Connect the database
 mongoose
-    .connect(DATABASE, { useNewUrlParser: true } as mongoose.ConnectOptions)
+    .connect(
+        DATABASE as string,
+        { useNewUrlParser: true } as mongoose.ConnectOptions
+    )
     .then(() => {
         Logger.info('DB Connected Successfully!');
     })
