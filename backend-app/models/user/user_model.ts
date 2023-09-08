@@ -1,10 +1,35 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
-const bcrypt = require('bcrypt');
-const Actions = require('../../constants/actions');
-const metaData = require('../../constants/meta_data');
+import mongoose, { Document, Model, Schema } from 'mongoose';
+import validator from 'validator';
+import bcrypt from 'bcrypt';
+import Actions from '../../constants/actions';
+import metaData from '../../constants/meta_data';
+import { randomBytes, createHash } from 'crypto';
 
-const userSchema = new mongoose.Schema(
+export interface IUser extends Document {
+    name: string;
+    email: string;
+    address?: string;
+    password?: string;
+    authorities: Actions[];
+    restrictions: Actions[];
+    roles: string[];
+    active: boolean;
+    activationKey?: string;
+    accessRestricted: boolean;
+    githubOauthAccessToken?: string;
+    resetKey?: string;
+    createdAt: Date;
+    updatedAt: Date;
+    correctPassword(
+        typedPassword: string,
+        originalPassword: string
+    ): Promise<boolean>;
+    isAuthorizedTo(action: Actions): boolean;
+    isRestrictedFrom(action: Actions): boolean;
+    generateResetKey(): string;
+}
+
+const userSchema: Schema = new mongoose.Schema<IUser>(
     {
         name: {
             type: String,
@@ -22,15 +47,14 @@ const userSchema = new mongoose.Schema(
         },
         password: {
             type: String,
-            allowNull: true,
             minLength: 6,
             select: false,
         },
         authorities: {
-            type: Array,
+            type: [String],
             default: [],
             validate: {
-                validator: function (el) {
+                validator: function (el: string[]) {
                     return el.every((action) =>
                         Object.values(Actions).includes(action)
                     );
@@ -39,10 +63,10 @@ const userSchema = new mongoose.Schema(
             message: 'Please provide a valid action',
         },
         restrictions: {
-            type: Array,
+            type: [String],
             default: [],
             validate: {
-                validator: function (el) {
+                validator: function (el: string[]) {
                     return el.every((action) =>
                         Object.values(Actions).includes(action)
                     );
@@ -51,7 +75,7 @@ const userSchema = new mongoose.Schema(
             },
         },
         roles: {
-            type: Array,
+            type: [String],
             default: [],
         },
         active: {
@@ -71,6 +95,10 @@ const userSchema = new mongoose.Schema(
             select: false,
             default: null,
         },
+        resetKey: {
+            type: String,
+            select: false,
+        },
     },
     { timestamps: true }
 );
@@ -78,7 +106,7 @@ const userSchema = new mongoose.Schema(
 // add meta data to the schema
 metaData.apply(userSchema);
 
-userSchema.pre('save', async function (next) {
+userSchema.pre<IUser>('save', async function (next) {
     if (
         !this.isModified('password') ||
         this.password === undefined ||
@@ -90,19 +118,27 @@ userSchema.pre('save', async function (next) {
     next();
 });
 
-userSchema.methods.correctPassword = function (
-    typedPassword,
-    originalPassword
+userSchema.methods.correctPassword = async function (
+    typedPassword: string,
+    originalPassword: string
 ) {
-    return bcrypt.compare(typedPassword, originalPassword);
+    const isTrue = await bcrypt.compare(typedPassword, originalPassword);
+    return isTrue;
 };
 
 // verify if the user is authorized or restricted from an action
-userSchema.methods.isAuthorizedTo = function (action) {
+userSchema.methods.isAuthorizedTo = function (action: Actions) {
     return this.authorities.includes(action);
 };
-userSchema.methods.isRestrictedFrom = function (action) {
+userSchema.methods.isRestrictedFrom = function (action: Actions) {
     return this.restrictions.includes(action);
+};
+
+// generateResetKey
+userSchema.methods.generateResetKey = function () {
+    const resetKey = randomBytes(32).toString('hex');
+    this.resetKey = createHash('sha256').update(resetKey).digest('hex');
+    return resetKey;
 };
 
 userSchema.index(
@@ -111,12 +147,14 @@ userSchema.index(
 );
 
 userSchema.pre('find', function () {
+    // @ts-ignore
     this.where({ deleted: false });
 });
 
 userSchema.pre('findOne', function () {
+    // @ts-ignore
     this.where({ deleted: false });
 });
 
-const User = mongoose.model('User', userSchema);
-module.exports = User;
+const User: Model<IUser> = mongoose.model<IUser>('User', userSchema);
+export default User;

@@ -3,11 +3,10 @@ const Actions = require('../../constants/actions');
 const validateActions = require('../../utils/authorization/validate_actions');
 const Role = require('../../utils/authorization/role/role');
 const AppError = require('../../utils/app_error');
-const role = new Role();
 
 exports.addAdmin = async (req, res, next) => {
     try {
-        const Roles = await role.getRoles();
+        const Roles = await Role.getRoles();
         const { userId } = req.params;
         const user = await userModel.findById(userId);
         if (!user)
@@ -40,7 +39,7 @@ exports.addAdmin = async (req, res, next) => {
 
 exports.removeAdmin = async (req, res, next) => {
     try {
-        const Roles = await role.getRoles();
+        const Roles = await Role.getRoles();
         const { userId } = req.params;
         const user = await userModel.findById(userId);
         if (!user)
@@ -67,7 +66,7 @@ exports.removeAdmin = async (req, res, next) => {
 
 exports.addSuperAdmin = async (req, res, next) => {
     try {
-        const Roles = await role.getRoles();
+        const Roles = await Role.getRoles();
         const { userId } = req.params;
         const user = await userModel.findById(userId);
         if (!user)
@@ -100,7 +99,7 @@ exports.addSuperAdmin = async (req, res, next) => {
 exports.removeSuperAdmin = async (req, res, next) => {
     const { userId } = req.params;
     try {
-        const Roles = await role.getRoles();
+        const Roles = await Role.getRoles();
         const user = await userModel.findById(userId);
         if (!user)
             throw new AppError(404, 'fail', 'No user found with this id');
@@ -172,7 +171,7 @@ exports.authorizeOrRestrict = async (req, res, next) => {
 exports.banUser = async (req, res, next) => {
     const { userId } = req.params;
     try {
-        const Roles = await role.getRoles();
+        const Roles = await Role.getRoles();
         const user = await userModel.findById(userId);
         if (!user)
             throw new AppError(404, 'fail', 'No user found with this id');
@@ -215,9 +214,9 @@ exports.unbanUser = async (req, res, next) => {
 exports.createRole = async (req, res, next) => {
     const { name, authorities, restrictions } = req.body;
     try {
-        if (await role.getRoleByName(name))
+        if (await Role.getRoleByName(name))
             throw new AppError(400, 'fail', 'Role already exists');
-        const createdRole = await role.createRole(
+        const createdRole = await Role.createRole(
             name,
             authorities,
             restrictions
@@ -232,7 +231,7 @@ exports.createRole = async (req, res, next) => {
 };
 exports.getRoles = async (req, res, next) => {
     try {
-        const roles = await role.getRoles();
+        const roles = await Role.getRoles();
         res.status(200).json({
             message: 'Roles retrieved',
             data: roles,
@@ -244,7 +243,7 @@ exports.getRoles = async (req, res, next) => {
 exports.getRole = async (req, res, next) => {
     const { name } = req.params;
     try {
-        const singleRole = await role.getRoleByName(name);
+        const singleRole = await Role.getRoleByName(name);
         res.status(200).json({
             message: 'Role retrieved',
             data: singleRole,
@@ -256,7 +255,7 @@ exports.getRole = async (req, res, next) => {
 exports.deleteRole = async (req, res, next) => {
     const { name } = req.params;
     try {
-        const deletedRole = await role.deleteRoleByName(name);
+        const deletedRole = await Role.deleteRoleByName(name);
         res.status(200).json({
             message: 'Role deleted',
             data: deletedRole,
@@ -269,7 +268,7 @@ exports.updateRole = async (req, res, next) => {
     const { name } = req.params;
     const { authorities, restrictions } = req.body;
     try {
-        const updatedRole = await role.updateRoleByName(
+        const updatedRole = await Role.updateRoleByName(
             name,
             authorities,
             restrictions
@@ -286,7 +285,7 @@ exports.assignRoleToUser = async (req, res, next) => {
     const { userId, name } = req.params;
     try {
         const user = await userModel.findById(userId);
-        const Role = await role.getRoleByName(name);
+        const Role = await Role.getRoleByName(name);
         if (!user)
             throw new AppError(404, 'fail', 'No user found with this id');
         if (!Role)
@@ -311,7 +310,7 @@ exports.assignRoleToUser = async (req, res, next) => {
 exports.removeRoleFromUser = async (req, res, next) => {
     const { userId, name } = req.params;
     try {
-        const Role = await role.getRoleByName(name);
+        const Role = await Role.getRoleByName(name);
         if (!Role)
             throw new AppError(404, 'fail', 'No role found with this name');
         const user = await userModel.findById(userId);

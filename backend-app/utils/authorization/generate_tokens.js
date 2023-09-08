@@ -5,13 +5,10 @@ const {
     REFRESH_TOKEN_EXPIRY_TIME,
 } = require('../../config/app_config');
 const AppError = require('../app_error');
-const TokenModel = require('../../models/token_model');
 const jwt = require('jsonwebtoken');
 
-const generateTokens = async (id) => {
+const generateTokens = (id) => {
     try {
-        const exists = await TokenModel.findOne({ userId: id });
-        if (exists) await TokenModel.findByIdAndDelete(exists._id);
         const accessToken = jwt.sign({ id }, ACCESS_TOKEN_SECRET, {
             expiresIn: ACCESS_TOKEN_EXPIRY_TIME,
         });
@@ -24,11 +21,6 @@ const generateTokens = async (id) => {
                 'fail',
                 'Something went wrong. Please try again later.'
             );
-        await TokenModel.create({
-            accessToken,
-            refreshToken,
-            userId: id,
-        });
         return { accessToken, refreshToken };
     } catch (err) {
         throw new AppError(

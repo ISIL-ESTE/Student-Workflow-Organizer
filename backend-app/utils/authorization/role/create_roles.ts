@@ -1,25 +1,31 @@
-const Role = require('./role');
-const Actions = require('../../../constants/actions');
+import Actions from '../../../constants/actions';
+import Role from '../role/role';
 
-const superAdmin = {
+interface RoleType {
+    type: string;
+    authorities: string[];
+    restrictions: string[];
+}
+
+const superAdmin: RoleType = {
     type: 'SUPER_ADMIN',
     authorities: Object.values(Actions),
     restrictions: [],
 };
-const admin = {
+const admin: RoleType = {
     type: 'ADMIN',
     authorities: [Actions.BAN_USER, Actions.DELETE_USER],
     restrictions: [],
 };
-const user = {
+const user: RoleType = {
     type: 'USER',
     authorities: [Actions.UPDATE_CALANDER],
     restrictions: [],
 };
 
-const createRoles = async () => {
-    const role = new Role();
-    const roleArr = Object.keys(await role.getRoles());
+const createRoles = async (): Promise<void> => {
+    const roles = await Role.getRoles();
+    const roleArr = Object.keys(roles);
     try {
         if (
             roleArr.length > 2 &&
@@ -28,17 +34,17 @@ const createRoles = async () => {
             roleArr.includes(user.type)
         )
             return;
-        await role.createRole(
+        await Role.createRole(
             superAdmin.type,
             superAdmin.authorities,
             superAdmin.restrictions
         );
-        await role.createRole(
+        await Role.createRole(
             admin.type,
             admin.authorities,
             admin.restrictions
         );
-        await role.createRole(user.type, user.authorities, user.restrictions);
+        await Role.createRole(user.type, user.authorities, user.restrictions);
         global.Logger.info(
             `[ ${superAdmin.type}, ${admin.type}, ${user.type} ] ROLES CREATED!`
         );
@@ -47,4 +53,4 @@ const createRoles = async () => {
         global.Logger.error(err.stack);
     }
 };
-module.exports = createRoles;
+export default createRoles;
