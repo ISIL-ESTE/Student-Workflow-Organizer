@@ -9,10 +9,10 @@ import { fileOptions, consoleOptions } from '../config/logger_config';
 const consoleTransport = new transports.Console(consoleOptions);
 const fileTransport = new DailyRotateFile(fileOptions);
 
-const Logger = createLogger({
+const logger = createLogger({
     transports: [consoleTransport, fileTransport], // add the transport to the logger
     exceptionHandlers: [fileTransport],
     exitOnError: false, // do not exit on handled exceptions
 });
 // Export the logger
-globalThis.Logger = Logger;
+export default logger;

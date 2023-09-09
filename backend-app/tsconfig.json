@@ -10,6 +10,7 @@
         "allowJs": true,
         "strictNullChecks": true,
         "allowUnreachableCode": false,
+        "resolveJsonModule": true,
         "noUnusedLocals": true,
         "strictFunctionTypes": true,
         "noImplicitReturns": true,

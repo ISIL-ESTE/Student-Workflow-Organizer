@@ -15,7 +15,7 @@ interface RequestWithUser extends Request {
  * @returns {Function} - Express middleware function
  */
 export const deleteOne =
-    (Model: Model<any>) =>
+    (Model: Model<any>): Function =>
     async (req: RequestWithUser, res: Response, next: NextFunction) => {
         try {
             const doc = await Model.findByIdAndUpdate(
