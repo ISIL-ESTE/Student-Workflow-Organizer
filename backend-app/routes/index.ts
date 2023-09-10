@@ -18,4 +18,4 @@ userRoutes(router);
 adminRoutes(router);
 superAdminRoutes(router);
 githubRoutes(router);
-module.exports = router;
+export default router;
