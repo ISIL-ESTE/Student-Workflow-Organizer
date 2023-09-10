@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import '@utils/logger';
+import logger from '@utils/logger';
 import mongoose from 'mongoose';
 import { promisify } from 'util';
 import validator from 'validator';
@@ -35,6 +35,7 @@ export const githubHandler = async (
             return next(
                 new AppError(
                     500,
+                    'fail',
                     'User role does not exist. Please contact the admin.'
                 )
             );
@@ -168,6 +169,7 @@ export const signup = async (
             return next(
                 new AppError(
                     500,
+                    'fail',
                     'User role does not exist. Please contact the admin.'
                 )
             );
@@ -380,7 +382,7 @@ export const forgotPassword = async (
         const resetKey = user.generateResetKey();
         await user.save();
 
-        Logger.info(
+        logger.info(
             `User ${user.name} with email ${user.email} has requested for password reset with reset key ${resetKey}`
         );
 

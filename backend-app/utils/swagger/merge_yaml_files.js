@@ -1,3 +1,4 @@
+import logger from '@utils/logger';
 const path = require('path');
 const fs = require('fs');
 const YAML = require('yamljs');
@@ -10,13 +11,13 @@ const mergeYamlFiles = (directoryPath) => {
     const mergedYamlObject = {};
     // check directory exists
     if (!fs.existsSync(directoryPath)) {
-        Logger.error(`Directory ${directoryPath} does not exist`);
+        logger.error(`Directory ${directoryPath} does not exist`);
         fs.mkdirSync(directoryPath);
     }
     const files = fs.readdirSync(directoryPath);
     files.forEach((file) => {
         if (path.extname(file) !== '.yaml')
-            Logger.warn(`Skipping file ${file} as it is not a YAML file`);
+            logger.warn(`Skipping file ${file} as it is not a YAML file`);
         const yamlFilePath = path.join(directoryPath, file);
         const fileContents = fs.readFileSync(yamlFilePath, 'utf8');
         const yamlData = YAML.parse(fileContents);

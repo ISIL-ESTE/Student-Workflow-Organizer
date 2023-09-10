@@ -2,11 +2,12 @@
  * @description This file contains the morgan middleware for logging requests
  */
 import morgan from 'morgan';
+import logger from '@utils/logger';
 import { CURRENT_ENV } from '../config/app_config';
 
 // Create a stream object with a 'write' function that will be used by `morgan`
 const stream = {
-    write: (message: string) => Logger.http(message),
+    write: (message: string) => logger.http(message),
 };
 
 // Setup the logger

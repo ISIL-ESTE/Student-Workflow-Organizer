@@ -15,6 +15,9 @@
     "license": "ISC",
     "dependencies": {
         "@typegoose/typegoose": "11.5.0",
+        "@types/compression": "1.7.3",
+        "@types/express-routes-versioning": "1.0.1",
+        "@types/hpp": "0.2.2",
         "@types/morgan": "1.9.5",
         "@types/validator": "13.11.1",
         "@typescript-eslint/parser": "6.5.0",
@@ -34,6 +37,7 @@
         "http-status-codes": "2.2.0",
         "jsonwebtoken": "9.0.2",
         "mongoose": "7.5.0",
+        "morgan": "1.10.0",
         "qs": "6.11.2",
         "supertest": "6.3.3",
         "swagger-autogen": "2.23.5",

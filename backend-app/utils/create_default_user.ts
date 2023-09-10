@@ -1,7 +1,7 @@
 import User from '../models/user/user_model';
 import { ADMIN_EMAIL, ADMIN_PASSWORD } from '../config/app_config';
 import Roles from '@constants/default_roles';
-import '@utils/logger';
+import logger from '@utils/logger';
 
 const createAdminUser = async () => {
     try {
@@ -21,7 +21,7 @@ const createAdminUser = async () => {
             });
         }
     } catch (err) {
-        Logger.error(err.stack);
+        logger.error(err.stack);
     }
 };
 

@@ -1,5 +1,5 @@
 const swaggerAutogen = require('swagger-autogen');
-require('../logger');
+const logger = require('../logger');
 
 const outputFile = './docs/swagger-output.json';
 
@@ -29,7 +29,7 @@ const register = async (tag, routePath) => {
     // save to swagger2.yaml
     fs.writeFileSync(`./docs/api_docs/${tag}.yaml`, yamlData);
     fs.unlinkSync(outputFile);
-    Logger.info(`Swagger docs for route [ ${tag} ] generated successfully`);
+    logger.info(`Swagger docs for route [ ${tag} ] generated successfully`);
 };
 
 exports.register = register;

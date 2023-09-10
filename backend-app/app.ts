@@ -1,20 +1,22 @@
-const globalErrHandler = require('./middlewares/global_error_handler');
-const AppError = require('./utils/app_error');
-const express = require('express');
-const limiter = require('./middlewares/rate_limit');
-const bearerToken = require('express-bearer-token');
-const compression = require('compression');
-const helmet = require('helmet');
-const mongoSanitize = require('express-mongo-sanitize');
-const xss = require('xss-clean');
-const hpp = require('hpp');
-const cors = require('cors');
-const morgan = require('./middlewares/morgan');
-const swaggerDocs = require('./utils/swagger');
-const handleAPIVersion = require('./middlewares/api_version_controll');
-const { COOKIE_SECRET, CURRENT_ENV } = require('./config/app_config');
-const cookieParser = require('cookie-parser');
-const routesVersioning = require('express-routes-versioning')();
+import globalErrHandler from './middlewares/global_error_handler';
+import AppError from './utils/app_error';
+import express, { Request, Response, NextFunction } from 'express';
+import limiter from './middlewares/rate_limit';
+import bearerToken from 'express-bearer-token';
+import compression from 'compression';
+import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
+import xss from 'xss-clean';
+import hpp from 'hpp';
+import cors from 'cors';
+import Morgan from './middlewares/morgan';
+// @ts-ignore
+import swaggerDocs from './utils/swagger/index';
+import handleAPIVersion from './middlewares/api_version_controll';
+import { COOKIE_SECRET, CURRENT_ENV } from './config/app_config';
+import cookieParser from 'cookie-parser';
+import routesVersioning from 'express-routes-versioning';
+import indexRouter from './routes/index';
 
 const app = express();
 
@@ -24,7 +26,7 @@ app.use(express.json());
 app.use(cookieParser(COOKIE_SECRET));
 
 // use morgan for logging
-app.use(morgan);
+app.use(Morgan);
 
 // Allow Cross-Origin requests
 app.use(cors());
@@ -68,7 +70,7 @@ app.use(handleAPIVersion);
 // handle bearer token
 app.use(bearerToken());
 
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
     res.status(200).json({
         status: 'success',
         message: 'Welcome to the backend app',
@@ -79,8 +81,8 @@ app.get('/', (req, res) => {
 // routes
 app.use(
     `/api`,
-    routesVersioning({
-        '1.0.0': require('./routes/index'),
+    routesVersioning()({
+        '1.0.0': indexRouter,
     })
 );
 
@@ -88,11 +90,11 @@ app.use(
 swaggerDocs(app);
 
 // handle undefined Routes
-app.use('*', (req, res, next) => {
+app.use('*', (req: Request, res: Response, next: NextFunction) => {
     const err = new AppError(404, 'fail', 'Route Not Found', req.originalUrl);
-    next(err, req, res, next);
+    next(err);
 });
 
 app.use(globalErrHandler);
 
-module.exports = app;
+export default app;

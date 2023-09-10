@@ -6,7 +6,7 @@ export default class AppError extends Error {
         statusCode: Number,
         status: string,
         message: string,
-        path = false
+        path: any = false
     ) {
         super(message);
         this.statusCode = statusCode;

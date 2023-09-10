@@ -138,8 +138,10 @@ export const getAll =
     (Model: Model<any>) =>
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            // const s = req.body.search;
-            const features = new APIFeatures(Model.find(), req.query)
+            const features = new APIFeatures(
+                Model.find(),
+                req.query as Record<string, string>
+            )
                 .sort()
                 .paginate();
 

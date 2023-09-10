@@ -3,6 +3,7 @@ import User, { IUser } from '../../models/user/user_model';
 import * as base from '../base_controller';
 import AppError from '../../utils/app_error';
 import sanitizeRequestBody from '../../utils/sanitize_request_body';
+import { Model } from 'mongoose';
 
 export const getMe = (req: Request, res: Response) => {
     // return data of the current user
@@ -71,7 +72,10 @@ export const updateMe = async (
         });
 
         // validate the request body
-        const sanitizedBody = sanitizeRequestBody(User.schema, filteredBody);
+        const sanitizedBody = sanitizeRequestBody(
+            User as unknown as Model<any>,
+            filteredBody
+        );
 
         // 3) Update user document
         // @ts-ignore

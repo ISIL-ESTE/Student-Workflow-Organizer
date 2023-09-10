@@ -1,5 +1,6 @@
 import Actions from '../../../constants/actions';
 import Role from '../role/role';
+import logger from '@utils/logger';
 
 interface RoleType {
     type: string;
@@ -45,12 +46,12 @@ const createRoles = async (): Promise<void> => {
             admin.restrictions
         );
         await Role.createRole(user.type, user.authorities, user.restrictions);
-        global.Logger.info(
+        logger.info(
             `[ ${superAdmin.type}, ${admin.type}, ${user.type} ] ROLES CREATED!`
         );
-        // Logger.warn(await role.getRoles());
+        // logger.warn(await role.getRoles());
     } catch (err) {
-        global.Logger.error(err.stack);
+        logger.error(err.stack);
     }
 };
 export default createRoles;

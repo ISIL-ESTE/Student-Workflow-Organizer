@@ -1,4 +1,5 @@
 const swaggerUi = require('swagger-ui-express');
+import logger from '@utils/logger';
 const { PORT, CURRENT_ENV } = require('../../config/app_config');
 const path = require('path');
 const YAML = require('yamljs');
@@ -47,7 +48,7 @@ const swaggerDocs = (app) => {
         res.setHeader('Content-Type', 'application/json');
         res.send(swaggerSpec);
     });
-    global.Logger.info(`Swagger available at /docs  /docs-json`);
+    logger.info(`Swagger available at /docs  /docs-json`);
 };
 
 module.exports = swaggerDocs;

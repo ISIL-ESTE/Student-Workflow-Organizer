@@ -1,9 +1,11 @@
 import { Document, Query } from 'mongoose'; // Import appropriate types for your use case
 
 class APIFeatures<T extends Document> {
+    query: Query<T[], T, {}, T, 'find'>;
+    queryString: Record<string, string | string[]>;
     constructor(
-        private query: Query<T[], T>,
-        private queryString: Record<string, string | string[]>
+        query: Query<T[], T>,
+        queryString: Record<string, string | string[]>
     ) {
         this.query = query;
         this.queryString = queryString;

@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import httpStatus from 'http-status-codes';
 import { CURRENT_ENV } from '../config/app_config';
 import AppError from '../utils/app_error';
-import '../utils/logger';
 
 /**
  * Error handling middleware
