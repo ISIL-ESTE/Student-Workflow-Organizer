@@ -13,16 +13,14 @@ export const addAdmin = async (
         const Roles = await Role.getRoles();
         const { userId } = req.params;
         const user = await USER.findById(userId);
-        if (!user)
-            throw new AppError(404, 'fail', 'No user found with this id');
+        if (!user) throw new AppError(404, 'No user found with this id');
         if (!Roles.ADMIN)
             throw new AppError(
                 500,
-                'fail',
                 'Error in base roles, please contact an admin'
             );
         if (user.roles?.includes(Roles.ADMIN.type))
-            throw new AppError(400, 'fail', 'User is already an admin');
+            throw new AppError(400, 'User is already an admin');
         user.roles?.push(Roles.ADMIN.type);
         const existingAuthorities = user.authorities;
         const existingRestrictions = user.restrictions;
@@ -52,24 +50,18 @@ export const removeAdmin = async (
         const Roles = await Role.getRoles();
         const { userId } = req.params;
         const user = await USER.findById(userId);
-        if (!user)
-            throw new AppError(404, 'fail', 'No user found with this id');
+        if (!user) throw new AppError(404, 'No user found with this id');
         // @ts-ignore
         if (!Roles.ADMIN || !Roles.USER)
             throw new AppError(
                 500,
-                'fail',
                 'Error in base roles, please contact an admin'
             );
         // @ts-ignore
         if (req.user._id?.toString() === userId?.toString())
-            throw new AppError(
-                400,
-                'fail',
-                'You cannot remove yourself as an admin'
-            );
+            throw new AppError(400, 'You cannot remove yourself as an admin');
         if (!user.roles?.includes(Roles.ADMIN.type))
-            throw new AppError(400, 'fail', 'User is not an admin');
+            throw new AppError(400, 'User is not an admin');
         // @ts-ignore
         user.roles = user.roles.filter((role) => role !== Roles.ADMIN.type);
         // @ts-ignore
@@ -94,18 +86,13 @@ export const addSuperAdmin = async (
         const Roles = await Role.getRoles();
         const { userId } = req.params;
         const user = await USER.findById(userId);
-        if (!user)
-            throw new AppError(404, 'fail', 'No user found with this id');
+        if (!user) throw new AppError(404, 'No user found with this id');
         // @ts-ignore
         if (req.user._id?.toString() === userId?.toString())
-            throw new AppError(
-                400,
-                'fail',
-                'You cannot make yourself a super admin'
-            );
+            throw new AppError(400, 'You cannot make yourself a super admin');
         // @ts-ignore
         if (user.roles?.includes(Roles.SUPER_ADMIN.type))
-            throw new AppError(400, 'fail', 'User is already a super admin');
+            throw new AppError(400, 'User is already a super admin');
         // @ts-ignore
         user.roles?.push(Roles.SUPER_ADMIN.type);
         const existingRestrictions = user.restrictions;
@@ -137,18 +124,16 @@ export const removeSuperAdmin = async (
     try {
         const Roles = await Role.getRoles();
         const user = await USER.findById(userId);
-        if (!user)
-            throw new AppError(404, 'fail', 'No user found with this id');
+        if (!user) throw new AppError(404, 'No user found with this id');
         // @ts-ignore
         if (req.user._id?.toString() === userId?.toString())
             throw new AppError(
                 400,
-                'fail',
                 'You cannot remove yourself as a super admin'
             );
         // @ts-ignore
         if (!user.roles?.includes(Roles.SUPER_ADMIN.type))
-            throw new AppError(400, 'fail', 'User is not a super admin');
+            throw new AppError(400, 'User is not a super admin');
         user.roles = user.roles.filter(
             // @ts-ignore
             (role) => role !== Roles.SUPER_ADMIN.type
@@ -177,28 +162,24 @@ export const authorizeOrRestrict = async (
         if (!validateActions(authorities))
             throw new AppError(
                 400,
-                'fail',
                 'One or many actions are invalid in the authorities array'
             );
         if (!validateActions(restrictions))
             throw new AppError(
                 400,
-                'fail',
                 'One or many actions are invalid in the restrictions array'
             );
         // @ts-ignore
         if (req.user._id?.toString() === userId?.toString())
             throw new AppError(
                 400,
-                'fail',
                 'You cannot change your own authorities or restrictions'
             );
         const user = await USER.findById(userId);
-        if (!user)
-            throw new AppError(404, 'fail', 'No user found with this id');
+        if (!user) throw new AppError(404, 'No user found with this id');
         // if the user is a super admin, he can't be restricted
         if (user.roles?.includes('SUPER_ADMIN'))
-            throw new AppError(400, 'fail', 'User is a super admin');
+            throw new AppError(400, 'User is a super admin');
         const existingAuthorities = user.authorities;
         const existingRestrictions = user.restrictions;
         user.authorities = Array.from(
@@ -225,19 +206,18 @@ export const banUser = async (
     try {
         const Roles = await Role.getRoles();
         const user = await USER.findById(userId);
-        if (!user)
-            throw new AppError(404, 'fail', 'No user found with this id');
+        if (!user) throw new AppError(404, 'No user found with this id');
         // @ts-ignore
         if (req.user._id?.toString() === userId?.toString())
-            throw new AppError(400, 'fail', 'You cannot ban yourself');
+            throw new AppError(400, 'You cannot ban yourself');
         if (user.accessRestricted)
-            throw new AppError(400, 'fail', 'User is already banned');
+            throw new AppError(400, 'User is already banned');
         // @ts-ignore
         if (user.roles?.includes(Roles.SUPER_ADMIN.type))
-            throw new AppError(400, 'fail', 'You cannot ban a super admin');
+            throw new AppError(400, 'You cannot ban a super admin');
         // @ts-ignore
         if (user.roles?.includes(Roles.ADMIN.type))
-            throw new AppError(400, 'fail', 'You cannot ban an admin');
+            throw new AppError(400, 'You cannot ban an admin');
         user.accessRestricted = true;
         await user.save();
         res.status(200).json({
@@ -256,13 +236,12 @@ export const unbanUser = async (
     const { userId } = req.params;
     try {
         const user = await USER.findById(userId);
-        if (!user)
-            throw new AppError(404, 'fail', 'No user found with this id');
+        if (!user) throw new AppError(404, 'No user found with this id');
         // @ts-ignore
         if (req.user._id?.toString() === userId?.toString())
-            throw new AppError(400, 'fail', 'You cannot unban yourself');
+            throw new AppError(400, 'You cannot unban yourself');
         if (!user.accessRestricted)
-            throw new AppError(400, 'fail', 'User is not banned');
+            throw new AppError(400, 'User is not banned');
         user.accessRestricted = false;
         await user.save();
         res.status(200).json({
@@ -281,7 +260,7 @@ export const createRole = async (
     const { name, authorities, restrictions } = req.body;
     try {
         if (await Role.getRoleByName(name))
-            throw new AppError(400, 'fail', 'Role already exists');
+            throw new AppError(400, 'Role already exists');
         const createdRole = await Role.createRole(
             name,
             authorities,
@@ -377,13 +356,11 @@ export const assignRoleToUser = async (
     try {
         const user = await USER.findById(userId);
         const role = await Role.getRoleByName(name as string);
-        if (!user)
-            throw new AppError(404, 'fail', 'No user found with this id');
-        if (!role)
-            throw new AppError(404, 'fail', 'No role found with this name');
+        if (!user) throw new AppError(404, 'No user found with this id');
+        if (!role) throw new AppError(404, 'No role found with this name');
         // @ts-ignore
         if (user.roles.includes(role.type))
-            throw new AppError(400, 'fail', 'User already has this role');
+            throw new AppError(400, 'User already has this role');
         user.roles.push(role.type);
         // @ts-ignore
         user.authorities = Array.from(
@@ -410,13 +387,11 @@ export const removeRoleFromUser = async (
     const { userId, name } = req.params;
     try {
         const role = await Role.getRoleByName(name as string);
-        if (!role)
-            throw new AppError(404, 'fail', 'No role found with this name');
+        if (!role) throw new AppError(404, 'No role found with this name');
         const user = await USER.findById(userId);
-        if (!user)
-            throw new AppError(404, 'fail', 'No user found with this id');
+        if (!user) throw new AppError(404, 'No user found with this id');
         if (!user.roles.includes(role.type))
-            throw new AppError(400, 'fail', 'User does not have this role');
+            throw new AppError(400, 'User does not have this role');
         user.roles = user.roles.filter((_role) => _role !== role.type);
         user.authorities = user.authorities.filter(
             (authority) => !role.authorities.includes(authority)

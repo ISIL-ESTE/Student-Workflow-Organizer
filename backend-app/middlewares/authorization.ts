@@ -27,7 +27,6 @@ export const restrictTo =
                 next(
                     new AppError(
                         403,
-                        'fail',
                         'You are restricted from performing this action, contact the admin for more information'
                     )
                 );
@@ -36,7 +35,6 @@ export const restrictTo =
             next(
                 new AppError(
                     403,
-                    'fail',
                     'You do not have permission to perform this action'
                 )
             );

@@ -91,7 +91,7 @@ swaggerDocs(app);
 
 // handle undefined Routes
 app.use('*', (req: Request, res: Response, next: NextFunction) => {
-    const err = new AppError(404, 'fail', 'Route Not Found', req.originalUrl);
+    const err = new AppError(404, 'Route Not Found', req.originalUrl);
     next(err);
 });
 

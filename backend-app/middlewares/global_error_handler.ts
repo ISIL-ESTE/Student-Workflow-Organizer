@@ -37,7 +37,7 @@ const errorHandler = (
 
     // Handle validation errors
     if ((err as any).name === 'ValidationError') {
-        err = new AppError(400, 'fail', (err as any).message);
+        err = new AppError(400, (err as any).message);
     }
 
     // Determine the description based on error status code and environment

@@ -25,7 +25,7 @@ exports.getGithubOAuthToken = async (code) => {
 
         return decoded;
     } catch (err) {
-        throw new AppError(400, 'fail', 'Invalid code');
+        throw new AppError(400, 'Invalid code');
     }
 };
 exports.getGithubOAuthUser = async (access_token) => {
@@ -38,7 +38,7 @@ exports.getGithubOAuthUser = async (access_token) => {
 
         return data;
     } catch (err) {
-        throw new AppError(400, 'fail', 'Invalid access token');
+        throw new AppError(400, 'Invalid access token');
     }
 };
 exports.getGithubOAuthUserPrimaryEmail = async (access_token) => {
@@ -51,6 +51,6 @@ exports.getGithubOAuthUserPrimaryEmail = async (access_token) => {
         const primaryEmail = data.find((email) => email.primary === true);
         return primaryEmail.email;
     } catch (err) {
-        throw new AppError(400, 'fail', 'Invalid access token');
+        throw new AppError(400, 'Invalid access token');
     }
 };

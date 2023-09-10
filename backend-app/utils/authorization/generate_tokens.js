@@ -18,14 +18,12 @@ const generateTokens = (id) => {
         if (!accessToken || !refreshToken)
             throw new AppError(
                 500,
-                'fail',
                 'Something went wrong. Please try again later.'
             );
         return { accessToken, refreshToken };
     } catch (err) {
         throw new AppError(
             500,
-            'fail',
             'Something went wrong. Please try again later.'
         );
     }

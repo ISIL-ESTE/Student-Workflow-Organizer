@@ -25,19 +25,18 @@ class AuthUtils {
         try {
             return await promisify(jwt.verify)(token, ACCESS_TOKEN_SECRET);
         } catch (error) {
-            throw new AppError(401, 'fail', 'Invalid token');
+            throw new AppError(401, 'Invalid token');
         }
     }
     static async verifyRefreshToken(token) {
         try {
             return await promisify(jwt.verify)(token, REFRESH_TOKEN_SECRET);
         } catch (error) {
-            throw new AppError(401, 'fail', 'Invalid token');
+            throw new AppError(401, 'Invalid token');
         }
     }
     static setAccessTokenCookie(res, accessToken) {
         res.cookie('access_token', accessToken, {
-            httpOnly: true,
             secure: true,
             sameSite: 'strict',
             maxAge: ACCESS_TOKEN_COOKIE_EXPIRY_TIME,

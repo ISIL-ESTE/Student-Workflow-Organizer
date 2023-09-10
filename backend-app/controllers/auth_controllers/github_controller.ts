@@ -53,7 +53,7 @@ export const getRecentRepo = async (
             })
         );
         if (mappedUserRepositories.length <= 0) {
-            throw new AppError(400, 'fail', 'No repositories found');
+            throw new AppError(400, 'No repositories found');
         }
 
         const sortedRepository = mappedUserRepositories.sort(

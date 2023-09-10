@@ -30,7 +30,7 @@ export const deleteOne =
 
             if (!doc) {
                 return next(
-                    new AppError(404, 'fail', 'No document found with that id')
+                    new AppError(404, 'No document found with that id')
                 );
             }
 
@@ -61,7 +61,7 @@ export const updateOne =
 
             if (!doc) {
                 return next(
-                    new AppError(404, 'fail', 'No document found with that id')
+                    new AppError(404, 'No document found with that id')
                 );
             }
 
@@ -87,7 +87,6 @@ export const createOne =
                 return next(
                     new AppError(
                         401,
-                        'fail',
                         'You are not authorized to perform this action'
                     )
                 );
@@ -117,7 +116,7 @@ export const getOne =
 
             if (!doc) {
                 return next(
-                    new AppError(404, 'fail', 'No document found with that id')
+                    new AppError(404, 'No document found with that id')
                 );
             }
 

@@ -18,7 +18,7 @@ export const updateCalendar = async (
         !req.user.roles.includes('SUPER_ADMIN')
     ) {
         return next(
-            new AppError('You are not allowed to update this calendar', 403)
+            new AppError(403, 'You are not allowed to update this calendar')
         );
     }
     // TODO: update calendar
@@ -38,7 +38,7 @@ export const deleteCalendar = async (
         !req.user.roles.includes('SUPER_ADMIN')
     ) {
         return next(
-            new AppError('You are not allowed to delete this calendar', 403)
+            new AppError(403, 'You are not allowed to delete this calendar')
         );
     }
     // TODO: delete calendar

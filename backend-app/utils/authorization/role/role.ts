@@ -10,7 +10,7 @@ interface RoleData {
 
 function isRoleName(roleName: any): void {
     if (!roleName || typeof roleName !== 'string')
-        throw new AppError(400, 'fail', 'Invalid role name!');
+        throw new AppError(400, 'Invalid role name!');
 }
 
 /**
@@ -54,12 +54,12 @@ async function getRoleByName(roleName: string): Promise<RoleData | null> {
 async function deleteRoleByName(roleName: string): Promise<RoleData> {
     isRoleName(roleName);
     const role = await getRoleByName(roleName);
-    if (!role) throw new AppError(404, 'fail', 'Role not found!');
+    if (!role) throw new AppError(404, 'Role not found!');
     const deletedRole = await roleModel.findOneAndDelete(
         { name: roleName },
         { new: true }
     );
-    if (!deletedRole) throw new AppError(404, 'fail', 'Role not found!');
+    if (!deletedRole) throw new AppError(404, 'Role not found!');
     return {
         type: deletedRole.name,
         authorities: deletedRole.authorities,
@@ -81,20 +81,16 @@ async function createRole(
 ): Promise<RoleData> {
     isRoleName(roleName);
     if (await getRoleByName(roleName))
-        throw new AppError(400, 'fail', 'Role already exists');
+        throw new AppError(400, 'Role already exists');
     authorities.forEach((authority) => {
         // @ts-ignore
         if (!Object.values(Actions).includes(authority))
-            throw new AppError(400, 'fail', `Invalid authority ${authority}`);
+            throw new AppError(400, `Invalid authority ${authority}`);
     });
     restrictions.forEach((restriction) => {
         // @ts-ignore
         if (!Object.values(Actions).includes(restriction))
-            throw new AppError(
-                400,
-                'fail',
-                `Invalid restriction ${restriction}`
-            );
+            throw new AppError(400, `Invalid restriction ${restriction}`);
     });
     const role = await roleModel.create({
         name: roleName,
@@ -131,19 +127,15 @@ async function updateRoleByName(
     authorities.forEach((authority) => {
         // @ts-ignore
         if (!Object.values(Actions).includes(authority))
-            throw new AppError(400, 'fail', `Invalid authority ${authority}`);
+            throw new AppError(400, `Invalid authority ${authority}`);
     });
     restrictions.forEach((restriction) => {
         // @ts-ignore
         if (!Object.values(Actions).includes(restriction))
-            throw new AppError(
-                400,
-                'fail',
-                `Invalid restriction ${restriction}`
-            );
+            throw new AppError(400, `Invalid restriction ${restriction}`);
     });
     const exists = await getRoleByName(roleName);
-    if (!exists) throw new AppError(404, 'fail', 'Role does not exist');
+    if (!exists) throw new AppError(404, 'Role does not exist');
 
     const updatedRole = await roleModel.findOneAndUpdate(
         {
@@ -158,7 +150,7 @@ async function updateRoleByName(
             ),
         }
     );
-    if (!updatedRole) throw new AppError(404, 'fail', 'Role not found!');
+    if (!updatedRole) throw new AppError(404, 'Role not found!');
     return {
         type: updatedRole.name,
         authorities: updatedRole.authorities,

@@ -47,7 +47,6 @@ export const updateMe = async (
             return next(
                 new AppError(
                     400,
-                    'fail',
                     'This route is not for password updates. Please use /updateMyPassword'
                 )
             );
@@ -57,7 +56,6 @@ export const updateMe = async (
             return next(
                 new AppError(
                     400,
-                    'fail',
                     'This route is not for role updates. Please use /updateRole'
                 )
             );
@@ -84,9 +82,7 @@ export const updateMe = async (
             runValidators: true,
         });
         if (!doc) {
-            return next(
-                new AppError(404, 'fail', 'No document found with that id')
-            );
+            return next(new AppError(404, 'No document found with that id'));
         }
 
         res.status(200).json({
