@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import User, { IUser } from '../../models/user/user_model';
+import User, { IUser } from '@models/user/user_model';
 import * as base from '../base_controller';
-import AppError from '../../utils/app_error';
-import sanitizeRequestBody from '../../utils/sanitize_request_body';
+import AppError from '@utils/app_error';
+import sanitizeRequestBody from '@utils/sanitize_request_body';
 import { Model } from 'mongoose';
 
 export const getMe = (req: Request, res: Response) => {

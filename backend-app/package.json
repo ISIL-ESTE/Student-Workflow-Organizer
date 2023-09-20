@@ -9,11 +9,13 @@
         "prod": "node server.ts NODE_ENV=PRODUCTION",
         "start": "ts-node-dev server.ts",
         "test": "jest --detectOpenHandles",
-        "prepare": "cd .. && husky install"
+        "prepare": "cd .. && husky install",
+        "seed": "ts-node-dev ./seeds/m.js"
     },
     "author": "Bella Abdelouahab",
     "license": "ISC",
     "dependencies": {
+        "@inquirer/prompts": "3.1.1",
         "@typegoose/typegoose": "11.5.0",
         "@types/compression": "1.7.3",
         "@types/express-routes-versioning": "1.0.1",

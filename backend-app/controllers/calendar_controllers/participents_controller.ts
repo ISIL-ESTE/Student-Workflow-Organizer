@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import AppError from '../../utils/app_error';
+import AppError from '@utils/app_error';
 import validator from 'validator';
 import * as calendar_validators from './calendar_validators';
 import { ObjectId } from 'mongoose';
@@ -15,17 +15,17 @@ export const inviteUsersByEmail = async (req: Request, res: Response) => {
         // check if user is a participant and the calendar is shareable
         if (!calendar.participants.includes(userid))
             throw new AppError(
-                'You do not have permission to invite users to this calendar',
-                403
+                403,
+                'You do not have permission to invite users to this calendar'
             );
         if (!calendar.isShareAble) {
-            throw new AppError('This calendar is not shareable', 403);
+            throw new AppError(403, 'This calendar is not shareable');
         }
     }
     // get emails from request body
     const emails = req.body.emails;
     if (!emails) {
-        throw new AppError('Emails are required', 400);
+        throw new AppError(400, 'Emails are required');
     }
     // check if emails are valid
     const validEmails: string[] = [];
@@ -55,7 +55,7 @@ export const removeCalendarParticipants = async (
     // check if user is the calendar owner
     // @ts-ignore
     if (calendar.owner.toString() === !userid.toString()) {
-        throw new AppError('You are not the owner of this calendar', 403);
+        throw new AppError(403, 'You are not the owner of this calendar');
     }
     // get list of participants to remove from calendar
     const listOfParticipants: string[] = req.body.participants;

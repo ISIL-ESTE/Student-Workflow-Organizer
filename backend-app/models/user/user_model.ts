@@ -1,8 +1,8 @@
 import mongoose, { Document, Model, Schema } from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcrypt';
-import Actions from '../../constants/actions';
-import metaData from '../../constants/meta_data';
+import Actions from '@constants/actions';
+import metaData from '@constants/meta_data';
 import { randomBytes, createHash } from 'crypto';
 
 export interface IUser extends Document {

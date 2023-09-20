@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import AppError from '../../utils/app_error';
+import AppError from '@utils/app_error';
 import * as calendar_validators from './calendar_validators';
 
 export const updateCalendar = async (

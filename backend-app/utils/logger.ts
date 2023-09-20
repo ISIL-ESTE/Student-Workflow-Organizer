@@ -3,7 +3,7 @@
  */
 import { createLogger, transports } from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
-import { fileOptions, consoleOptions } from '../config/logger_config';
+import { fileOptions, consoleOptions } from '@config/logger_config';
 
 // Define the transport for the logger
 const consoleTransport = new transports.Console(consoleOptions);

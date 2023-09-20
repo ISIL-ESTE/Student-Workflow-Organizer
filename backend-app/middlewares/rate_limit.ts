@@ -1,5 +1,5 @@
 import rateLimit from 'express-rate-limit';
-import { RATE_LIMIT_PER_HOUR } from '../config/app_config';
+import { RATE_LIMIT_PER_HOUR } from '@config/app_config';
 
 export default rateLimit({
     // @ts-ignore

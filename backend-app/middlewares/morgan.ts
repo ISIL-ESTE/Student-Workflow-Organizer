@@ -3,7 +3,7 @@
  */
 import morgan from 'morgan';
 import logger from '@utils/logger';
-import { CURRENT_ENV } from '../config/app_config';
+import { CURRENT_ENV } from '@config/app_config';
 
 // Create a stream object with a 'write' function that will be used by `morgan`
 const stream = {

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Request, Response, NextFunction } from 'express';
-import AppError from '../../utils/app_error';
+import AppError from '@utils/app_error';
 
 interface Repository {
     id: number;

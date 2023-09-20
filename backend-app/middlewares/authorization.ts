@@ -1,4 +1,4 @@
-import AppError from '../utils/app_error';
+import AppError from '@utils/app_error';
 import { Request, Response, NextFunction } from 'express';
 
 interface User {

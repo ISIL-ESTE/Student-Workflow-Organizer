@@ -4,7 +4,7 @@ import { promisify } from 'util';
 import validator from 'validator';
 import AppError from '@utils/app_error';
 import Role from '@utils/authorization/role/role';
-import { REQUIRE_ACTIVATION } from '../../config/app_config';
+import { REQUIRE_ACTIVATION } from '@config/app_config';
 import {
     getGithubOAuthUser,
     getGithubOAuthToken,
@@ -83,6 +83,7 @@ export const githubHandler = async (
 };
 
 function validateCredentialsTypes(email: string, password: string) {
+    // TODO: impllement joi to validate url params ( only if it's compatible with swagger )
     if (!email || !password) {
         throw new AppError(404, 'Please provide email or password');
     }
