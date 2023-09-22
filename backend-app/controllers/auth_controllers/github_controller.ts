@@ -1,31 +1,12 @@
 import axios from 'axios';
-import { Request, Response, NextFunction } from 'express';
+import Repository from '@interfaces/github_repo';
 import AppError from '@utils/app_error';
+import { INext, IReq, IRes } from '@interfaces/vendors';
 
-interface Repository {
-    id: number;
-    name: string;
-    full_name: string;
-    description: string;
-    isFork: boolean;
-    language: string;
-    license: string | null;
-    openedIssuesCount: number;
-    repoCreatedAt: string;
-    url: string;
-}
-
-interface UserRequest extends Request {
-    user: {
-        githubOauthAccessToken: string;
-    };
-}
-
-export const getRecentRepo = async (
-    req: UserRequest,
-    res: Response,
-    next: NextFunction
-) => {
+export const getRecentRepo = async (req: IReq, res: IRes, next: INext) => {
+    if (!req.user) {
+        return next(new AppError(401, 'You are not logged in'));
+    }
     const { githubOauthAccessToken } = req.user;
     try {
         const userRepositories = await axios.get(

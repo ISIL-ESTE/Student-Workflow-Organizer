@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
+import { IReq, IRes, INext } from '@interfaces/vendors';
 import { promisify } from 'util';
 import validator from 'validator';
 import AppError from '@utils/app_error';
@@ -20,11 +20,7 @@ const generateActivationKey = async () => {
     return activationKey;
 };
 
-export const githubHandler = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const githubHandler = async (req: IReq, res: IRes, next: INext) => {
     try {
         const Roles = await Role.getRoles();
         // check if user role exists
@@ -98,15 +94,8 @@ function validateCredentialsTypes(email: string, password: string) {
     }
 }
 
-export const login = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const login = async (req: IReq, res: IRes, next: INext) => {
     try {
-        if (!req.body.nameo)
-            throw new AppError(400, 'Please login to continue');
-
         const { email, password } = req.body;
 
         // 1) check if email and password existos
@@ -152,11 +141,7 @@ export const login = async (
     }
 };
 
-export const signup = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const signup = async (req: IReq, res: IRes, next: INext) => {
     try {
         const activationKey = await generateActivationKey();
         const Roles = await Role.getRoles();
@@ -198,11 +183,7 @@ export const signup = async (
     }
 };
 
-export const tokenRefresh = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const tokenRefresh = async (req: IReq, res: IRes, next: INext) => {
     try {
         const refreshToken = searchCookies(req, 'refresh_token');
         if (!refreshToken)
@@ -221,11 +202,7 @@ export const tokenRefresh = async (
         next(err);
     }
 };
-export const logout = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const logout = async (req: IReq, res: IRes, next: INext) => {
     try {
         const accessToken = searchCookies(req, 'access_token');
         if (!accessToken)
@@ -245,11 +222,7 @@ interface ActivationParams {
     activationKey: string;
 }
 
-export const activateAccount = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const activateAccount = async (req: IReq, res: IRes, next: INext) => {
     try {
         const { id, activationKey } = req.query as unknown as ActivationParams;
 
@@ -295,11 +268,7 @@ export const activateAccount = async (
     }
 };
 
-export const protect = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const protect = async (req: IReq, res: IRes, next: INext) => {
     try {
         // @ts-ignore
         const accessToken = searchCookies(req, 'access_token') || req.token;
@@ -350,7 +319,7 @@ export const protect = async (
 // Authorization check if the user have rights to do this action
 export const restrictTo =
     (...roles: string[]) =>
-    (req: Request, res: Response, next: NextFunction) => {
+    (req: IReq, res: IRes, next: INext) => {
         // @ts-ignore
         if (!req.user) {
             return next(new AppError(401, 'Please login to continue'));

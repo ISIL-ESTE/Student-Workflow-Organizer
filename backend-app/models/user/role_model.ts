@@ -1,17 +1,7 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import Actions from '@constants/actions';
 import validator from 'validator';
-
-export interface IRole extends Document {
-    name: string;
-    authorities: string[];
-    restrictions: string[];
-    deleted: boolean;
-    deletedBy?: string;
-    deletedAt?: Date;
-    createdBy?: string;
-    updatedBy?: string;
-}
+import { IRole } from '@interfaces/models/i_role';
 
 const roleSchema: Schema = new Schema<IRole>(
     {

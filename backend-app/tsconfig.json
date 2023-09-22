@@ -22,7 +22,8 @@
             "@models/*": ["./models/*"],
             "@controllers/*": ["./controllers/*"],
             "@middlewares/*": ["./middlewares/*"],
-            "@constants/*": ["./constants/*"]
+            "@constants/*": ["./constants/*"],
+            "@interfaces/*": ["./interfaces/*"]
         }
     },
     "include": ["**/*.ts", "**/*.js"],

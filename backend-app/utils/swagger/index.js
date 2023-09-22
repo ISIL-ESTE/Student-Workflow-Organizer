@@ -29,6 +29,7 @@ const swaggerUiOptions = {
         showCommonExtensions: true,
         layout: 'BaseLayout',
         deepLinking: true,
+        files: ['@routes/**/*.{js,ts}'],
     },
 };
 /**

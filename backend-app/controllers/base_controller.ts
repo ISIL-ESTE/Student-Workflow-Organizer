@@ -1,13 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction } from 'express';
 import { Model } from 'mongoose';
 import AppError from '@utils/app_error';
 import APIFeatures from '@utils/api_features';
-
-interface RequestWithUser extends Request {
-    user?: {
-        _id: string;
-    };
-}
+import { IReq, IRes } from '@interfaces/vendors';
 
 /**
  * Delete a document by ID (soft delete)
@@ -16,7 +11,7 @@ interface RequestWithUser extends Request {
  */
 export const deleteOne =
     (Model: Model<any>): Function =>
-    async (req: RequestWithUser, res: Response, next: NextFunction) => {
+    async (req: IReq, res: IRes, next: NextFunction): Promise<void> => {
         try {
             const doc = await Model.findByIdAndUpdate(
                 req.params.id,
@@ -49,7 +44,7 @@ export const deleteOne =
  */
 export const updateOne =
     (Model: Model<any>): Function =>
-    async (req: RequestWithUser, res: Response, next: NextFunction) => {
+    async (req: IReq, res: IRes, next: NextFunction) => {
         try {
             // get the user who is updating the document
             const userid = req.user?._id;
@@ -79,8 +74,7 @@ export const updateOne =
  * @returns {Function} - Express middleware function
  */
 export const createOne =
-    (Model: Model<any>) =>
-    async (req: RequestWithUser, res: Response, next: NextFunction) => {
+    (Model: Model<any>) => async (req: IReq, res: IRes, next: NextFunction) => {
         try {
             // get the user who is creating the document
             if (req.user === undefined) {
@@ -109,8 +103,7 @@ export const createOne =
  * @returns {Function} - Express middleware function
  */
 export const getOne =
-    (Model: Model<any>) =>
-    async (req: Request, res: Response, next: NextFunction) => {
+    (Model: Model<any>) => async (req: IReq, res: IRes, next: NextFunction) => {
         try {
             const doc = await Model.findById(req.params.id);
 
@@ -134,8 +127,7 @@ export const getOne =
  * @returns {Function} - Express middleware function
  */
 export const getAll =
-    (Model: Model<any>) =>
-    async (req: Request, res: Response, next: NextFunction) => {
+    (Model: Model<any>) => async (req: IReq, res: IRes, next: NextFunction) => {
         try {
             const features = new APIFeatures(
                 Model.find(),

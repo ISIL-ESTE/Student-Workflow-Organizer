@@ -1,11 +1,13 @@
-import { Request, Response, NextFunction } from 'express';
-import User, { IUser } from '@models/user/user_model';
+import { NextFunction } from 'express';
+import { IUser } from '@interfaces/models/i_user';
+import User from '@models/user/user_model';
 import * as base from '../base_controller';
 import AppError from '@utils/app_error';
 import sanitizeRequestBody from '@utils/sanitize_request_body';
 import { Model } from 'mongoose';
+import { IReq, IRes } from '@interfaces/vendors';
 
-export const getMe = (req: Request, res: Response) => {
+export const getMe = (req: IReq, res: IRes) => {
     // return data of the current user
     res.status(200).json({
         status: 'success',
@@ -14,11 +16,7 @@ export const getMe = (req: Request, res: Response) => {
     });
 };
 
-export const deleteMe = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const deleteMe = async (req: IReq, res: IRes, next: NextFunction) => {
     try {
         // @ts-ignore
         await User.findByIdAndUpdate(req.user.id, {
@@ -36,11 +34,7 @@ export const deleteMe = async (
     }
 };
 
-export const updateMe = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const updateMe = async (req: IReq, res: IRes, next: NextFunction) => {
     try {
         // 1) Create error if user POSTs password data
         if (req.body.password || req.body.passwordConfirm) {

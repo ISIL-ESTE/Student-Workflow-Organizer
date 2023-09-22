@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import httpStatus from 'http-status-codes';
 import { CURRENT_ENV } from '@config/app_config';
 import AppError from '@utils/app_error';
+import logger from '@utils/logger';
 
 /**
  * Error handling middleware
@@ -53,6 +54,15 @@ const errorHandler = (
     } else {
         description = (err as any).message;
     }
+    // tsting :
+    const stackTrace = (err as any).stack?.split('at ');
+    const stackTraceObject = stackTrace?.reduce(
+        (acc: any, line: string, index: number) => {
+            acc[index + 1] = line;
+            return acc;
+        },
+        {}
+    );
 
     // Construct the response object
     const response = {
@@ -62,12 +72,14 @@ const errorHandler = (
             ...((err as any).path && { path: (err as any).path }),
             description,
             ...(CURRENT_ENV === 'development' && {
-                error:
-                    'Do not forget to remove this in production!\n' +
-                    (err as any).stack,
+                error: {
+                    '0': 'Do not forget to remove this in production!',
+                    ...stackTraceObject,
+                },
             }),
         },
     };
+    logger.debug((err as any).stack);
 
     // Send the response
     res.status((err as any).statusCode).json(response);

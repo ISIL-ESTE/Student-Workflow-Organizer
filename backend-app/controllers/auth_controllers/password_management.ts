@@ -1,15 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
+import { IReq, IRes, INext } from '@interfaces/vendors';
 import User from '@models/user/user_model';
 import logger from '@utils/logger';
 import AppError from '@utils/app_error';
 import generateTokens from '@utils/authorization/generate_tokens';
 import validator from 'validator';
 
-export const updatePassword = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const updatePassword = async (req: IReq, res: IRes, next: INext) => {
     try {
         const { email, resetKey, password } = req.body;
 
@@ -54,11 +50,7 @@ export const updatePassword = async (
     }
 };
 
-export const forgotPassword = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const forgotPassword = async (req: IReq, res: IRes, next: INext) => {
     try {
         const { email } = req.body;
 

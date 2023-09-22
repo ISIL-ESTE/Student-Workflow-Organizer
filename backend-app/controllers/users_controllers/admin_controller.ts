@@ -1,14 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { IReq, IRes, INext } from '@interfaces/vendors';
 import USER from '@models/user/user_model';
 import Role from '@utils/authorization/role/role';
 import AppError from '@utils/app_error';
 import validateActions from '@utils/authorization/validate_actions';
 
-export const addAdmin = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const addAdmin = async (req: IReq, res: IRes, next: INext) => {
     try {
         const Roles = await Role.getRoles();
         const { userId } = req.params;
@@ -41,11 +37,7 @@ export const addAdmin = async (
     }
 };
 
-export const removeAdmin = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const removeAdmin = async (req: IReq, res: IRes, next: INext) => {
     try {
         const Roles = await Role.getRoles();
         const { userId } = req.params;
@@ -77,11 +69,7 @@ export const removeAdmin = async (
     }
 };
 
-export const addSuperAdmin = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const addSuperAdmin = async (req: IReq, res: IRes, next: INext) => {
     try {
         const Roles = await Role.getRoles();
         const { userId } = req.params;
@@ -115,11 +103,7 @@ export const addSuperAdmin = async (
     }
 };
 
-export const removeSuperAdmin = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const removeSuperAdmin = async (req: IReq, res: IRes, next: INext) => {
     const { userId } = req.params;
     try {
         const Roles = await Role.getRoles();
@@ -152,9 +136,9 @@ export const removeSuperAdmin = async (
 };
 
 export const authorizeOrRestrict = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
+    req: IReq,
+    res: IRes,
+    next: INext
 ) => {
     try {
         const { authorities, restrictions } = req.body;
@@ -197,11 +181,7 @@ export const authorizeOrRestrict = async (
     }
 };
 
-export const banUser = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const banUser = async (req: IReq, res: IRes, next: INext) => {
     const { userId } = req.params;
     try {
         const Roles = await Role.getRoles();
@@ -228,11 +208,7 @@ export const banUser = async (
     }
 };
 
-export const unbanUser = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const unbanUser = async (req: IReq, res: IRes, next: INext) => {
     const { userId } = req.params;
     try {
         const user = await USER.findById(userId);
@@ -252,11 +228,7 @@ export const unbanUser = async (
     }
 };
 
-export const createRole = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const createRole = async (req: IReq, res: IRes, next: INext) => {
     const { name, authorities, restrictions } = req.body;
     try {
         if (await Role.getRoleByName(name))
@@ -275,11 +247,7 @@ export const createRole = async (
     }
 };
 
-export const getRoles = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const getRoles = async (req: IReq, res: IRes, next: INext) => {
     try {
         const roles = await Role.getRoles();
         res.status(200).json({
@@ -291,11 +259,7 @@ export const getRoles = async (
     }
 };
 
-export const getRole = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const getRole = async (req: IReq, res: IRes, next: INext) => {
     const { name } = req.params;
     try {
         const singleRole = await Role.getRoleByName(name as string);
@@ -308,11 +272,7 @@ export const getRole = async (
     }
 };
 
-export const deleteRole = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const deleteRole = async (req: IReq, res: IRes, next: INext) => {
     const { name } = req.params;
     try {
         const deletedRole = await Role.deleteRoleByName(name as string);
@@ -325,11 +285,7 @@ export const deleteRole = async (
     }
 };
 
-export const updateRole = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const updateRole = async (req: IReq, res: IRes, next: INext) => {
     const { name } = req.params;
     const { authorities, restrictions } = req.body;
     try {
@@ -347,11 +303,7 @@ export const updateRole = async (
     }
 };
 
-export const assignRoleToUser = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const assignRoleToUser = async (req: IReq, res: IRes, next: INext) => {
     const { userId, name } = req.params;
     try {
         const user = await USER.findById(userId);
@@ -379,11 +331,7 @@ export const assignRoleToUser = async (
     }
 };
 
-export const removeRoleFromUser = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const removeRoleFromUser = async (req: IReq, res: IRes, next: INext) => {
     const { userId, name } = req.params;
     try {
         const role = await Role.getRoleByName(name as string);
