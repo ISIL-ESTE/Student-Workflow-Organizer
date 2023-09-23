@@ -1,14 +1,14 @@
 import logger from '@utils/logger';
-const path = require('path');
-const fs = require('fs');
-const YAML = require('yamljs');
+import path from 'path';
+import fs from 'fs';
+import YAML from 'yamljs';
 
 /**
  * Merges all the YAML files in a directory
  * @param {String} directoryPath
  */
-const mergeYamlFiles = (directoryPath) => {
-    const mergedYamlObject = {};
+const mergeYamlFiles = (directoryPath: string): Record<string, unknown> => {
+    const mergedYamlObject: Record<string, unknown> = {};
     // check directory exists
     if (!fs.existsSync(directoryPath)) {
         logger.error(`Directory ${directoryPath} does not exist`);
@@ -26,4 +26,4 @@ const mergeYamlFiles = (directoryPath) => {
     return mergedYamlObject;
 };
 
-module.exports = mergeYamlFiles;
+export default mergeYamlFiles;

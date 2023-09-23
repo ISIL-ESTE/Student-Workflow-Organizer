@@ -1,5 +1,7 @@
-const swaggerAutogen = require('swagger-autogen');
-const logger = require('../logger');
+import swaggerAutogen from 'swagger-autogen';
+import logger from '../logger';
+import fs from 'fs';
+import jsYaml from 'js-yaml';
 
 const outputFile = './docs/swagger-output.json';
 
@@ -13,18 +15,17 @@ const options = {
  * @param {string} routePath path of route file
  * @returns {Promise<void>}
  * */
-const register = async (tag, routePath) => {
+const register = async (tag: string, routePath: string): Promise<void> => {
     await swaggerAutogen(options)(outputFile, [routePath]);
-    const fs = require('fs');
     const rawdata = fs.readFileSync(outputFile);
-    const s = JSON.parse(rawdata);
+    const s = JSON.parse(rawdata.toString());
     // to all request add tag tag
     for (const [key, value] of Object.entries(s.paths)) {
-        for (const [method, data] of Object.entries(value)) {
-            data.tags = [tag];
+        // @ts-ignore
+        for (const [, data] of Object.entries(value)) {
+            (data as any).tags = [tag];
         }
     }
-    const jsYaml = require('js-yaml');
     const yamlData = jsYaml.dump(s.paths);
     // save to swagger2.yaml
     fs.writeFileSync(`./docs/api_docs/${tag}.yaml`, yamlData);
@@ -32,4 +33,4 @@ const register = async (tag, routePath) => {
     logger.info(`Swagger docs for route [ ${tag} ] generated successfully`);
 };
 
-exports.register = register;
+export { register };

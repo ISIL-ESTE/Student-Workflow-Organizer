@@ -1,9 +1,11 @@
-const swaggerUi = require('swagger-ui-express');
+import swaggerUi from 'swagger-ui-express';
 import logger from '@utils/logger';
-const { PORT, CURRENT_ENV } = require('../../config/app_config');
-const path = require('path');
-const YAML = require('yamljs');
-const mergeYamlFiles = require('./merge_yaml_files');
+import { PORT, CURRENT_ENV } from '../../config/app_config';
+import path from 'path';
+import YAML from 'yamljs';
+import mergeYamlFiles from './merge_yaml_files';
+import { IRes } from '@interfaces/vendors';
+
 // Path to the swagger annotations directory
 const docsDirPath = path.join(__dirname, '../../docs/api_docs/');
 // Path to the swagger.yaml file
@@ -32,12 +34,13 @@ const swaggerUiOptions = {
         files: ['@routes/**/*.{js,ts}'],
     },
 };
+
 /**
  * This function configures the swagger documentation
  * @param { application } app - The express application
  * @returns {void}
  */
-const swaggerDocs = (app) => {
+const swaggerDocs = (app: any): void => {
     if (CURRENT_ENV === 'production') return;
     app.use(
         '/docs',
@@ -45,11 +48,11 @@ const swaggerDocs = (app) => {
         swaggerUi.setup(swaggerSpec, swaggerUiOptions)
     );
     // Get docs in JSON format
-    app.get('/docs-json', (_, res) => {
+    app.get('/docs-json', (_: any, res: IRes) => {
         res.setHeader('Content-Type', 'application/json');
         res.send(swaggerSpec);
     });
     logger.info(`Swagger available at /docs  /docs-json`);
 };
 
-module.exports = swaggerDocs;
+export default swaggerDocs;
