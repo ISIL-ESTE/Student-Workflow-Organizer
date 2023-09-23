@@ -9,29 +9,20 @@ export const updatePassword = async (req: IReq, res: IRes, next: INext) => {
     try {
         const { email, resetKey, password } = req.body;
 
-        if (!validator.isEmail(email)) {
-            return next(new AppError(400, 'Invalid email format'));
-        }
+        if (!validator.isEmail(email))
+            throw new AppError(400, 'Invalid email format');
 
         const user = await User.findOne({ email }).select('+password');
 
-        if (!user) {
-            return next(
-                new AppError(404, 'User with this email does not exist')
-            );
-        }
+        if (!user)
+            throw new AppError(404, 'User with this email does not exist');
 
-        if (!resetKey) {
-            return next(new AppError(400, 'Please provide reset key'));
-        }
+        if (!resetKey) throw new AppError(400, 'Please provide reset key');
 
-        if (!user.resetKey) {
-            return next(new AppError(400, 'Invalid reset key'));
-        }
+        if (!user.resetKey) throw new AppError(400, 'Invalid reset key');
 
-        if (resetKey !== user.resetKey) {
-            return next(new AppError(400, 'Invalid reset key'));
-        }
+        if (resetKey !== user.resetKey)
+            throw new AppError(400, 'Invalid reset key');
 
         user.password = password;
         user.resetKey = undefined;
@@ -54,21 +45,15 @@ export const forgotPassword = async (req: IReq, res: IRes, next: INext) => {
     try {
         const { email } = req.body;
 
-        if (!email) {
-            return next(new AppError(400, 'Please provide email'));
-        }
+        if (!email) throw new AppError(400, 'Please provide email');
 
-        if (!validator.isEmail(email)) {
-            return next(new AppError(400, 'Invalid email format'));
-        }
+        if (!validator.isEmail(email))
+            throw new AppError(400, 'Invalid email format');
 
         const user = await User.findOne({ email });
 
-        if (!user) {
-            return next(
-                new AppError(404, 'User with this email does not exist')
-            );
-        }
+        if (!user)
+            throw new AppError(404, 'User with this email does not exist');
 
         const resetKey = user.generateResetKey();
         await user.save();

@@ -38,20 +38,16 @@ export const updateMe = async (req: IReq, res: IRes, next: NextFunction) => {
     try {
         // 1) Create error if user POSTs password data
         if (req.body.password || req.body.passwordConfirm) {
-            return next(
-                new AppError(
-                    400,
-                    'This route is not for password updates. Please use /updateMyPassword'
-                )
+            throw new AppError(
+                400,
+                'This route is not for password updates. Please use /updateMyPassword'
             );
         }
         // create error if user tries to update role
         if (req.body.roles) {
-            return next(
-                new AppError(
-                    400,
-                    'This route is not for role updates. Please use /updateRole'
-                )
+            throw new AppError(
+                400,
+                'This route is not for role updates. Please use /updateRole'
             );
         }
         // 2) Filtered out unwanted fields names that are not allowed to be updated

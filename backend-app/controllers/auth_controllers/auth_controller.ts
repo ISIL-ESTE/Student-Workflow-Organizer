@@ -24,15 +24,11 @@ export const githubHandler = async (req: IReq, res: IRes, next: INext) => {
     try {
         const Roles = await Role.getRoles();
         // check if user role exists
-        if (!Roles.USER) {
-            // send error to client
-            return next(
-                new AppError(
-                    500,
-                    'User role does not exist. Please contact the admin.'
-                )
+        if (!Roles.USER)
+            throw new AppError(
+                500,
+                'User role does not exist. Please contact the admin.'
             );
-        }
         const { code, redirect_url } = req.query;
         if (!redirect_url)
             throw new AppError(400, 'Please provide redirect_url');
@@ -108,7 +104,7 @@ export const login = async (req: IReq, res: IRes, next: INext) => {
 
         // check if password exist and  it is a string
         if (!user?.password || typeof user.password !== 'string')
-            return next(new AppError(400, 'Invalid email or password'));
+            throw new AppError(400, 'Invalid email or password');
 
         // Check if the account is banned
         if (user && user?.accessRestricted)
@@ -118,7 +114,7 @@ export const login = async (req: IReq, res: IRes, next: INext) => {
             );
 
         if (!user || !(await user.correctPassword(password, user.password))) {
-            return next(new AppError(401, 'Email or Password is wrong'));
+            throw new AppError(401, 'Email or Password is wrong');
         }
 
         // 3) All correct, send accessToken & refreshToken to client via cookie
@@ -227,15 +223,15 @@ export const activateAccount = async (req: IReq, res: IRes, next: INext) => {
         const { id, activationKey } = req.query as unknown as ActivationParams;
 
         if (!activationKey) {
-            return next(new AppError(400, 'Please provide activation key'));
+            throw new AppError(400, 'Please provide activation key');
         }
         if (!id) {
-            return next(new AppError(400, 'Please provide user id'));
+            throw new AppError(400, 'Please provide user id');
         }
 
         // check if a valid id
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return next(new AppError(400, 'Please provide a valid user id'));
+            throw new AppError(400, 'Please provide a valid user id');
         }
 
         const user = await User.findOne({
@@ -243,15 +239,15 @@ export const activateAccount = async (req: IReq, res: IRes, next: INext) => {
         }).select('+activationKey');
 
         if (!user) {
-            return next(new AppError(404, 'User does not exist'));
+            throw new AppError(404, 'User does not exist');
         }
         if (user.active) {
-            return next(new AppError(409, 'User is already active'));
+            throw new AppError(409, 'User is already active');
         }
 
         // verify activation key
         if (activationKey !== user.activationKey) {
-            return next(new AppError(400, 'Invalid activation key'));
+            throw new AppError(400, 'Invalid activation key');
         }
         // activate user
         user.active = true;
@@ -272,8 +268,7 @@ export const protect = async (req: IReq, res: IRes, next: INext) => {
     try {
         // @ts-ignore
         const accessToken = searchCookies(req, 'access_token') || req.token;
-        if (!accessToken)
-            return next(new AppError(401, 'Please login to continue'));
+        if (!accessToken) throw new AppError(401, 'Please login to continue');
 
         const accessTokenPayload =
             await AuthUtils.verifyAccessToken(accessToken);
@@ -284,28 +279,23 @@ export const protect = async (req: IReq, res: IRes, next: INext) => {
             'accessRestricted active'
         );
         if (!user) {
-            return next(new AppError(401, 'This user is no longer exist'));
+            throw new AppError(401, 'This user is no longer exist');
         }
 
         // Check if the account is banned
         if (user?.accessRestricted)
-            return next(
-                new AppError(
-                    403,
-                    'Your account has been banned. Please contact the admin for more information.'
-                )
+            throw new AppError(
+                403,
+                'Your account has been banned. Please contact the admin for more information.'
             );
         // @ts-ignore
         req.user = user;
         // check if account is active
         if (!user.active)
-            return next(
-                new AppError(
-                    403,
-                    'Your account is not active. Please activate your account to continue.'
-                )
+            throw new AppError(
+                403,
+                'Your account is not active. Please activate your account to continue.'
             );
-
         next();
     } catch (err) {
         // check if the token is expired
@@ -322,14 +312,11 @@ export const restrictTo =
     (req: IReq, res: IRes, next: INext) => {
         // @ts-ignore
         if (!req.user) {
-            return next(new AppError(401, 'Please login to continue'));
+            throw new AppError(401, 'Please login to continue');
         }
         // @ts-ignore
         const roleExist = roles.some((role) => req.user.roles.includes(role));
-        if (!roleExist) {
-            return next(
-                new AppError(403, 'You are not allowed to do this action')
-            );
-        }
+        if (!roleExist)
+            throw new AppError(403, 'You are not allowed to do this action');
         next();
     };

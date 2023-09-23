@@ -23,11 +23,7 @@ export const deleteOne =
                 { new: true }
             );
 
-            if (!doc) {
-                return next(
-                    new AppError(404, 'No document found with that id')
-                );
-            }
+            if (!doc) throw new AppError(404, 'No document found with that id');
 
             res.status(204).json({
                 data: null,
@@ -54,11 +50,7 @@ export const updateOne =
                 runValidators: true,
             });
 
-            if (!doc) {
-                return next(
-                    new AppError(404, 'No document found with that id')
-                );
-            }
+            if (!doc) throw new AppError(404, 'No document found with that id');
 
             res.status(200).json({
                 doc,
@@ -74,17 +66,15 @@ export const updateOne =
  * @returns {Function} - Express middleware function
  */
 export const createOne =
-    (Model: Model<any>) => async (req: IReq, res: IRes, next: NextFunction) => {
+    (Model: Model<any>): Function =>
+    async (req: IReq, res: IRes, next: NextFunction) => {
         try {
             // get the user who is creating the document
-            if (req.user === undefined) {
-                return next(
-                    new AppError(
-                        401,
-                        'You are not authorized to perform this action'
-                    )
+            if (req.user === undefined)
+                throw new AppError(
+                    401,
+                    'You are not authorized to perform this action'
                 );
-            }
             const userid = req.user._id;
             req.body.createdBy = userid;
 
@@ -103,15 +93,12 @@ export const createOne =
  * @returns {Function} - Express middleware function
  */
 export const getOne =
-    (Model: Model<any>) => async (req: IReq, res: IRes, next: NextFunction) => {
+    (Model: Model<any>): Function =>
+    async (req: IReq, res: IRes, next: NextFunction) => {
         try {
             const doc = await Model.findById(req.params.id);
 
-            if (!doc) {
-                return next(
-                    new AppError(404, 'No document found with that id')
-                );
-            }
+            if (!doc) throw new AppError(404, 'No document found with that id');
 
             res.status(200).json({
                 doc,
@@ -127,7 +114,8 @@ export const getOne =
  * @returns {Function} - Express middleware function
  */
 export const getAll =
-    (Model: Model<any>) => async (req: IReq, res: IRes, next: NextFunction) => {
+    (Model: Model<any>): Function =>
+    async (req: IReq, res: IRes, next: NextFunction) => {
         try {
             const features = new APIFeatures(
                 Model.find(),

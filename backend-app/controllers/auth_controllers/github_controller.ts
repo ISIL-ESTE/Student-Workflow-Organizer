@@ -4,11 +4,11 @@ import AppError from '@utils/app_error';
 import { INext, IReq, IRes } from '@interfaces/vendors';
 
 export const getRecentRepo = async (req: IReq, res: IRes, next: INext) => {
-    if (!req.user) {
-        return next(new AppError(401, 'You are not logged in'));
-    }
-    const { githubOauthAccessToken } = req.user;
     try {
+        if (!req.user) {
+            throw new AppError(401, 'You are not logged in');
+        }
+        const { githubOauthAccessToken } = req.user;
         const userRepositories = await axios.get(
             'https://api.github.com/user/repos',
             {
