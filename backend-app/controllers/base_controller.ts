@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { Model } from 'mongoose';
 import AppError from '@utils/app_error';
 import APIFeatures from '@utils/api_features';
@@ -48,7 +48,7 @@ export const deleteOne =
  * @returns {Function} - Express middleware function
  */
 export const updateOne =
-    (Model: Model<any>): Function =>
+    (Model: Model<any>): RequestHandler =>
     async (req: RequestWithUser, res: Response, next: NextFunction) => {
         try {
             // get the user who is updating the document
