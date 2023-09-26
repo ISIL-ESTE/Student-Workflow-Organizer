@@ -1,25 +1,17 @@
-import swaggerUi from 'swagger-ui-express';
 import logger from '@utils/logger';
-import { PORT, CURRENT_ENV } from '../../config/app_config';
-import path from 'path';
-import YAML from 'yamljs';
-import mergeYamlFiles from './merge_yaml_files';
+import { CURRENT_ENV } from '@config/app_config';
 import { IRes } from '@interfaces/vendors';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsdoc from 'swagger-jsdoc';
 
-// Path to the swagger annotations directory
-const docsDirPath = path.join(__dirname, '../../docs/api_docs/');
-// Path to the swagger.yaml file
-const swaggerSpecPath = path.join(__dirname, '../../swagger.yaml');
-// Load the swagger.yaml file
-const swaggerSpec = YAML.load(swaggerSpecPath);
-// Merge the swagger.yaml file with the swagger annotations
-swaggerSpec.paths = mergeYamlFiles(docsDirPath);
-swaggerSpec.servers = [
-    {
-        url: `http://localhost:${PORT}/api`,
-        description: 'Development server',
+const swaggerDefinition = {
+    openapi: '3.0.0',
+    info: {
+        title: 'My API',
+        version: '1.0.0',
+        description: 'API Documentation',
     },
-];
+};
 const swaggerUiOptions = {
     swaggerOptions: {
         tryItOutEnabled: true,
@@ -34,6 +26,11 @@ const swaggerUiOptions = {
         files: ['@routes/**/*.{js,ts}'],
     },
 };
+
+const swaggerSpec = swaggerJsdoc({
+    swaggerDefinition,
+    apis: ['./routes/**/*.ts'],
+});
 
 /**
  * This function configures the swagger documentation

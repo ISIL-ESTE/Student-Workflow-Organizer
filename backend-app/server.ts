@@ -8,7 +8,7 @@ import createRoles from './utils/authorization/role/create_roles';
 
 process.on('uncaughtException', (err) => {
     logger.error('UNCAUGHT EXCEPTION!!!  shutting down ...');
-    logger.error(`${err.name}, ${err.message}, ${err.stack}`);
+    logger.error(`${err}, ${err.message}, ${err.stack}`);
     process.exit(1);
 });
 
