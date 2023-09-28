@@ -1,6 +1,6 @@
-const { Router } = require('express');
+import { Router } from 'express';
 const router = Router();
-const githubController = require('../controllers/auth_controllers/github_controller');
+import * as githubController from '../controllers/auth_controllers/github_controller';
 
 router.get('/recent-repo', githubController.getRecentRepo);
 
@@ -10,8 +10,8 @@ router.get('/recent-repo', githubController.getRecentRepo);
  * @name githubRoutes
  * @param {Object} mainrouter - Express router object.
  */
-const githubRoutes = (mainrouter) => {
+const githubRoutes = (mainrouter: Router) => {
     mainrouter.use('/github', router);
 };
 
-module.exports = githubRoutes;
+export default githubRoutes;
