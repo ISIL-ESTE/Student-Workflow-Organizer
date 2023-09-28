@@ -1,14 +1,16 @@
-const express = require('express');
-const router = express.Router();
-const authController = require('../../controllers/auth_controllers/auth_controller');
-const { restrictTo } = require('../../middlewares/authorization');
-const Actions = require('../../constants/actions');
-const {
+import express from 'express';
+import { Router } from 'express';
+import * as authController from '../../controllers/auth_controllers/auth_controller';
+import restrictTo from '../../middlewares/authorization';
+import Actions from '../../constants/actions';
+import {
     addSuperAdmin,
     removeSuperAdmin,
     addAdmin,
     removeAdmin,
-} = require('../../controllers/users_controllers/admin_controller');
+} from '../../controllers/users_controllers/admin_controller';
+
+const router = Router();
 
 router.use(authController.restrictTo('SUPER_ADMIN'));
 
@@ -60,11 +62,11 @@ router.put(
     removeAdmin
 );
 
-superAdminRoutes = (mainrouter) => {
+const superAdminRoutes = (mainrouter: express.Router) => {
     // swaggergenerator.register(
     //   'super_admin',
     //   './routes/users/super_admin_route.js'
     // );
     mainrouter.use('/super_admin', router);
 };
-module.exports = superAdminRoutes;
+export default superAdminRoutes;

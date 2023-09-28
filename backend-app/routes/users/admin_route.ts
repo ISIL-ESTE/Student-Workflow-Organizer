@@ -1,5 +1,5 @@
-const express = require('express');
-const {
+import { Router } from 'express';
+import {
     authorizeOrRestrict,
     banUser,
     unbanUser,
@@ -10,16 +10,17 @@ const {
     deleteRole,
     assignRoleToUser,
     removeRoleFromUser,
-} = require('../../controllers/users_controllers/admin_controller');
-const authController = require('../../controllers/auth_controllers/auth_controller');
-const { restrictTo } = require('../../middlewares/authorization');
-const router = express.Router();
-const Actions = require('../../constants/actions');
-const userController = require('../../controllers/users_controllers/user_controller');
+} from '../../controllers/users_controllers/admin_controller';
+import * as authController from '../../controllers/auth_controllers/auth_controller';
+import restrictTo from '../../middlewares/authorization';
+import Actions from '../../constants/actions';
+import * as userController from '@controllers/users_controllers/user_controller';
 
 /**
  * Below all routes are protected
  */
+
+const router = Router();
 
 router.use(authController.restrictTo('ADMIN', 'SUPER_ADMIN'));
 
@@ -141,8 +142,8 @@ router.put(
     removeRoleFromUser
 );
 
-adminRoutes = (mainrouter) => {
+const adminRoutes = (mainrouter: Router) => {
     // swaggergenerator.register('admin', './routes/users/admin_route.js');
     mainrouter.use('/admin', router);
 };
-module.exports = adminRoutes;
+export default adminRoutes;

@@ -1,6 +1,7 @@
-const authController = require('../controllers/auth_controllers/auth_controller');
-const password_management = require('../controllers/auth_controllers/password_management');
-const express = require('express');
+import * as authController from '../controllers/auth_controllers/auth_controller';
+import * as password_management from '../controllers/auth_controllers/password_management';
+import express, { Router } from 'express';
+
 const router = express.Router();
 
 router.post('/signup', authController.signup);
@@ -12,9 +13,8 @@ router.patch('/updateMyPassword', password_management.updatePassword);
 router.patch('/forgotPassword', password_management.forgotPassword);
 router.get('/github/callback', authController.githubHandler);
 
-// make this file so i can use it with authRoutes(router) in index.js
-const authRoutes = (mainrouter) => {
-    // swaggergenerator.register('auth', './routes/auth_routes.js');
+const authRoutes = (mainrouter: Router) => {
     mainrouter.use('/auth', router);
 };
-module.exports = authRoutes;
+
+export default authRoutes;

@@ -1,4 +1,4 @@
-import { NextFunction } from 'express';
+import { NextFunction, RequestHandler } from 'express';
 import { Model } from 'mongoose';
 import AppError from '@utils/app_error';
 import APIFeatures from '@utils/api_features';
@@ -10,7 +10,7 @@ import { IReq, IRes } from '@interfaces/vendors';
  * @returns {Function} - Express middleware function
  */
 export const deleteOne =
-    (Model: Model<any>): Function =>
+    (Model: Model<any>): RequestHandler =>
     async (req: IReq, res: IRes, next: NextFunction): Promise<void> => {
         try {
             const doc = await Model.findByIdAndUpdate(
@@ -39,7 +39,7 @@ export const deleteOne =
  * @returns {Function} - Express middleware function
  */
 export const updateOne =
-    (Model: Model<any>): Function =>
+    (Model: Model<any>): RequestHandler =>
     async (req: IReq, res: IRes, next: NextFunction) => {
         try {
             // get the user who is updating the document
@@ -66,7 +66,7 @@ export const updateOne =
  * @returns {Function} - Express middleware function
  */
 export const createOne =
-    (Model: Model<any>): Function =>
+    (Model: Model<any>): RequestHandler =>
     async (req: IReq, res: IRes, next: NextFunction) => {
         try {
             // get the user who is creating the document
@@ -93,7 +93,7 @@ export const createOne =
  * @returns {Function} - Express middleware function
  */
 export const getOne =
-    (Model: Model<any>): Function =>
+    (Model: Model<any>): RequestHandler =>
     async (req: IReq, res: IRes, next: NextFunction) => {
         try {
             const doc = await Model.findById(req.params.id);
@@ -114,7 +114,7 @@ export const getOne =
  * @returns {Function} - Express middleware function
  */
 export const getAll =
-    (Model: Model<any>): Function =>
+    (Model: Model<any>): RequestHandler =>
     async (req: IReq, res: IRes, next: NextFunction) => {
         try {
             const features = new APIFeatures(

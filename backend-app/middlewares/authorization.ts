@@ -15,7 +15,7 @@ interface User {
 const hasAuthority = (user: User, actions: string[]): boolean =>
     actions.every((action) => user.authorities.includes(action));
 
-export const restrictTo =
+const restrictTo =
     (...actions: string[]) =>
     (req: Request, res: Response, next: NextFunction): void => {
         // @ts-ignore
@@ -40,3 +40,4 @@ export const restrictTo =
             );
         }
     };
+export default restrictTo;
