@@ -3,7 +3,7 @@ import { IReq, IRes, INext } from '@interfaces/vendors';
 import { promisify } from 'util';
 import validator from 'validator';
 import AppError from '@utils/app_error';
-import Role from '@utils/authorization/role/role';
+import Role from '@utils/authorization/roles/role';
 import { REQUIRE_ACTIVATION } from '@config/app_config';
 import {
     getGithubOAuthUser,

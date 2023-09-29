@@ -1,12 +1,14 @@
-const {
+import {
     GITHUB_OAUTH_CLIENT_ID,
     GITHUB_OAUTH_CLIENT_SECRET,
-} = require('../../config/app_config');
-const qs = require('qs');
-const axios = require('axios');
-const AppError = require('../../utils/app_error');
+} from '@config/app_config';
+import qs from 'qs';
+import axios from 'axios';
+import AppError from '@utils/app_error';
 
-exports.getGithubOAuthToken = async (code) => {
+export const getGithubOAuthToken = async (
+    code: string
+): Promise<qs.ParsedQs> => {
     const rootUrl = 'https://github.com/login/oauth/access_token';
 
     const queryString = qs.stringify({
@@ -28,7 +30,9 @@ exports.getGithubOAuthToken = async (code) => {
         throw new AppError(400, 'Invalid code');
     }
 };
-exports.getGithubOAuthUser = async (access_token) => {
+export const getGithubOAuthUser = async (
+    access_token: string
+): Promise<any> => {
     try {
         const { data } = await axios.get('https://api.github.com/user', {
             headers: {
@@ -41,14 +45,16 @@ exports.getGithubOAuthUser = async (access_token) => {
         throw new AppError(400, 'Invalid access token');
     }
 };
-exports.getGithubOAuthUserPrimaryEmail = async (access_token) => {
+export const getGithubOAuthUserPrimaryEmail = async (
+    access_token: string
+): Promise<string> => {
     try {
         const { data } = await axios.get('https://api.github.com/user/emails', {
             headers: {
                 Authorization: `Bearer ${access_token}`,
             },
         });
-        const primaryEmail = data.find((email) => email.primary === true);
+        const primaryEmail = data.find((email: any) => email.primary === true);
         return primaryEmail.email;
     } catch (err) {
         throw new AppError(400, 'Invalid access token');

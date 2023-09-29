@@ -1,11 +1,11 @@
-const Actions = require('../../constants/actions');
+import Actions from '@constants/actions';
 
 /**
  * Validate all the actions in the array
  * @param {string[]} actions
  * @returns boolean
  */
-const validateActions = (actions) =>
+const validateActions = (actions: string[]): boolean =>
     actions.every((action) => Object.values(Actions).includes(action));
 
-module.exports = validateActions;
+export default validateActions;

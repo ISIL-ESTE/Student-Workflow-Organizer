@@ -1,10 +1,9 @@
 import mongoose from 'mongoose';
 import './utils/register_paths';
-
 import logger from '@utils/logger';
 import fs from 'fs';
 import { DATABASE, PORT } from './config/app_config';
-import createRoles from './utils/authorization/role/create_roles';
+import createRoles from './utils/authorization/roles/create_roles';
 
 process.on('uncaughtException', (err) => {
     logger.error('UNCAUGHT EXCEPTION!!!  shutting down ...');

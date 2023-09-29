@@ -1,5 +1,5 @@
 const request = require('supertest');
-const createRoles = require('../utils/authorization/role/create_roles');
+const createRoles = require('../utils/authorization/roles/create_roles');
 const createDefaultUser = require('../utils/create_default_user');
 const { testUserCredentials } = require('./testConstants');
 const { MONGO_URI_TEST } = require('../config/app_config');

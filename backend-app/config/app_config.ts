@@ -20,7 +20,8 @@ export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 export const REQUIRE_ACTIVATION = parseBoolean(
     process.env.REQUIRE_ACTIVATION as string
 );
-export const RATE_LIMIT_PER_HOUR = process.env.RATE_LIMIT_PER_HOUR;
+export const RATE_LIMIT_PER_HOUR = process.env
+    .RATE_LIMIT_PER_HOUR as unknown as number;
 export const GITHUB_OAUTH_CLIENT_ID = process.env.GITHUB_OAUTH_CLIENT_ID;
 export const GITHUB_OAUTH_CLIENT_SECRET =
     process.env.GITHUB_OAUTH_CLIENT_SECRET;

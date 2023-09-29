@@ -45,7 +45,8 @@ export const updateOne =
             // get the user who is updating the document
             const userid = req.user?._id;
             req.body.updatedBy = userid;
-            const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
+            const payload = new Model(req.body);
+            const doc = await Model.findByIdAndUpdate(req.params.id, payload, {
                 new: true,
                 runValidators: true,
             });

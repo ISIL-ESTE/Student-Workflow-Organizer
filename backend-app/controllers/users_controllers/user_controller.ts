@@ -1,9 +1,6 @@
-import { IUser } from '@interfaces/models/i_user';
 import User from '@models/user/user_model';
 import * as base from '../base_controller';
 import AppError from '@utils/app_error';
-import sanitizeRequestBody from '@utils/sanitize_request_body';
-import { Model } from 'mongoose';
 import { INext, IReq, IRes } from '@interfaces/vendors';
 
 export const getMe = (req: IReq, res: IRes) => {
@@ -47,23 +44,9 @@ export const updateMe = async (req: IReq, res: IRes, next: INext) => {
             );
         }
         // 2) Filtered out unwanted fields names that are not allowed to be updated
-        const filteredfields = Object.keys(req.body).filter(
-            (el) => el !== 'email'
-        );
-        const filteredBody: Partial<IUser> = {};
-        filteredfields.forEach((el) => {
-            // @ts-ignore
-            filteredBody[el as keyof IUser] = req.body[el as keyof IUser];
-        });
-
-        // validate the request body
-        const sanitizedBody = sanitizeRequestBody(
-            User as unknown as Model<any>,
-            filteredBody
-        );
-
+        const payload = new User(req.body);
         // 3) Update user document
-        const doc = await User.findByIdAndUpdate(req.user._id, sanitizedBody, {
+        const doc = await User.findByIdAndUpdate(req.user._id, payload, {
             new: true,
             runValidators: true,
         });

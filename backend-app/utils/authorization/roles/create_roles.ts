@@ -1,5 +1,5 @@
 import Actions from '../../../constants/actions';
-import Role from '../role/role';
+import Role from './role';
 import logger from '@utils/logger';
 
 interface RoleType {
