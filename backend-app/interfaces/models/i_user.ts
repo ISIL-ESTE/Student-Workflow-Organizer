@@ -1,13 +1,12 @@
 import { Document } from 'mongoose';
-import Actions from '@constants/actions';
 
 export interface IUser extends Document {
     name: string;
     email: string;
     address?: string;
     password?: string;
-    authorities: Actions[];
-    restrictions: Actions[];
+    authorities: string[];
+    restrictions: string[];
     roles: string[];
     active: boolean;
     activationKey?: string;
@@ -25,7 +24,7 @@ export interface IUser extends Document {
         typedPassword: string,
         originalPassword: string
     ): Promise<boolean>;
-    isAuthorizedTo(action: Actions): boolean;
-    isRestrictedFrom(action: Actions): boolean;
+    isAuthorizedTo(action: string[]): boolean;
+    isRestrictedFrom(action: string[]): boolean;
     generateResetKey(): string;
 }

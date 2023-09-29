@@ -13,6 +13,7 @@ import {
 import AuthUtils from '@utils/authorization/auth_utils';
 import searchCookies from '@utils/searchCookie';
 import User from '@models/user/user_model';
+import { Request, Response, NextFunction } from 'express';
 
 const generateActivationKey = async () => {
     const randomBytesPromiseified = promisify(require('crypto').randomBytes);
@@ -20,7 +21,11 @@ const generateActivationKey = async () => {
     return activationKey;
 };
 
-export const githubHandler = async (req: IReq, res: IRes, next: INext) => {
+export const githubHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const Roles = await Role.getRoles();
         // check if user role exists
@@ -90,7 +95,11 @@ function validateCredentialsTypes(email: string, password: string) {
     }
 }
 
-export const login = async (req: IReq, res: IRes, next: INext) => {
+export const login = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const { email, password } = req.body;
 
@@ -137,7 +146,11 @@ export const login = async (req: IReq, res: IRes, next: INext) => {
     }
 };
 
-export const signup = async (req: IReq, res: IRes, next: INext) => {
+export const signup = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const activationKey = await generateActivationKey();
         const Roles = await Role.getRoles();
@@ -179,7 +192,11 @@ export const signup = async (req: IReq, res: IRes, next: INext) => {
     }
 };
 
-export const tokenRefresh = async (req: IReq, res: IRes, next: INext) => {
+export const tokenRefresh = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const refreshToken = searchCookies(req, 'refresh_token');
         if (!refreshToken)
@@ -198,7 +215,11 @@ export const tokenRefresh = async (req: IReq, res: IRes, next: INext) => {
         next(err);
     }
 };
-export const logout = async (req: IReq, res: IRes, next: INext) => {
+export const logout = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const accessToken = searchCookies(req, 'access_token');
         if (!accessToken)
@@ -218,7 +239,11 @@ interface ActivationParams {
     activationKey: string;
 }
 
-export const activateAccount = async (req: IReq, res: IRes, next: INext) => {
+export const activateAccount = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const { id, activationKey } = req.query as unknown as ActivationParams;
 
@@ -264,10 +289,13 @@ export const activateAccount = async (req: IReq, res: IRes, next: INext) => {
     }
 };
 
-export const protect = async (req: IReq, res: IRes, next: INext) => {
+export const protect = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     try {
-        // @ts-ignore
-        const accessToken = searchCookies(req, 'access_token') || req.token;
+        const accessToken = searchCookies(req, 'access_token');
         if (!accessToken) throw new AppError(401, 'Please login to continue');
 
         const accessTokenPayload =
@@ -288,19 +316,24 @@ export const protect = async (req: IReq, res: IRes, next: INext) => {
                 403,
                 'Your account has been banned. Please contact the admin for more information.'
             );
-        // @ts-ignore
-        req.user = user;
+
         // check if account is active
         if (!user.active)
             throw new AppError(
                 403,
                 'Your account is not active. Please activate your account to continue.'
             );
+
+        // Create a new request object with the user property set to the user object
+        req.user = user;
         next();
     } catch (err) {
         // check if the token is expired
         if (err.name === 'TokenExpiredError') {
             return next(new AppError(401, 'Your token is expired'));
+        }
+        if (err.name === 'JsonWebTokenError') {
+            return next(new AppError(401, err.message));
         }
         next(err);
     }
@@ -310,13 +343,17 @@ export const protect = async (req: IReq, res: IRes, next: INext) => {
 export const restrictTo =
     (...roles: string[]) =>
     (req: IReq, res: IRes, next: INext) => {
-        // @ts-ignore
-        if (!req.user) {
-            throw new AppError(401, 'Please login to continue');
+        try {
+            const roleExist = roles.some((role) =>
+                req.user.roles.includes(role)
+            );
+            if (!roleExist)
+                throw new AppError(
+                    403,
+                    'You are not allowed to do this action'
+                );
+            next();
+        } catch (err) {
+            next(err);
         }
-        // @ts-ignore
-        const roleExist = roles.some((role) => req.user.roles.includes(role));
-        if (!roleExist)
-            throw new AppError(403, 'You are not allowed to do this action');
-        next();
     };

@@ -20,11 +20,9 @@ export const addAdmin = async (req: IReq, res: IRes, next: INext) => {
         user.roles?.push(Roles.ADMIN.type);
         const existingAuthorities = user.authorities;
         const existingRestrictions = user.restrictions;
-        // @ts-ignore
         user.authorities = Array.from(
             new Set([...Roles.ADMIN.authorities, ...existingAuthorities])
         );
-        // @ts-ignore
         user.restrictions = Array.from(
             new Set([...Roles.ADMIN.restrictions, ...existingRestrictions])
         );
@@ -43,7 +41,6 @@ export const removeAdmin = async (req: IReq, res: IRes, next: INext) => {
         const { userId } = req.params;
         const user = await USER.findById(userId);
         if (!user) throw new AppError(404, 'No user found with this id');
-        // @ts-ignore
         if (!Roles.ADMIN || !Roles.USER)
             throw new AppError(
                 500,

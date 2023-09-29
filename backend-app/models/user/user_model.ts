@@ -106,11 +106,12 @@ userSchema.methods.correctPassword = async function (
 };
 
 // verify if the user is authorized or restricted from an action
-userSchema.methods.isAuthorizedTo = function (action: Actions) {
-    return this.authorities.includes(action);
+userSchema.methods.isAuthorizedTo = function (actions: string[]) {
+    return actions.every((action) => this.authorities.includes(action));
 };
-userSchema.methods.isRestrictedFrom = function (action: Actions) {
-    return this.restrictions.includes(action);
+
+userSchema.methods.isRestrictedFrom = function (actions: string[]) {
+    return actions.some((action) => this.restrictions.includes(action));
 };
 
 // generateResetKey

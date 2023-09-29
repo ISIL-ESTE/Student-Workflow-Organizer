@@ -22,11 +22,8 @@ class AuthUtils {
         });
     }
     static async verifyAccessToken(token) {
-        try {
-            return await promisify(jwt.verify)(token, ACCESS_TOKEN_SECRET);
-        } catch (error) {
-            throw new AppError(401, 'Invalid token');
-        }
+        const result = await promisify(jwt.verify)(token, ACCESS_TOKEN_SECRET);
+        return result;
     }
     static async verifyRefreshToken(token) {
         try {
