@@ -1,11 +1,14 @@
 import { Request } from 'express';
 
 export interface IReq extends Request {
-    user?: {
+    user: {
         _id: string;
-        githubOauthAccessToken: string;
+        roles: string[];
+        authorities: string[];
+        restrictions: string[];
+        active: boolean;
+        githubOauthAccessToken?: string;
     };
-    params: any;
 }
 
 import { Response } from 'express';

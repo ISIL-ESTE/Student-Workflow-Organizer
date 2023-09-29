@@ -8,7 +8,6 @@
         "sourceMap": true,
         "outDir": "dist",
         "allowJs": true,
-        "strictNullChecks": true,
         "allowUnreachableCode": false,
         "resolveJsonModule": true,
         "noUnusedLocals": true,
@@ -24,8 +23,9 @@
             "@middlewares/*": ["./middlewares/*"],
             "@constants/*": ["./constants/*"],
             "@interfaces/*": ["./interfaces/*"]
-        }
+        },
+        "typeRoots": ["./typings"]
     },
-    "include": ["**/*.ts", "**/*.js"],
+    "include": ["./**/*"],
     "exclude": ["node_modules", "**/*.spec.ts"]
 }

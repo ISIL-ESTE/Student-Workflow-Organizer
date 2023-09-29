@@ -10,7 +10,6 @@ import xss from 'xss-clean';
 import hpp from 'hpp';
 import cors from 'cors';
 import Morgan from './middlewares/morgan';
-// @ts-ignore
 import swaggerDocs from './utils/swagger/index';
 import handleAPIVersion from './middlewares/api_version_controll';
 import { COOKIE_SECRET, CURRENT_ENV } from './config/app_config';
