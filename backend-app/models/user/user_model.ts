@@ -33,7 +33,6 @@ const userSchema: Schema = new mongoose.Schema<IUser>(
             validate: {
                 validator: function (el: string[]) {
                     return el.every((action) =>
-                        // @ts-ignore
                         Object.values(Actions).includes(action)
                     );
                 },
@@ -46,7 +45,6 @@ const userSchema: Schema = new mongoose.Schema<IUser>(
             validate: {
                 validator: function (el: string[]) {
                     return el.every((action) =>
-                        // @ts-ignore
                         Object.values(Actions).includes(action)
                     );
                 },
@@ -127,12 +125,10 @@ userSchema.index(
 );
 
 userSchema.pre('find', function () {
-    // @ts-ignore
     this.where({ deleted: false });
 });
 
 userSchema.pre('findOne', function () {
-    // @ts-ignore
     this.where({ deleted: false });
 });
 

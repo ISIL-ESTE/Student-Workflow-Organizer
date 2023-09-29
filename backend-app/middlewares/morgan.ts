@@ -16,7 +16,6 @@ const Morgan = morgan(
     {
         stream,
         skip: (req: any) =>
-            // @ts-ignore
             CURRENT_ENV.toLowerCase() === 'production' ||
             (req.originalUrl && req.originalUrl !== req.url),
     }

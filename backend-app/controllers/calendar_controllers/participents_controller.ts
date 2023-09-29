@@ -9,13 +9,9 @@ export const inviteUsersByEmail = async (req: IReq, res: IRes, next: INext) => {
         // check if calendar exists
         const calendar = await calendar_validators.validateCalendar(req);
         // check if user is the calendar owner
-        // @ts-ignore
-        const userid = req.user._id;
-        // @ts-ignore
-        if (calendar.createdBy.toString() !== userid.toString()) {
+        if (calendar.createdBy.toString() !== req.user._id.toString()) {
             // check if user is a participant and the calendar is shareable
-            // @ts-ignore
-            if (!calendar.participants.includes(userid))
+            if (!calendar.participants.includes(req.user._id))
                 throw new AppError(
                     403,
                     'You do not have permission to invite users to this calendar'
@@ -56,22 +52,15 @@ export const removeCalendarParticipants = async (
 ) => {
     try {
         const calendar = await calendar_validators.validateCalendar(req);
-        // @ts-ignore
-        const userid = req.user._id;
         // check if user is the calendar owner
-        // @ts-ignore
-        if (calendar.owner.toString() === !userid.toString()) {
+        if (calendar.createdBy.toString() !== req.user._id.toString()) {
             throw new AppError(403, 'You are not the owner of this calendar');
         }
         // get list of participants to remove from calendar
-        const listOfParticipants: string[] = req.body.participants;
+        const listOfParticipants: ObjectId[] = req.body.participants;
         // remove users from list of participants in calendar
-        // @ts-ignore
-        calendar.participants = listOfParticipants.filter(
-            (participant: string) =>
-                !calendar.participants.includes(
-                    participant as unknown as ObjectId
-                )
+        calendar.participants = calendar.participants.filter(
+            (participant: ObjectId) => !listOfParticipants.includes(participant)
         );
         // save calendar
         await calendar.save();

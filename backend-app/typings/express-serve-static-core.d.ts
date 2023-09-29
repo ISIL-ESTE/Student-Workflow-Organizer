@@ -1,9 +1,10 @@
 import { Express } from 'express-serve-static-core';
+import { ObjectId } from 'mongoose';
 declare module 'express-serve-static-core' {
     interface Request {
         user:
             | {
-                  _id: string;
+                  _id: ObjectId;
                   roles: string[];
                   authorities: string[];
                   restrictions: string[];

@@ -83,12 +83,10 @@ async function createRole(
     if (await getRoleByName(roleName))
         throw new AppError(400, 'Role already exists');
     authorities.forEach((authority) => {
-        // @ts-ignore
         if (!Object.values(Actions).includes(authority))
             throw new AppError(400, `Invalid authority ${authority}`);
     });
     restrictions.forEach((restriction) => {
-        // @ts-ignore
         if (!Object.values(Actions).includes(restriction))
             throw new AppError(400, `Invalid restriction ${restriction}`);
     });
@@ -125,12 +123,10 @@ async function updateRoleByName(
     restrictions: string[] = []
 ): Promise<RoleData> {
     authorities.forEach((authority) => {
-        // @ts-ignore
         if (!Object.values(Actions).includes(authority))
             throw new AppError(400, `Invalid authority ${authority}`);
     });
     restrictions.forEach((restriction) => {
-        // @ts-ignore
         if (!Object.values(Actions).includes(restriction))
             throw new AppError(400, `Invalid restriction ${restriction}`);
     });
