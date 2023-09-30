@@ -224,7 +224,7 @@ export const createRole = async (req: IReq, res: IRes, next: INext) => {
     }
 };
 
-export const getRoles = async (req: IReq, res: IRes, next: INext) => {
+export const getRoles = async (_req: IReq, res: IRes, next: INext) => {
     try {
         const roles = await Role.getRoles();
         res.status(200).json({

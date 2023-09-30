@@ -16,6 +16,7 @@ import { COOKIE_SECRET, CURRENT_ENV } from './config/app_config';
 import cookieParser from 'cookie-parser';
 import routesVersioning from 'express-routes-versioning';
 import indexRouter from './routes/index';
+import logger from '@utils/logger';
 
 const app = express();
 
@@ -69,7 +70,7 @@ app.use(handleAPIVersion);
 // handle bearer token
 app.use(bearerToken());
 
-app.get('/', (req: Request, res: Response) => {
+app.get('/', (_req: Request, res: Response) => {
     res.status(200).json({
         status: 'success',
         message: 'Welcome to the backend app',
@@ -89,10 +90,12 @@ app.use(
 swaggerDocs(app);
 
 // handle undefined Routes
-app.use('*', (req: Request, res: Response, next: NextFunction) => {
+app.use('*', (req: Request, _res: Response, next: NextFunction) => {
     const err = new AppError(404, 'Route Not Found', req.originalUrl);
     next(err);
 });
+
+logger.error('This is an error log');
 
 app.use(globalErrHandler);
 

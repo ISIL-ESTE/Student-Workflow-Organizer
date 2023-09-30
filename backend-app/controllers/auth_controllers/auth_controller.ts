@@ -48,10 +48,8 @@ export const githubHandler = async (
         if (exists) {
             const accessToken = AuthUtils.generateAccessToken(exists._id);
             const refreshToken = AuthUtils.generateRefreshToken(exists._id);
-            AuthUtils.setAccessTokenCookie(
-                res,
-                accessToken
-            ).setRefreshTokenCookie(res, refreshToken);
+            AuthUtils.setAccessTokenCookie(res, accessToken);
+            AuthUtils.setRefreshTokenCookie(res, refreshToken);
         }
         if (!githubUser) throw new AppError(400, 'Invalid access token');
         const createdUser = await User.create({
@@ -68,10 +66,8 @@ export const githubHandler = async (
 
         const accessToken = AuthUtils.generateAccessToken(createdUser._id);
         const refreshToken = AuthUtils.generateRefreshToken(createdUser._id);
-        AuthUtils.setAccessTokenCookie(res, accessToken).setRefreshTokenCookie(
-            res,
-            refreshToken
-        );
+        AuthUtils.setAccessTokenCookie(res, accessToken);
+        AuthUtils.setRefreshTokenCookie(res, refreshToken);
         //redirect user to redirect url
         res.redirect(redirect_url);
     } catch (err) {
@@ -129,10 +125,8 @@ export const login = async (
         // 3) All correct, send accessToken & refreshToken to client via cookie
         const accessToken = AuthUtils.generateAccessToken(user._id);
         const refreshToken = AuthUtils.generateRefreshToken(user._id);
-        AuthUtils.setAccessTokenCookie(res, accessToken).setRefreshTokenCookie(
-            res,
-            refreshToken
-        );
+        AuthUtils.setAccessTokenCookie(res, accessToken);
+        AuthUtils.setRefreshTokenCookie(res, refreshToken);
 
         // Remove the password from the output
         user.password = undefined;
@@ -175,10 +169,8 @@ export const signup = async (
         const user = await User.create(userpayload);
         const accessToken = AuthUtils.generateAccessToken(user._id);
         const refreshToken = AuthUtils.generateRefreshToken(user._id);
-        AuthUtils.setAccessTokenCookie(res, accessToken).setRefreshTokenCookie(
-            res,
-            refreshToken
-        );
+        AuthUtils.setAccessTokenCookie(res, accessToken);
+        AuthUtils.setRefreshTokenCookie(res, refreshToken);
         // Remove the password and activation key from the output
         user.password = undefined;
         user.activationKey = undefined;
@@ -203,7 +195,7 @@ export const tokenRefresh = async (
             throw new AppError(400, 'You have to login to continue.');
         const refreshTokenPayload =
             await AuthUtils.verifyRefreshToken(refreshToken);
-        if (!refreshTokenPayload || !refreshTokenPayload.id)
+        if (!refreshTokenPayload || !refreshTokenPayload._id)
             throw new AppError(400, 'Invalid refresh token');
         const user = await User.findById(refreshTokenPayload.id);
         if (!user) throw new AppError(400, 'Invalid refresh token');
@@ -300,6 +292,8 @@ export const protect = async (
 
         const accessTokenPayload =
             await AuthUtils.verifyAccessToken(accessToken);
+        console.log(accessTokenPayload);
+
         if (!accessTokenPayload || !accessTokenPayload.id)
             throw new AppError(401, 'Invalid access token');
         // 3) check if the user is exist (not deleted)

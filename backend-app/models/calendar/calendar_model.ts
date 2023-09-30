@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import metaData from '@constants/meta_data';
 import { ICalendar } from '@interfaces/models/i_calendar';
 

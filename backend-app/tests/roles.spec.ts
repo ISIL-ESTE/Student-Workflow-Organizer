@@ -1,6 +1,6 @@
 // imprt expect from chai
 
-import '../../utils/register_paths';
+import '../utils/register_paths';
 
 import expect from 'expect';
 

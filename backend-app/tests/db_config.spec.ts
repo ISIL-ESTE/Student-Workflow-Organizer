@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
+const { describe } = require('node:test');
 require('dotenv').config();
 
-beforeAll(() => {
+before(() => {
     // check if db isn't already connected
     if (mongoose.connection.readyState === 0) {
         mongoose.set('strictQuery', false);
@@ -16,6 +17,12 @@ beforeAll(() => {
     //     password: testUserCredentials.userPassword,
     // });
 });
-afterAll(async () => {
+after(async () => {
     await mongoose.disconnect();
+});
+
+describe('Database connection', () => {
+    it('should connect to the database', () => {
+        expect(mongoose.connection.readyState).to.equal(1);
+    });
 });

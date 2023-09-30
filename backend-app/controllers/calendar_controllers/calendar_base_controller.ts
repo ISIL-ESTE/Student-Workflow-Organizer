@@ -4,7 +4,7 @@ import * as calendar_validators from './calendar_validators';
 
 export const updateCalendar = async (
     req: IReq,
-    res: IRes,
+    _res: IRes,
     next: INext
 ): Promise<void> => {
     try {

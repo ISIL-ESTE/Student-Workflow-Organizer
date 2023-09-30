@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import httpStatus from 'http-status-codes';
 import { CURRENT_ENV } from '@config/app_config';
 import AppError from '@utils/app_error';
@@ -13,12 +13,7 @@ import logger from '@utils/logger';
  * @returns {void}
  * Express automatically knows that this entire function is an error handling middleware by specifying 4 parameters
  */
-const errorHandler = (
-    err: Error,
-    req: Request,
-    res: Response,
-    next: NextFunction
-): void => {
+const errorHandler = (err: Error, req: Request, res: Response): void => {
     // Set default values if not provided
     (err as any).path = (err as any).path || req.path;
     (err as any).statusCode = (err as any).statusCode || 500;
