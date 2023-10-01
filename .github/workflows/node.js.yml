@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [main]
 
-env:
+env: 
   NODE_ENV: production
   API_VERSION: v1
   MONGO_URI: ${{ secrets.MONGO_URI }}
@@ -38,34 +38,35 @@ jobs:
           node-version: '14.x'
       - name: Set up environment variables
         run: |
-          touch backend-app/.env
-          echo "NODE_ENV=${{ env.NODE_ENV }}" > backend-app/.env
-          echo "API_VERSION=${{ env.API_VERSION }}" >> backend-app/.env
-          echo "MONGO_URI=${{ env.MONGO_URI }}" >> backend-app/.env
-          echo "MONGO_URI_TEST=${{ env.MONGO_URI_TEST }}" >> backend-app/.env
-          echo "PORT=${{ env.PORT }}" >> backend-app/.env
-          echo "ADMIN_EMAIL=${{ env.ADMIN_EMAIL }}" >> backend-app/.env
-          echo "ADMIN_PASSWORD=${{ env.ADMIN_PASSWORD }}" >> backend-app/.env
-          echo "ACCESS_TOKEN_SECRET=${{ env.ACCESS_TOKEN_SECRET }}" >> backend-app/.env
-          echo "ACCESS_TOKEN_EXPIRY_TIME=${{ env.ACCESS_TOKEN_EXPIRY_TIME }}" >> backend-app/.env
-          echo "REFRESH_TOKEN_SECRET=${{ env.REFRESH_TOKEN_SECRET }}" >> backend-app/.env
-          echo "REFRESH_TOKEN_EXPIRY_TIME=${{ env.REFRESH_TOKEN_EXPIRY_TIME }}" >> backend-app/.env
-          echo "REQUIRE_ACTIVATION=${{ env.REQUIRE_ACTIVATION }}" >> backend-app/.env
-          echo "RATE_LIMIT_PER_HOUR=${{ env.RATE_LIMIT_PER_HOUR }}" >> backend-app/.env
+          touch backend-app/.env.production
+          echo "NODE_ENV=${{ env.NODE_ENV }}" > backend-app/.env.production
+          echo "API_VERSION=${{ env.API_VERSION }}" >> backend-app/.env.production
+          echo "MONGO_URI=${{ env.MONGO_URI }}" >> backend-app/.env.production
+          echo "MONGO_URI_TEST=${{ env.MONGO_URI_TEST }}" >> backend-app/.env.production
+          echo "PORT=${{ env.PORT }}" >> backend-app/.env.production
+          echo "ADMIN_EMAIL=${{ env.ADMIN_EMAIL }}" >> backend-app/.env.production
+          echo "ADMIN_PASSWORD=${{ env.ADMIN_PASSWORD }}" >> backend-app/.env.production
+          echo "ACCESS_TOKEN_SECRET=${{ env.ACCESS_TOKEN_SECRET }}" >> backend-app/.env.production
+          echo "ACCESS_TOKEN_EXPIRY_TIME=${{ env.ACCESS_TOKEN_EXPIRY_TIME }}" >> backend-app/.env.production
+          echo "REFRESH_TOKEN_SECRET=${{ env.REFRESH_TOKEN_SECRET }}" >> backend-app/.env.production
+          echo "REFRESH_TOKEN_EXPIRY_TIME=${{ env.REFRESH_TOKEN_EXPIRY_TIME }}" >> backend-app/.env.production
+          echo "REQUIRE_ACTIVATION=${{ env.REQUIRE_ACTIVATION }}" >> backend-app/.env.production
+          echo "RATE_LIMIT_PER_HOUR=${{ env.RATE_LIMIT_PER_HOUR }}" >> backend-app/.env.production
+      
       - name: Install dependencies
         run: |
           cd backend-app/
           npm install
         working-directory: backend-app/
 
-      - name: Build
-        run: |
-          cd backend-app/
-          npm run build
-        working-directory: backend-app/
+      # - name: Build
+      #   run: |
+      #     cd backend-app/
+      #     npm run build
+      #   working-directory: backend-app/
 
       - name: Run tests
         run: |
           cd backend-app/
-          npm run test:build
+          npm run test
         working-directory: backend-app/

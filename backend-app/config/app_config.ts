@@ -6,7 +6,7 @@ import fs from 'fs';
 const envMode = process.env.NODE_ENV?.toLowerCase();
 const envFile =
     envMode === 'production'
-        ? ''
+        ? '.env.production'
         : fs.existsSync('.env')
         ? '.env'
         : '.env.example';
