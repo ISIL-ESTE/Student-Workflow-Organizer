@@ -6,25 +6,23 @@ on:
   pull_request:
     branches: [main]
 
-env: 
-  NODE_ENV: production
-  API_VERSION: v1
-  MONGO_URI: ${{ secrets.MONGO_URI }}
-  MONGO_URI_TEST: ${{ secrets.MONGO_URI_TEST }}
-  PORT: ${{ secrets.PORT }}
-  ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
-  ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
-  ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
-  ACCESS_TOKEN_EXPIRY_TIME: 1h
-  REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
-  REFRESH_TOKEN_EXPIRY_TIME: 7d
-  REQUIRE_ACTIVATION: true
-  RATE_LIMIT_PER_HOUR: 1000
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
+    env: 
+      NODE_ENV: production
+      API_VERSION: v1
+      MONGO_URI: ${{ secrets.MONGO_URI }}
+      MONGO_URI_TEST: ${{ secrets.MONGO_URI_TEST }}
+      PORT: ${{ secrets.PORT }}
+      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+      ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+      ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+      ACCESS_TOKEN_EXPIRY_TIME: 1h
+      REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
+      REFRESH_TOKEN_EXPIRY_TIME: 7d
+      REQUIRE_ACTIVATION: true
+      RATE_LIMIT_PER_HOUR: 1000
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -36,22 +34,24 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '14.x'
+
       - name: Set up environment variables
         run: |
           touch backend-app/.env.production
-          echo "NODE_ENV=${{ env.NODE_ENV }}" > backend-app/.env.production
-          echo "API_VERSION=${{ env.API_VERSION }}" >> backend-app/.env.production
-          echo "MONGO_URI=${{ env.MONGO_URI }}" >> backend-app/.env.production
-          echo "MONGO_URI_TEST=${{ env.MONGO_URI_TEST }}" >> backend-app/.env.production
-          echo "PORT=${{ env.PORT }}" >> backend-app/.env.production
-          echo "ADMIN_EMAIL=${{ env.ADMIN_EMAIL }}" >> backend-app/.env.production
-          echo "ADMIN_PASSWORD=${{ env.ADMIN_PASSWORD }}" >> backend-app/.env.production
-          echo "ACCESS_TOKEN_SECRET=${{ env.ACCESS_TOKEN_SECRET }}" >> backend-app/.env.production
-          echo "ACCESS_TOKEN_EXPIRY_TIME=${{ env.ACCESS_TOKEN_EXPIRY_TIME }}" >> backend-app/.env.production
-          echo "REFRESH_TOKEN_SECRET=${{ env.REFRESH_TOKEN_SECRET }}" >> backend-app/.env.production
-          echo "REFRESH_TOKEN_EXPIRY_TIME=${{ env.REFRESH_TOKEN_EXPIRY_TIME }}" >> backend-app/.env.production
-          echo "REQUIRE_ACTIVATION=${{ env.REQUIRE_ACTIVATION }}" >> backend-app/.env.production
-          echo "RATE_LIMIT_PER_HOUR=${{ env.RATE_LIMIT_PER_HOUR }}" >> backend-app/.env.production
+          echo "NODE_ENV=${NODE_ENV}" > backend-app/.env.production
+          echo "API_VERSION=${API_VERSION}" >> backend-app/.env.production
+          echo "MONGO_URI=${MONGO_URI}" >> backend-app/.env.production
+          echo "MONGO_URI_TEST=${MONGO_URI_TEST}" >> backend-app/.env.production
+          echo "PORT=${PORT}" >> backend-app/.env.production
+          echo "ADMIN_EMAIL=${ADMIN_EMAIL}" >> backend-app/.env.production
+          echo "ADMIN_PASSWORD=${ADMIN_PASSWORD}" >> backend-app/.env.production
+          echo "ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}" >> backend-app/.env.production
+          echo "ACCESS_TOKEN_EXPIRY_TIME=${ACCESS_TOKEN_EXPIRY_TIME}" >> backend-app/.env.production
+          echo "REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}" >> backend-app/.env.production
+          echo "REFRESH_TOKEN_EXPIRY_TIME=${REFRESH_TOKEN_EXPIRY_TIME}" >> backend-app/.env.production
+          echo "REQUIRE_ACTIVATION=${REQUIRE_ACTIVATION}" >> backend-app/.env.production
+          echo "RATE_LIMIT_PER_HOUR=${RATE_LIMIT_PER_HOUR}" >> backend-app/.env.production
+
       # log to terminal the env variables to make sure they are set correctly
       - name: Log environment variables
         run: |
@@ -60,28 +60,19 @@ jobs:
       # manual log of env variables
       - name: Log environment variables
         run: |
-          echo "NODE_ENV=${{ env.NODE_ENV }}"
-          echo "API_VERSION=${{ env.API_VERSION }}"
-          echo "MONGO_URI=${{ env.MONGO_URI }}"
-          echo "MONGO_URI_TEST=${{ env.MONGO_URI_TEST }}"
-          echo "PORT=${{ env.PORT }}"
-          echo "ADMIN_EMAIL=${{ env.ADMIN_EMAIL }}"
-          echo "ADMIN_PASSWORD=${{ env.ADMIN_PASSWORD }}"
-          echo "ACCESS_TOKEN_SECRET=${{ env.ACCESS_TOKEN_SECRET }}"
-          echo "ACCESS_TOKEN_EXPIRY_TIME=${{ env.ACCESS_TOKEN_EXPIRY_TIME }}"
-          echo "REFRESH_TOKEN_SECRET=${{ env.REFRESH_TOKEN_SECRET }}"
-          echo "REFRESH_TOKEN_EXPIRY_TIME=${{ env.REFRESH_TOKEN_EXPIRY_TIME }}"
-          echo "REQUIRE_ACTIVATION=${{ env.REQUIRE_ACTIVATION }}"
-          echo "RATE_LIMIT_PER_HOUR=${{ env.RATE_LIMIT_PER_HOUR }}"
-        env:
-          
-          MONGO_URI: ${{ secrets.MONGO_URI }}
-          MONGO_URI_TEST: ${{ secrets.MONGO_URI_TEST }}
-          PORT: ${{ secrets.PORT }}
-          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
-          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
-          ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
-          REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
+          echo "NODE_ENV=${NODE_ENV}"
+          echo "API_VERSION=${API_VERSION}"
+          echo "MONGO_URI=${MONGO_URI}"
+          echo "MONGO_URI_TEST=${MONGO_URI_TEST}"
+          echo "PORT=${PORT}"
+          echo "ADMIN_EMAIL=${ADMIN_EMAIL}"
+          echo "ADMIN_PASSWORD=${ADMIN_PASSWORD}"
+          echo "ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}"
+          echo "ACCESS_TOKEN_EXPIRY_TIME=${ACCESS_TOKEN_EXPIRY_TIME}"
+          echo "REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}"
+          echo "REFRESH_TOKEN_EXPIRY_TIME=${REFRESH_TOKEN_EXPIRY_TIME}"
+          echo "REQUIRE_ACTIVATION=${REQUIRE_ACTIVATION}"
+          echo "RATE_LIMIT_PER_HOUR=${RATE_LIMIT_PER_HOUR}"
 
       - name: Install dependencies
         run: |
