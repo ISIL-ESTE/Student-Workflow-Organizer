@@ -18,4 +18,5 @@ userRoutes(router);
 adminRoutes(router);
 superAdminRoutes(router);
 githubRoutes(router);
+
 export default router;

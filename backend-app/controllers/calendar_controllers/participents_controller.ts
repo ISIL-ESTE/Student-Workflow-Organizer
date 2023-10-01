@@ -36,7 +36,6 @@ export const inviteUsersByEmail = async (req: IReq, res: IRes, next: INext) => {
         });
         // TODO: send emails to valid emails
         res.status(200).json({
-            status: 'success',
             validEmails,
             invalidEmails,
         });
@@ -65,7 +64,6 @@ export const removeCalendarParticipants = async (
         // save calendar
         await calendar.save();
         res.status(200).json({
-            status: 'success',
             calendar,
         });
     } catch (err) {

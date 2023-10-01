@@ -52,7 +52,7 @@ class AuthUtils {
                 REFRESH_TOKEN_SECRET
             );
         } catch (error) {
-            throw new AppError(401, 'Invalid token');
+            throw new AppError(400, 'Invalid refresh token');
         }
     }
 }

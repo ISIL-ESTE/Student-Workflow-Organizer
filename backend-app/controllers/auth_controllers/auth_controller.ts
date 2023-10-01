@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import { IReq, IRes, INext } from '@interfaces/vendors';
 import { promisify } from 'util';
-import validator from 'validator';
 import AppError from '@utils/app_error';
 import Role from '@utils/authorization/roles/role';
 import { REQUIRE_ACTIVATION } from '@config/app_config';
@@ -14,6 +13,7 @@ import AuthUtils from '@utils/authorization/auth_utils';
 import searchCookies from '@utils/searchCookie';
 import User from '@models/user/user_model';
 import { Request, Response, NextFunction } from 'express';
+import { IUser } from '@root/interfaces/models/i_user';
 
 const generateActivationKey = async () => {
     const randomBytesPromiseified = promisify(require('crypto').randomBytes);
@@ -34,7 +34,10 @@ export const githubHandler = async (
                 500,
                 'User role does not exist. Please contact the admin.'
             );
-        const { code, redirect_url } = req.query;
+        const { code, redirect_url } = req.query as {
+            code: string;
+            redirect_url: string;
+        };
         if (!redirect_url)
             throw new AppError(400, 'Please provide redirect_url');
         if (typeof redirect_url !== 'string')
@@ -42,12 +45,18 @@ export const githubHandler = async (
         if (!code) throw new AppError(400, 'Please provide code');
         const { access_token } = await getGithubOAuthToken(code);
         if (!access_token) throw new AppError(400, 'Invalid code');
-        const githubUser = await getGithubOAuthUser(access_token);
-        const primaryEmail = await getGithubOAuthUserPrimaryEmail(access_token);
+        const githubUser = await getGithubOAuthUser(access_token as string);
+        const primaryEmail = await getGithubOAuthUserPrimaryEmail(
+            access_token as string
+        );
         const exists = await User.findOne({ email: primaryEmail });
         if (exists) {
-            const accessToken = AuthUtils.generateAccessToken(exists._id);
-            const refreshToken = AuthUtils.generateRefreshToken(exists._id);
+            const accessToken = AuthUtils.generateAccessToken(
+                exists._id.toString()
+            );
+            const refreshToken = AuthUtils.generateRefreshToken(
+                exists._id.toString()
+            );
             AuthUtils.setAccessTokenCookie(res, accessToken);
             AuthUtils.setRefreshTokenCookie(res, refreshToken);
         }
@@ -57,15 +66,19 @@ export const githubHandler = async (
             email: primaryEmail,
             password: null,
             address: githubUser.location,
-            roles: [Roles.USER.type],
+            roles: [Roles.USER.name],
             authorities: Roles.USER.authorities,
             restrictions: Roles.USER.restrictions,
             githubOauthAccessToken: access_token,
             active: true,
         });
 
-        const accessToken = AuthUtils.generateAccessToken(createdUser._id);
-        const refreshToken = AuthUtils.generateRefreshToken(createdUser._id);
+        const accessToken = AuthUtils.generateAccessToken(
+            createdUser._id.toString()
+        );
+        const refreshToken = AuthUtils.generateRefreshToken(
+            createdUser._id.toString()
+        );
         AuthUtils.setAccessTokenCookie(res, accessToken);
         AuthUtils.setRefreshTokenCookie(res, refreshToken);
         //redirect user to redirect url
@@ -75,32 +88,25 @@ export const githubHandler = async (
     }
 };
 
-function validateCredentialsTypes(email: string, password: string) {
-    // TODO: impllement joi to validate url params ( only if it's compatible with swagger )
-    if (!email || !password) {
-        throw new AppError(404, 'Please provide email or password');
-    }
-
-    if (!validator.isEmail(email)) {
-        throw new AppError(400, 'Invalid email format');
-    }
-
-    // to type safty on password
-    if (typeof password !== 'string') {
-        throw new AppError(400, 'Invalid password format');
-    }
-}
-
 export const login = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
     try {
-        const { email, password } = req.body;
+        const { email, password } = req.body as {
+            email: string;
+            password: string;
+        };
 
-        // 1) check if email and password existos
-        validateCredentialsTypes(email, password);
+        // 1) check if password exist
+        if (!password) {
+            throw new AppError(400, 'Please provide a password');
+        }
+        // to type safty on password
+        if (typeof password !== 'string') {
+            throw new AppError(400, 'Invalid password format');
+        }
 
         // 2) check if user exist and password is correct
         const user = await User.findOne({
@@ -123,8 +129,10 @@ export const login = async (
         }
 
         // 3) All correct, send accessToken & refreshToken to client via cookie
-        const accessToken = AuthUtils.generateAccessToken(user._id);
-        const refreshToken = AuthUtils.generateRefreshToken(user._id);
+        const accessToken = AuthUtils.generateAccessToken(user._id.toString());
+        const refreshToken = AuthUtils.generateRefreshToken(
+            user._id.toString()
+        );
         AuthUtils.setAccessTokenCookie(res, accessToken);
         AuthUtils.setRefreshTokenCookie(res, refreshToken);
 
@@ -156,19 +164,25 @@ export const signup = async (
                 'User role does not exist. Please contact the admin.'
             );
 
+        // check if password is provided
+        if (!req.body.password)
+            throw new AppError(400, 'Please provide a password');
+
         const userpayload = {
             name: req.body.name,
             email: req.body.email,
             password: req.body.password,
-            roles: [Roles.USER.type],
+            roles: [Roles.USER.name],
             authorities: Roles.USER.authorities,
             active: !REQUIRE_ACTIVATION,
             restrictions: Roles.USER.restrictions,
             ...(REQUIRE_ACTIVATION && { activationKey }),
         };
         const user = await User.create(userpayload);
-        const accessToken = AuthUtils.generateAccessToken(user._id);
-        const refreshToken = AuthUtils.generateRefreshToken(user._id);
+        const accessToken = AuthUtils.generateAccessToken(user._id.toString());
+        const refreshToken = AuthUtils.generateRefreshToken(
+            user._id.toString()
+        );
         AuthUtils.setAccessTokenCookie(res, accessToken);
         AuthUtils.setRefreshTokenCookie(res, refreshToken);
         // Remove the password and activation key from the output
@@ -190,6 +204,7 @@ export const tokenRefresh = async (
     next: NextFunction
 ) => {
     try {
+        // get the refresh token from httpOnly cookie
         const refreshToken = searchCookies(req, 'refresh_token');
         if (!refreshToken)
             throw new AppError(400, 'You have to login to continue.');
@@ -197,9 +212,9 @@ export const tokenRefresh = async (
             await AuthUtils.verifyRefreshToken(refreshToken);
         if (!refreshTokenPayload || !refreshTokenPayload._id)
             throw new AppError(400, 'Invalid refresh token');
-        const user = await User.findById(refreshTokenPayload.id);
+        const user = await User.findById(refreshTokenPayload._id);
         if (!user) throw new AppError(400, 'Invalid refresh token');
-        const accessToken = AuthUtils.generateAccessToken(user._id);
+        const accessToken = AuthUtils.generateAccessToken(user._id.toString());
         //set or override accessToken cookie.
         AuthUtils.setAccessTokenCookie(res, accessToken);
         res.sendStatus(204);
@@ -218,7 +233,7 @@ export const logout = async (
             throw new AppError(400, 'Please provide access token');
         const accessTokenPayload =
             await AuthUtils.verifyAccessToken(accessToken);
-        if (!accessTokenPayload || !accessTokenPayload.id)
+        if (!accessTokenPayload || !accessTokenPayload._id)
             throw new AppError(400, 'Invalid access token');
         res.sendStatus(204);
     } catch (err) {
@@ -288,17 +303,17 @@ export const protect = async (
 ) => {
     try {
         const accessToken = searchCookies(req, 'access_token');
+
         if (!accessToken) throw new AppError(401, 'Please login to continue');
 
         const accessTokenPayload =
             await AuthUtils.verifyAccessToken(accessToken);
-        console.log(accessTokenPayload);
 
-        if (!accessTokenPayload || !accessTokenPayload.id)
+        if (!accessTokenPayload || !accessTokenPayload._id)
             throw new AppError(401, 'Invalid access token');
         // 3) check if the user is exist (not deleted)
-        const user = await User.findById(accessTokenPayload.id).select(
-            'accessRestricted active'
+        const user: IUser = await User.findById(accessTokenPayload._id).select(
+            'accessRestricted active roles authorities restrictions name email'
         );
         if (!user) {
             throw new AppError(401, 'This user is no longer exist');
@@ -319,6 +334,7 @@ export const protect = async (
             );
 
         // Create a new request object with the user property set to the user object
+
         req.user = user;
         next();
     } catch (err) {

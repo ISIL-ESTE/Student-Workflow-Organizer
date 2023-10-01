@@ -16,7 +16,6 @@ import { COOKIE_SECRET, CURRENT_ENV } from './config/app_config';
 import cookieParser from 'cookie-parser';
 import routesVersioning from 'express-routes-versioning';
 import indexRouter from './routes/index';
-import logger from '@utils/logger';
 
 const app = express();
 
@@ -72,7 +71,6 @@ app.use(bearerToken());
 
 app.get('/', (_req: Request, res: Response) => {
     res.status(200).json({
-        status: 'success',
         message: 'Welcome to the backend app',
         env: CURRENT_ENV,
     });
@@ -95,7 +93,11 @@ app.use('*', (req: Request, _res: Response, next: NextFunction) => {
     next(err);
 });
 
-logger.error('This is an error log');
+// dummy error handler
+app.use((_req: Request, _res: Response, next: NextFunction) => {
+    const err = new AppError(500, 'Something went wrong');
+    next(err);
+});
 
 app.use(globalErrHandler);
 

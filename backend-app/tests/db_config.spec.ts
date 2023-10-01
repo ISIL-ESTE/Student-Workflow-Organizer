@@ -1,16 +1,17 @@
 const mongoose = require('mongoose');
-const { describe } = require('node:test');
+const expect = require('chai').expect;
 require('dotenv').config();
+import createDefaultUser from '@utils/create_default_user';
+import createRoles from '@utils/authorization/roles/create_roles';
 
-before(() => {
-    // check if db isn't already connected
-    if (mongoose.connection.readyState === 0) {
-        mongoose.set('strictQuery', false);
-        mongoose.connect(process.env.MONGO_URI_TEST, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
-    }
+before(async () => {
+    mongoose.set('strictQuery', false);
+    await mongoose.connect(process.env.MONGO_URI_TEST, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
+    await createRoles();
+    await createDefaultUser();
     // const res = await request(app).post('/api/auth/signup').send({
     //     name: testUserCredentials.userName,
     //     email: testUserCredentials.userEmail,
@@ -18,7 +19,8 @@ before(() => {
     // });
 });
 after(async () => {
-    await mongoose.disconnect();
+    await mongoose.connection.dropDatabase();
+    await mongoose.connection.close();
 });
 
 describe('Database connection', () => {

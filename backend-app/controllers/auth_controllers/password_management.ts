@@ -36,7 +36,6 @@ export const updatePassword = async (
         user.password = undefined;
 
         res.status(200).json({
-            status: 'success',
             token,
             user,
         });
@@ -75,7 +74,7 @@ export const forgotPassword = async (
         // TODO: send email with reset key
 
         res.status(200).json({
-            status: 'success',
+            message: 'Email with reset key sent successfully',
         });
     } catch (err) {
         next(err);

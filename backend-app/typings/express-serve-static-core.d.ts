@@ -5,9 +5,11 @@ declare module 'express-serve-static-core' {
         user:
             | {
                   _id: ObjectId;
-                  roles: string[];
-                  authorities: string[];
-                  restrictions: string[];
+                  name?: string;
+                  email: string;
+                  roles?: string[];
+                  authorities?: string[];
+                  restrictions?: string[];
                   active: boolean;
                   githubOauthAccessToken?: string;
               }

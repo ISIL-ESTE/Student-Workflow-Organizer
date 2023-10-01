@@ -50,6 +50,7 @@ const swaggerDocs = (app: any): void => {
         res.send(swaggerSpec);
     });
     logger.info(`Swagger available at /docs  /docs-json`);
+    logger.info('list of all env variables', process.env);
 };
 
 export default swaggerDocs;

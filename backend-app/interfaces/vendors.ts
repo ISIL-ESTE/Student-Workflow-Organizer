@@ -3,9 +3,11 @@ import { Request } from 'express';
 export interface IReq extends Request {
     user: {
         _id: ObjectId;
-        roles: string[];
-        authorities: string[];
-        restrictions: string[];
+        name?: string;
+        email: string;
+        roles?: string[];
+        authorities?: string[];
+        restrictions?: string[];
         active: boolean;
         githubOauthAccessToken?: string;
     };

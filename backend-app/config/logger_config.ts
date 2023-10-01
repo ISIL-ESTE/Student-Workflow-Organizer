@@ -1,7 +1,7 @@
 import { addColors, format } from 'winston';
 import { logFilePath } from './app_config';
 // Define the current environment
-// import { CURRENT_ENV } from './app_config';
+import { CURRENT_ENV } from './app_config';
 
 // Define log colors
 const colors = {
@@ -28,7 +28,7 @@ const formatLogMessage = format.printf(
  * when the log level is debug, debug and all the levels above it will be logged.
  * when the log level is warn, warn and all the levels above it will be logged.
  */
-const logLevel = 'warn';
+const logLevel = CURRENT_ENV === 'development' ? 'debug' : 'warn';
 
 /**
  * @description - This is the configuration for the logger

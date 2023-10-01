@@ -7,10 +7,10 @@ const router = express.Router();
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 router.delete('/logout', authController.logout);
-router.put('/token-refresh', authController.tokenRefresh);
+router.get('/refreshToken', authController.tokenRefresh);
 router.get('/activate', authController.activateAccount);
-router.patch('/updateMyPassword', password_management.updatePassword);
 router.patch('/forgotPassword', password_management.forgotPassword);
+router.patch('/updateMyPassword', password_management.updatePassword);
 router.get('/github/callback', authController.githubHandler);
 
 const authRoutes = (mainrouter: Router) => {

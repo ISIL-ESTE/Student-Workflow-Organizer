@@ -1,12 +1,14 @@
 import { Request } from 'express';
 
-const searchCookies = (req: Request, cookieName: string): string => {
-    const cookies: { [key: string]: string } =
-        Object.keys(req.signedCookies).length > 0 ? req.signedCookies : false;
-    if (!cookies) return undefined;
-    const cookie = cookies[cookieName];
-    if (!cookie) return undefined;
-    return cookie;
+const searchCookies = (
+    req: Request,
+    cookieName: string
+): string | undefined => {
+    const cookies = req.cookies;
+    if (!cookies || !cookies[cookieName]) {
+        return undefined;
+    }
+    return cookies[cookieName];
 };
 
 export default searchCookies;

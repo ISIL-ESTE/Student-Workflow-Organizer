@@ -1,17 +1,6 @@
 // src/users/usersController.ts
 // import { IUser } from '@interfaces/models/i_user';
-import { NextFunction, Request, Response as IRes } from 'express';
-import {
-    Body,
-    Controller,
-    Path,
-    Post,
-    Query,
-    Route,
-    SuccessResponse,
-    Response,
-    Middlewares,
-} from 'tsoa';
+import { Controller, Route } from 'tsoa';
 export interface IUser {
     /**
      * @isString <please enter a valid integer number>
@@ -37,15 +26,15 @@ export interface IUser {
     updatedBy?: string;
 }
 
-interface ValidateErrorJSON {
-    message: 'Validation failed';
-    details: { [name: string]: unknown };
-}
+// interface ValidateErrorJSON {
+//     message: 'Validation failed';
+//     details: { [name: string]: unknown };
+// }
 
-function customMiddleware(req: Request, res: IRes, next: NextFunction) {
-    // Perform any necessary operations or modifications
-    next();
-}
+// function customMiddleware(req: Request, res: IRes, next: NextFunction) {
+//     // Perform any necessary operations or modifications
+//     next();
+// }
 
 @Route('users')
 export class UsersController extends Controller {

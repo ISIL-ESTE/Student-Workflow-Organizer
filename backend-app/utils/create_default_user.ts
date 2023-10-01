@@ -12,7 +12,7 @@ const createAdminUser = async () => {
                 name: 'Supper Admin',
                 email: ADMIN_EMAIL,
                 password: ADMIN_PASSWORD,
-                roles: [roles.SUPER_ADMIN.type],
+                roles: [roles.SUPER_ADMIN.name],
                 authorities: roles.SUPER_ADMIN.authorities,
                 restrictions: roles.SUPER_ADMIN.restrictions,
                 active: true,

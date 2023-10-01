@@ -27,6 +27,7 @@
         "allowUnreachableCode": false,
 
         "paths": {
+            "@root/*": ["./*"],
             "@config/*": ["./config/*"],
             "@utils/*": ["./utils/*"],
             "@models/*": ["./models/*"],
@@ -38,5 +39,5 @@
         "typeRoots": ["./typings"]
     },
     "include": ["./**/*"],
-    "exclude": ["node_modules", "**/*.spec.ts", "build"]
+    "exclude": ["node_modules", "build"]
 }

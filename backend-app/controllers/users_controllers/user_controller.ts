@@ -6,8 +6,7 @@ import { INext, IReq, IRes } from '@interfaces/vendors';
 export const getMe = (req: IReq, res: IRes) => {
     // return data of the current user
     res.status(200).json({
-        status: 'success',
-        data: req.user,
+        user: req.user,
     });
 };
 
@@ -44,7 +43,10 @@ export const updateMe = async (req: IReq, res: IRes, next: INext) => {
             );
         }
         // 2) Filtered out unwanted fields names that are not allowed to be updated
-        const payload = new User(req.body);
+        const payload = {
+            name: req.body.name,
+            email: req.body.email,
+        };
         // 3) Update user document
         const doc = await User.findByIdAndUpdate(req.user._id, payload, {
             new: true,

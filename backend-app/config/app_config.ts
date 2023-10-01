@@ -3,8 +3,17 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 
 // load env file
-const envFile = fs.existsSync('.env') ? '.env' : '.env.example';
-dotenv.config({ path: join(__dirname, `../${envFile}`) });
+const envMode = process.env.NODE_ENV?.toLowerCase();
+const envFile =
+    envMode === 'production'
+        ? ''
+        : fs.existsSync('.env')
+        ? '.env'
+        : '.env.example';
+
+if (envFile) {
+    dotenv.config({ path: join(__dirname, `../${envFile}`) });
+}
 
 // parse boolean values
 const parseBoolean = (value: string): boolean => value === 'true';

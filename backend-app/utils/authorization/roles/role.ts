@@ -3,7 +3,7 @@ import roleModel from '../../../models/user/role_model';
 import Actions from '../../../constants/actions';
 
 interface RoleData {
-    type: string;
+    name: string;
     authorities: string[];
     restrictions: string[];
 }
@@ -22,7 +22,7 @@ async function getRoles(): Promise<{ [key: string]: RoleData }> {
 
     roles.forEach((role) => {
         data[role.name] = {
-            type: role.name,
+            name: role.name,
             authorities: role.authorities,
             restrictions: role.restrictions,
         };
@@ -40,7 +40,7 @@ async function getRoleByName(roleName: string): Promise<RoleData | null> {
     const role = await roleModel.findOne({ name: roleName });
     if (!role) return null;
     return {
-        type: role.name,
+        name: role.name,
         authorities: role.authorities,
         restrictions: role.restrictions,
     };
@@ -61,7 +61,7 @@ async function deleteRoleByName(roleName: string): Promise<RoleData> {
     );
     if (!deletedRole) throw new AppError(404, 'Role not found!');
     return {
-        type: deletedRole.name,
+        name: deletedRole.name,
         authorities: deletedRole.authorities,
         restrictions: deletedRole.restrictions,
     };
@@ -96,7 +96,7 @@ async function createRole(
         restrictions,
     });
     return {
-        type: role.name,
+        name: role.name,
         authorities: role.authorities,
         restrictions: role.restrictions,
     };
@@ -148,7 +148,7 @@ async function updateRoleByName(
     );
     if (!updatedRole) throw new AppError(404, 'Role not found!');
     return {
-        type: updatedRole.name,
+        name: updatedRole.name,
         authorities: updatedRole.authorities,
         restrictions: updatedRole.restrictions,
     };

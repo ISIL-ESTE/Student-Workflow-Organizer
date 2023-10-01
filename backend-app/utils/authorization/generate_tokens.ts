@@ -1,13 +1,13 @@
-const {
+import {
     ACCESS_TOKEN_SECRET,
     ACCESS_TOKEN_EXPIRY_TIME,
     REFRESH_TOKEN_SECRET,
     REFRESH_TOKEN_EXPIRY_TIME,
-} = require('../../config/app_config');
-const AppError = require('../app_error');
-const jwt = require('jsonwebtoken');
+} from '@config/app_config';
+import AppError from '../app_error';
+import jwt from 'jsonwebtoken';
 
-const generateTokens = (id) => {
+const generateTokens = (id: string) => {
     try {
         const accessToken = jwt.sign({ id }, ACCESS_TOKEN_SECRET, {
             expiresIn: ACCESS_TOKEN_EXPIRY_TIME,
@@ -28,4 +28,4 @@ const generateTokens = (id) => {
         );
     }
 };
-module.exports = generateTokens;
+export default generateTokens;

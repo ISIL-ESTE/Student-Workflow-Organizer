@@ -15,9 +15,9 @@ export const addAdmin = async (req: IReq, res: IRes, next: INext) => {
                 500,
                 'Error in base roles, please contact an admin'
             );
-        if (user.roles?.includes(Roles.ADMIN.type))
+        if (user.roles?.includes(Roles.ADMIN.name))
             throw new AppError(400, 'User is already an admin');
-        user.roles?.push(Roles.ADMIN.type);
+        user.roles?.push(Roles.ADMIN.name);
         const existingAuthorities = user.authorities;
         const existingRestrictions = user.restrictions;
         user.authorities = Array.from(
@@ -48,9 +48,9 @@ export const removeAdmin = async (req: IReq, res: IRes, next: INext) => {
             );
         if (req.user._id?.toString() === userId?.toString())
             throw new AppError(400, 'You cannot remove yourself as an admin');
-        if (!user.roles?.includes(Roles.ADMIN.type))
+        if (!user.roles?.includes(Roles.ADMIN.name))
             throw new AppError(400, 'User is not an admin');
-        user.roles = user.roles.filter((role) => role !== Roles.ADMIN.type);
+        user.roles = user.roles.filter((role) => role !== Roles.ADMIN.name);
         user.authorities = Roles.USER.authorities;
         user.restrictions = Roles.USER.restrictions;
         await user.save();
@@ -70,9 +70,9 @@ export const addSuperAdmin = async (req: IReq, res: IRes, next: INext) => {
         if (!user) throw new AppError(404, 'No user found with this id');
         if (req.user._id?.toString() === userId?.toString())
             throw new AppError(400, 'You cannot make yourself a super admin');
-        if (user.roles?.includes(Roles.SUPER_ADMIN.type))
+        if (user.roles?.includes(Roles.SUPER_ADMIN.name))
             throw new AppError(400, 'User is already a super admin');
-        user.roles?.push(Roles.SUPER_ADMIN.type);
+        user.roles?.push(Roles.SUPER_ADMIN.name);
         const existingRestrictions = user.restrictions;
         user.authorities = Roles.SUPER_ADMIN.authorities;
         user.restrictions = Array.from(
@@ -101,10 +101,10 @@ export const removeSuperAdmin = async (req: IReq, res: IRes, next: INext) => {
                 400,
                 'You cannot remove yourself as a super admin'
             );
-        if (!user.roles?.includes(Roles.SUPER_ADMIN.type))
+        if (!user.roles?.includes(Roles.SUPER_ADMIN.name))
             throw new AppError(400, 'User is not a super admin');
         user.roles = user.roles.filter(
-            (role) => role !== Roles.SUPER_ADMIN.type
+            (role) => role !== Roles.SUPER_ADMIN.name
         );
         user.authorities = Roles.ADMIN.authorities;
         user.restrictions = Roles.ADMIN.restrictions;
@@ -172,9 +172,9 @@ export const banUser = async (req: IReq, res: IRes, next: INext) => {
             throw new AppError(400, 'You cannot ban yourself');
         if (user.accessRestricted)
             throw new AppError(400, 'User is already banned');
-        if (user.roles?.includes(Roles.SUPER_ADMIN.type))
+        if (user.roles?.includes(Roles.SUPER_ADMIN.name))
             throw new AppError(400, 'You cannot ban a super admin');
-        if (user.roles?.includes(Roles.ADMIN.type))
+        if (user.roles?.includes(Roles.ADMIN.name))
             throw new AppError(400, 'You cannot ban an admin');
         user.accessRestricted = true;
         await user.save();
@@ -287,9 +287,9 @@ export const assignRoleToUser = async (req: IReq, res: IRes, next: INext) => {
         const role = await Role.getRoleByName(name as string);
         if (!user) throw new AppError(404, 'No user found with this id');
         if (!role) throw new AppError(404, 'No role found with this name');
-        if (user.roles.includes(role.type))
+        if (user.roles.includes(role.name))
             throw new AppError(400, 'User already has this role');
-        user.roles.push(role.type);
+        user.roles.push(role.name);
         user.authorities = Array.from(
             new Set([...role.authorities, ...user.authorities])
         );
@@ -312,9 +312,9 @@ export const removeRoleFromUser = async (req: IReq, res: IRes, next: INext) => {
         if (!role) throw new AppError(404, 'No role found with this name');
         const user = await USER.findById(userId);
         if (!user) throw new AppError(404, 'No user found with this id');
-        if (!user.roles.includes(role.type))
+        if (!user.roles.includes(role.name))
             throw new AppError(400, 'User does not have this role');
-        user.roles = user.roles.filter((_role) => _role !== role.type);
+        user.roles = user.roles.filter((_role) => _role !== role.name);
         user.authorities = user.authorities.filter(
             (authority) => !role.authorities.includes(authority)
         );
