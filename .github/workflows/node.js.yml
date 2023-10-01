@@ -1,15 +1,28 @@
 name: Node.js API CI
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
+    
 
 jobs:
-  build-and-deploy:
+  approved:
+    # status is approved and branch is main
+    if: github.event.review.state == 'APPROVED' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-
+    env: 
+      NODE_ENV: production
+      API_VERSION: v1
+      MONGO_URI: ${{ secrets.MONGO_URI }}
+      MONGO_URI_TEST: ${{ secrets.MONGO_URI_TEST }}
+      PORT: ${{ secrets.PORT }}
+      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+      ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+      ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+      ACCESS_TOKEN_EXPIRY_TIME: 1h
+      REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
+      REFRESH_TOKEN_EXPIRY_TIME: 7d
+      REQUIRE_ACTIVATION: true
+      RATE_LIMIT_PER_HOUR: 1000
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -22,14 +35,59 @@ jobs:
         with:
           node-version: '14.x'
 
+      - name: Set up environment variables
+        run: |
+          touch backend-app/.env.production
+          echo "NODE_ENV=${NODE_ENV}" > backend-app/.env.production
+          echo "API_VERSION=${API_VERSION}" >> backend-app/.env.production
+          echo "MONGO_URI=${MONGO_URI}" >> backend-app/.env.production
+          echo "MONGO_URI_TEST=${MONGO_URI_TEST}" >> backend-app/.env.production
+          echo "PORT=${PORT}" >> backend-app/.env.production
+          echo "ADMIN_EMAIL=${ADMIN_EMAIL}" >> backend-app/.env.production
+          echo "ADMIN_PASSWORD=${ADMIN_PASSWORD}" >> backend-app/.env.production
+          echo "ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}" >> backend-app/.env.production
+          echo "ACCESS_TOKEN_EXPIRY_TIME=${ACCESS_TOKEN_EXPIRY_TIME}" >> backend-app/.env.production
+          echo "REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}" >> backend-app/.env.production
+          echo "REFRESH_TOKEN_EXPIRY_TIME=${REFRESH_TOKEN_EXPIRY_TIME}" >> backend-app/.env.production
+          echo "REQUIRE_ACTIVATION=${REQUIRE_ACTIVATION}" >> backend-app/.env.production
+          echo "RATE_LIMIT_PER_HOUR=${RATE_LIMIT_PER_HOUR}" >> backend-app/.env.production
+
+      # log to terminal the env variables to make sure they are set correctly
+      - name: Log environment variables
+        run: |
+          cat backend-app/.env.production
+
+      # manual log of env variables
+      - name: Log environment variables
+        run: |
+          echo "NODE_ENV=${NODE_ENV}"
+          echo "API_VERSION=${API_VERSION}"
+          echo "MONGO_URI=${MONGO_URI}"
+          echo "MONGO_URI_TEST=${MONGO_URI_TEST}"
+          echo "PORT=${PORT}"
+          echo "ADMIN_EMAIL=${ADMIN_EMAIL}"
+          echo "ADMIN_PASSWORD=${ADMIN_PASSWORD}"
+          echo "ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}"
+          echo "ACCESS_TOKEN_EXPIRY_TIME=${ACCESS_TOKEN_EXPIRY_TIME}"
+          echo "REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}"
+          echo "REFRESH_TOKEN_EXPIRY_TIME=${REFRESH_TOKEN_EXPIRY_TIME}"
+          echo "REQUIRE_ACTIVATION=${REQUIRE_ACTIVATION}"
+          echo "RATE_LIMIT_PER_HOUR=${RATE_LIMIT_PER_HOUR}"
+
       - name: Install dependencies
         run: |
           cd backend-app/
           npm install
         working-directory: backend-app/
 
+      # - name: Build
+      #   run: |
+      #     cd backend-app/
+      #     npm run build
+      #   working-directory: backend-app/
+
       - name: Run tests
         run: |
           cd backend-app/
-          npm test
+          npm run test
         working-directory: backend-app/
