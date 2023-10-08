@@ -31,10 +31,10 @@ export const REQUIRE_ACTIVATION = parseBoolean(
 );
 export const RATE_LIMIT_PER_HOUR = process.env
     .RATE_LIMIT_PER_HOUR as unknown as number;
-export const GITHUB_OAUTH_CLIENT_ID = process.env.GITHUB_OAUTH_CLIENT_ID;
-export const GITHUB_OAUTH_CLIENT_SECRET =
-    process.env.GITHUB_OAUTH_CLIENT_SECRET;
-export const GITHUB_OAUTH_REDIRECT_URL = process.env.GITHUB_OAUTH_REDIRECT_URL;
+export const OAUTH_CLIENT_ID_GITHUB = process.env.OAUTH_CLIENT_ID_GITHUB;
+export const OAUTH_CLIENT_SECRET_GITHUB =
+    process.env.OAUTH_CLIENT_SECRET_GITHUB;
+export const OAUTH_REDIRECT_URL_GITHUB = process.env.OAUTH_REDIRECT_URL_GITHUB;
 export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 export const ACCESS_TOKEN_EXPIRY_TIME = process.env.ACCESS_TOKEN_EXPIRY_TIME;
 export const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;

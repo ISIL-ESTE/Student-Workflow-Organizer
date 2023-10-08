@@ -1,6 +1,6 @@
 import {
-    GITHUB_OAUTH_CLIENT_ID,
-    GITHUB_OAUTH_CLIENT_SECRET,
+    OAUTH_CLIENT_ID_GITHUB,
+    OAUTH_CLIENT_SECRET_GITHUB,
 } from '@config/app_config';
 import qs from 'qs';
 import axios from 'axios';
@@ -10,8 +10,8 @@ export const getGithubOAuthToken = async (code: string) => {
     const rootUrl = 'https://github.com/login/oauth/access_token';
 
     const queryString = qs.stringify({
-        client_id: GITHUB_OAUTH_CLIENT_ID,
-        client_secret: GITHUB_OAUTH_CLIENT_SECRET,
+        client_id: OAUTH_CLIENT_ID_GITHUB,
+        client_secret: OAUTH_CLIENT_SECRET_GITHUB,
         code,
     });
     try {
