@@ -14,8 +14,8 @@ jobs:
         uses: dependabot/fetch-metadata@v1
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-      - name: Merge pull request
-        uses: peter-evans/merge-pull-request-action@v2
-        with:
+      - name: Enable auto-merge for Dependabot PRs
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           pull-request-number: ${{ steps.metadata.outputs.pull-request-number }}
