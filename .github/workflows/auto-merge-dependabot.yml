@@ -17,5 +17,5 @@ jobs:
       - name: Enable auto-merge for Dependabot PRs
         run: gh pr merge --auto --merge "$PR_URL"
         env:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           pull-request-number: ${{ steps.metadata.outputs.pull-request-number }}
