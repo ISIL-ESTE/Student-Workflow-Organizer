@@ -93,12 +93,6 @@ app.use('*', (req: Request, _res: Response, next: NextFunction) => {
     next(err);
 });
 
-// dummy error handler
-app.use((_req: Request, _res: Response, next: NextFunction) => {
-    const err = new AppError(500, 'Something went wrong');
-    next(err);
-});
-
 app.use(globalErrHandler);
 
 export default app;
