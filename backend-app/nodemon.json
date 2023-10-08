@@ -1,0 +1,4 @@
+{
+    "exec": "ts-node-dev server.ts",
+    "watch": ["."]
+}

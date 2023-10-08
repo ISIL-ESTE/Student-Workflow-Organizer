@@ -4,8 +4,13 @@ import * as githubController from '../controllers/auth_controllers/github_contro
 
 router.get('/recent-repo', githubController.getRecentRepo);
 
+/**
+ * Registers the GitHub routes with the main router and adds them to the Swagger documentation.
+ * @function
+ * @name githubRoutes
+ * @param {Object} mainrouter - Express router object.
+ */
 const githubRoutes = (mainrouter: Router) => {
-    // swaggergenerator.register('github', './routes/github_routes.js');
     mainrouter.use('/github', router);
 };
 

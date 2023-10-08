@@ -43,6 +43,10 @@ const consoleOptions = {
         format.timestamp({
             format: 'HH:mm:ss MM-DD-YYYY',
         }),
+        format((info) => {
+            info.level = info.level.toUpperCase();
+            return info;
+        })(),
         format.colorize({ all: true }),
         format.timestamp(),
         formatLogMessage

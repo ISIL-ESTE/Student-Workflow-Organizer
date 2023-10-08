@@ -1,13 +1,8 @@
-import { Request, Response, NextFunction, RequestHandler } from 'express';
+import { NextFunction, RequestHandler } from 'express';
 import { Model } from 'mongoose';
 import AppError from '@utils/app_error';
 import APIFeatures from '@utils/api_features';
-
-interface RequestWithUser extends Request {
-    user?: {
-        _id: string;
-    };
-}
+import { IReq, IRes } from '@interfaces/vendors';
 
 /**
  * Delete a document by ID (soft delete)
@@ -15,24 +10,20 @@ interface RequestWithUser extends Request {
  * @returns {Function} - Express middleware function
  */
 export const deleteOne =
-    (Model: Model<any>) =>
-    async (req: RequestWithUser, res: Response, next: NextFunction) => {
+    (Model: Model<any>): RequestHandler =>
+    async (req: IReq, res: IRes, next: NextFunction): Promise<void> => {
         try {
             const doc = await Model.findByIdAndUpdate(
                 req.params.id,
                 {
                     deleted: true,
-                    ...(req.user && { deletedBy: req.user._id }),
+                    ...(req.user && { deletedBy: req.user?._id }),
                     deletedAt: Date.now(),
                 },
                 { new: true }
             );
 
-            if (!doc) {
-                return next(
-                    new AppError(404, 'fail', 'No document found with that id')
-                );
-            }
+            if (!doc) throw new AppError(404, 'No document found with that id');
 
             res.status(204).json({
                 data: null,
@@ -49,21 +40,18 @@ export const deleteOne =
  */
 export const updateOne =
     (Model: Model<any>): RequestHandler =>
-    async (req: RequestWithUser, res: Response, next: NextFunction) => {
+    async (req: IReq, res: IRes, next: NextFunction) => {
         try {
             // get the user who is updating the document
-            const userid = req.user._id;
+            const userid = req.user?._id;
             req.body.updatedBy = userid;
-            const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
+            const payload = new Model(req.body);
+            const doc = await Model.findByIdAndUpdate(req.params.id, payload, {
                 new: true,
                 runValidators: true,
             });
 
-            if (!doc) {
-                return next(
-                    new AppError(404, 'fail', 'No document found with that id')
-                );
-            }
+            if (!doc) throw new AppError(404, 'No document found with that id');
 
             res.status(200).json({
                 doc,
@@ -79,10 +67,15 @@ export const updateOne =
  * @returns {Function} - Express middleware function
  */
 export const createOne =
-    (Model: Model<any>) =>
-    async (req: RequestWithUser, res: Response, next: NextFunction) => {
+    (Model: Model<any>): RequestHandler =>
+    async (req: IReq, res: IRes, next: NextFunction) => {
         try {
             // get the user who is creating the document
+            if (req.user === undefined)
+                throw new AppError(
+                    401,
+                    'You are not authorized to perform this action'
+                );
             const userid = req.user._id;
             req.body.createdBy = userid;
 
@@ -101,16 +94,12 @@ export const createOne =
  * @returns {Function} - Express middleware function
  */
 export const getOne =
-    (Model: Model<any>) =>
-    async (req: Request, res: Response, next: NextFunction) => {
+    (Model: Model<any>): RequestHandler =>
+    async (req: IReq, res: IRes, next: NextFunction) => {
         try {
             const doc = await Model.findById(req.params.id);
 
-            if (!doc) {
-                return next(
-                    new AppError(404, 'fail', 'No document found with that id')
-                );
-            }
+            if (!doc) throw new AppError(404, 'No document found with that id');
 
             res.status(200).json({
                 doc,
@@ -126,11 +115,13 @@ export const getOne =
  * @returns {Function} - Express middleware function
  */
 export const getAll =
-    (Model: Model<any>) =>
-    async (req: Request, res: Response, next: NextFunction) => {
+    (Model: Model<any>): RequestHandler =>
+    async (req: IReq, res: IRes, next: NextFunction) => {
         try {
-            // const s = req.body.search;
-            const features = new APIFeatures(Model.find(), req.query)
+            const features = new APIFeatures(
+                Model.find(),
+                req.query as Record<string, string>
+            )
                 .sort()
                 .paginate();
 

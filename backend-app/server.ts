@@ -1,14 +1,13 @@
 import mongoose from 'mongoose';
 import './utils/register_paths';
-
-import '@utils/logger';
+import logger from '@utils/logger';
 import fs from 'fs';
 import { DATABASE, PORT } from './config/app_config';
-import createRoles from './utils/authorization/role/create_roles';
+import createRoles from './utils/authorization/roles/create_roles';
 
 process.on('uncaughtException', (err) => {
-    Logger.error('UNCAUGHT EXCEPTION!!!  shutting down ...');
-    Logger.error(`${err.name}, ${err.message}, ${err.stack}`);
+    logger.error('UNCAUGHT EXCEPTION!!!  shutting down ...');
+    logger.error(`${err}, ${err.message}, ${err.stack}`);
     process.exit(1);
 });
 
@@ -16,55 +15,65 @@ import app from './app';
 
 mongoose.set('strictQuery', true);
 
+let expServer: Promise<import('http').Server>;
+
 // Connect the database
 mongoose
-    .connect(DATABASE, { useNewUrlParser: true } as mongoose.ConnectOptions)
+    .connect(
+        DATABASE as string,
+        { useNewUrlParser: true } as mongoose.ConnectOptions
+    )
     .then(() => {
-        Logger.info('DB Connected Successfully!');
+        logger.info('DB Connected Successfully!');
+        expServer = startServer();
+        logger.info(`Swagger Will Be Available at /docs  /docs-json`);
     })
-    .catch((err) => {
-        Logger.error(
+    .catch((err: Error) => {
+        logger.error(
             'DB Connection Failed! \n\tException : ' + err + '\n' + err.stack
         );
-    }); //Now all the errors of mongo will be handled by the catch block
+    });
 
 // When the connection is disconnected
 mongoose.connection.on('disconnected', () => {
-    Logger.error('DB Connection Disconnected!');
+    logger.error('DB Connection Disconnected!');
 });
 
 // Start the server
-const expServer = app.listen(PORT, async () => {
+const startServer = async (): Promise<import('http').Server> => {
     if (!fs.existsSync('.env'))
-        Logger.warn('.env file not found, using .env.example file');
-    Logger.info(`App running on  http://localhost:${PORT}`);
+        logger.warn('.env file not found, using .env.example file');
+    logger.info(`App running on  http://localhost:${PORT}`);
     await createRoles();
-});
+    return app.listen(PORT);
+};
 
 import createDefaultUser from './utils/create_default_user';
 createDefaultUser();
 
 process.on('unhandledRejection', (err: Error) => {
-    Logger.error('UNHANDLED REJECTION!!!  shutting down ...');
-    Logger.error(`${err.name}, ${err.message}, ${err.stack}`);
-    expServer.close(() => {
-        process.exit(1);
+    logger.error('UNHANDLED REJECTION!!!  shutting down ...');
+    logger.error(`${err.name}, ${err.message}, ${err.stack}`);
+    expServer.then((server) => {
+        server.close(() => {
+            process.exit(1);
+        });
     });
 });
 
 // add graceful shutdown.
 process.on('SIGTERM', () => {
-    Logger.info('SIGINT RECEIVED. Shutting down gracefully');
+    logger.info('SIGINT RECEIVED. Shutting down gracefully');
     mongoose.connection.close(false).then(() => {
-        Logger.info('💥 Process terminated!');
+        logger.info('💥 Process terminated!');
         process.exit(0);
     });
 });
 
 process.on('SIGINT', () => {
-    Logger.info('SIGINT RECEIVED. Shutting down gracefully');
+    logger.info('SIGINT RECEIVED. Shutting down gracefully');
     mongoose.connection.close(false).then(() => {
-        Logger.info('💥 Process terminated!');
+        logger.info('💥 Process terminated!');
         process.exit(0);
     });
 });
