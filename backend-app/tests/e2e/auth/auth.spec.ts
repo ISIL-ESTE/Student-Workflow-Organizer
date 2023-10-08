@@ -8,53 +8,52 @@ import * as supertest from 'supertest';
 const { generateAccessToken } = AuthUtils;
 const agent = supertest.agent(app);
 const expect = chai.expect;
-import logger from '@utils/logger';
 import request from 'supertest';
 
 let res: request.Response;
 
 describe('Auth API', () => {
-    it('should return an error if email is not provided', async () => {
-        res = await agent.post('/api/auth/signup').send({
-            name: 'Test User',
-            password: 'password123',
-        });
-
-        expect(res.status).to.equal(400);
-        expect(res.body).to.have.property(
-            'message',
-            'User validation failed: email: Please fill your email'
-        );
-    });
-
-    it('should return an error if email is invalid', async () => {
-        res = await agent.post('/api/auth/signup').send({
-            name: 'Test User',
-            email: 'invalidemail',
-            password: 'password123',
-        });
-
-        expect(res.status).to.equal(400);
-        expect(res.body).to.have.property(
-            'message',
-            'User validation failed: email:  Please provide a valid email'
-        );
-    });
-
-    it('should return an error if password is not provided', async () => {
-        res = await agent.post('/api/auth/signup').send({
-            name: 'Test User',
-            email: 'testuser@example.com',
-        });
-
-        expect(res.status).to.equal(400);
-        expect(res.body).to.have.property(
-            'message',
-            'Please provide a password'
-        );
-    });
-
     describe('POST /signup', () => {
+        it('should return an error if email is not provided', async () => {
+            res = await agent.post('/api/auth/signup').send({
+                name: 'Test User',
+                password: 'password123',
+            });
+
+            expect(res.status).to.equal(400);
+            expect(res.body).to.have.property(
+                'message',
+                'User validation failed: email: Please fill your email'
+            );
+        });
+
+        it('should return an error if email is invalid', async () => {
+            res = await agent.post('/api/auth/signup').send({
+                name: 'Test User',
+                email: 'invalidemail',
+                password: 'password123',
+            });
+
+            expect(res.status).to.equal(400);
+            expect(res.body).to.have.property(
+                'message',
+                'User validation failed: email:  Please provide a valid email'
+            );
+        });
+
+        it('should return an error if password is not provided', async () => {
+            res = await agent.post('/api/auth/signup').send({
+                name: 'Test User',
+                email: 'testuser@example.com',
+            });
+
+            expect(res.status).to.equal(400);
+            expect(res.body).to.have.property(
+                'message',
+                'Please provide a password'
+            );
+        });
+
         it('should create a new user', async () => {
             res = await agent.post('/api/auth/signup').send({
                 name: 'Test User',
@@ -78,7 +77,7 @@ describe('Auth API', () => {
     afterEach(function () {
         const errorBody = res && res.body;
         if (this.currentTest.state === 'failed' && errorBody) {
-            logger.debug('res: ', errorBody);
+            console.debug('res: ', errorBody);
         }
 
         res = null;
@@ -354,7 +353,7 @@ describe('User API', () => {
     afterEach(function () {
         const errorBody = res && res.body;
         if (this.currentTest.state === 'failed' && errorBody) {
-            logger.debug('res: ', errorBody);
+            console.debug('res: ', errorBody);
         }
 
         res = null;

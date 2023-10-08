@@ -2,12 +2,10 @@ name: Node.js API CI
 
 on:
   workflow_dispatch:
-    
+
 
 jobs:
   approved:
-    # status is approved and branch is main
-    if: github.event.review.state == 'APPROVED' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env: 
       NODE_ENV: production

@@ -17,6 +17,7 @@ const Morgan = morgan(
         stream,
         skip: (req: any) =>
             CURRENT_ENV.toLowerCase() === 'production' ||
+            CURRENT_ENV.toLowerCase() === 'test' ||
             (req.originalUrl && req.originalUrl !== req.url),
     }
 );

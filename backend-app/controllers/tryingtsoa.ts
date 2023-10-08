@@ -1,6 +1,8 @@
 // src/users/usersController.ts
 // import { IUser } from '@interfaces/models/i_user';
 import { Controller, Route } from 'tsoa';
+import { Body, Post, Query, Response, Path, Middlewares } from '@tsoa/runtime';
+import { Response as i_res } from 'express';
 export interface IUser {
     /**
      * @isString <please enter a valid integer number>
@@ -26,15 +28,15 @@ export interface IUser {
     updatedBy?: string;
 }
 
-// interface ValidateErrorJSON {
-//     message: 'Validation failed';
-//     details: { [name: string]: unknown };
-// }
+interface ValidateErrorJSON {
+    message: 'Validation failed';
+    details: { [name: string]: unknown };
+}
 
-// function customMiddleware(req: Request, res: IRes, next: NextFunction) {
-//     // Perform any necessary operations or modifications
-//     next();
-// }
+function customMiddleware(req: Request, res: i_res, next: any) {
+    // Perform any necessary operations or modifications
+    next();
+}
 
 @Route('users')
 export class UsersController extends Controller {
@@ -44,16 +46,16 @@ export class UsersController extends Controller {
      */
     //    @SuccessResponse('201', 'Created')
     //    // not found response
-    //    @Response<ValidateErrorJSON>(404, 'Not Found')
-    //    @Post('{userId}')
-    //    @Middlewares(customMiddleware)
-    //    public async getUser(
-    //         @Path() userId: number,
-    //         @Query() name?: string,
-    //         @Body() body?: IUser
-    //     ): Promise<Object> {
-    //         // return new UsersService().get(userId, name);
-    //         return { userId, name };
-    //     }
+    @Response<ValidateErrorJSON>(404, 'Not Found')
+    @Post('{userId}')
+    @Middlewares(customMiddleware)
+    public getUser(
+        @Path() userId: number,
+        @Query() name?: string,
+        @Body() body?: IUser
+    ): Object {
+        // return new UsersService().get(userId, name);
+        return { userId, name };
+    }
     // @SuccessResponse('201', 'Created');
 }

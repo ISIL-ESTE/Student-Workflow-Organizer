@@ -5,7 +5,6 @@ module.exports = {
         'accessor-pairs': 'error',
         'array-callback-return': 'error',
         'block-scoped-var': 'error',
-        'class-methods-use-this': 'error',
         complexity: ['error', 10],
         'consistent-return': 'off',
         'default-case': 'error',
