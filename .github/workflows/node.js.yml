@@ -6,6 +6,9 @@ on:
 jobs:
   approved:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        mongodb-version: ['6.0']
     env: 
       NODE_ENV: production
       API_VERSION: v1
@@ -49,27 +52,10 @@ jobs:
           echo "REQUIRE_ACTIVATION=${REQUIRE_ACTIVATION}" >> backend-app/.env.production
           echo "RATE_LIMIT_PER_HOUR=${RATE_LIMIT_PER_HOUR}" >> backend-app/.env.production
 
-      # log to terminal the env variables to make sure they are set correctly
-      - name: Log environment variables
-        run: |
-          cat backend-app/.env.production
-
-      # manual log of env variables
-      - name: Log environment variables
-        run: |
-          echo "NODE_ENV=${NODE_ENV}"
-          echo "API_VERSION=${API_VERSION}"
-          echo "MONGO_URI=${MONGO_URI}"
-          echo "MONGO_URI_TEST=${MONGO_URI_TEST}"
-          echo "PORT=${PORT}"
-          echo "ADMIN_EMAIL=${ADMIN_EMAIL}"
-          echo "ADMIN_PASSWORD=${ADMIN_PASSWORD}"
-          echo "ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}"
-          echo "ACCESS_TOKEN_EXPIRY_TIME=${ACCESS_TOKEN_EXPIRY_TIME}"
-          echo "REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}"
-          echo "REFRESH_TOKEN_EXPIRY_TIME=${REFRESH_TOKEN_EXPIRY_TIME}"
-          echo "REQUIRE_ACTIVATION=${REQUIRE_ACTIVATION}"
-          echo "RATE_LIMIT_PER_HOUR=${RATE_LIMIT_PER_HOUR}"
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.10.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
 
       - name: Install dependencies
         run: |
