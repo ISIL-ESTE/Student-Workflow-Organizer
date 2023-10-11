@@ -1,6 +1,6 @@
-import AppError from '../../app_error';
-import roleModel from '../../../models/user/role_model';
-import Actions from '../../../constants/actions';
+import AppError from '@utils/app_error';
+import roleModel from '@models/user/role_model';
+import Actions from '@constants/actions';
 
 interface RoleData {
     name: string;

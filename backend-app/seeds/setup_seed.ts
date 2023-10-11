@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import '../utils/register_paths';
-import Role from '../models/user/role_model';
-import User from '../models/user/user_model';
+import '@utils/register_paths';
+import Role from '@models/user/role_model';
+import User from '@models/user/user_model';
 import logger from '@utils/logger';
 import { DATABASE, ADMIN_EMAIL, ADMIN_PASSWORD } from '@config/app_config';
 import Actions from '@constants/actions';
@@ -17,8 +17,8 @@ async function seed() {
                 useUnifiedTopology: true,
             } as mongoose.ConnectOptions
         )
-        .then(() => console.log('Connected to MongoDB'))
-        .catch((err: any) => console.error(err));
+        .then(() => logger.info('MongoDB Connected'))
+        .catch((err: any) => logger.error(err));
 
     interface Role {
         name: string;

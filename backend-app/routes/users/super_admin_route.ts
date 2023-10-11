@@ -1,14 +1,14 @@
 import express from 'express';
 import { Router } from 'express';
-import * as authController from '../../controllers/auth_controllers/auth_controller';
-import restrictTo from '../../middlewares/authorization';
-import Actions from '../../constants/actions';
+import * as authController from '@controllers/auth_controllers/auth_controller';
+import restrictTo from '@middlewares/authorization';
+import Actions from '@constants/actions';
 import {
     addSuperAdmin,
     removeSuperAdmin,
     addAdmin,
     removeAdmin,
-} from '../../controllers/users_controllers/admin_controller';
+} from '@controllers/users_controllers/admin_controller';
 
 const router = Router();
 

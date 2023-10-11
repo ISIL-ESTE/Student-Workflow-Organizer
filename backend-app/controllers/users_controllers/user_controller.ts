@@ -1,5 +1,5 @@
 import User from '@models/user/user_model';
-import * as base from '../base_controller';
+import * as base from '@controllers/base_controller';
 import AppError from '@utils/app_error';
 import { INext, IReq, IRes } from '@interfaces/vendors';
 

@@ -1,4 +1,4 @@
-import Actions from '../../../constants/actions';
+import Actions from '@constants/actions';
 import Role from './role';
 import logger from '@utils/logger';
 

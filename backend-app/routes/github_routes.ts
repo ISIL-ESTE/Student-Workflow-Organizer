@@ -1,6 +1,6 @@
 import { Router } from 'express';
 const router = Router();
-import * as githubController from '../controllers/auth_controllers/github_controller';
+import * as githubController from '@controllers/auth_controllers/github_controller';
 
 router.get('/recent-repo', githubController.getRecentRepo);
 

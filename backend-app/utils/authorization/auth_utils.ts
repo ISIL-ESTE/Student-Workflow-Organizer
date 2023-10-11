@@ -5,8 +5,8 @@ import {
     REFRESH_TOKEN_EXPIRY_TIME,
     ACCESS_TOKEN_COOKIE_EXPIRY_TIME,
     REFRESH_TOKEN_COOKIE_EXPIRY_TIME,
-} from '../../config/app_config';
-import AppError from '../app_error';
+} from '@config/app_config';
+import AppError from '@utils/app_error';
 import jwt from 'jsonwebtoken';
 import { promisify } from 'util';
 
