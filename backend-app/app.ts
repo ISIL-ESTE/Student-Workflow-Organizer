@@ -16,6 +16,7 @@ import { COOKIE_SECRET, CURRENT_ENV } from './config/app_config';
 import cookieParser from 'cookie-parser';
 import routesVersioning from 'express-routes-versioning';
 import indexRouter from './routes/index';
+import { RegisterRoutes } from './routes/routes';
 
 const app = express();
 
@@ -83,6 +84,9 @@ app.use(
         '1.0.0': indexRouter,
     })
 );
+
+// register routes
+RegisterRoutes(app);
 
 // configure swagger docs
 swaggerDocs(app);

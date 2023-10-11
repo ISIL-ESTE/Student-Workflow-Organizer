@@ -1,7 +1,7 @@
 import { CURRENT_ENV } from '@config/app_config';
 import { IRes } from '@interfaces/vendors';
 import swaggerUi from 'swagger-ui-express';
-import * as swaggerjson from '@root/swagger.json';
+import * as swaggerjson from '@root/docs/api_docs/swagger.json';
 
 /**
  * This function configures the swagger documentation

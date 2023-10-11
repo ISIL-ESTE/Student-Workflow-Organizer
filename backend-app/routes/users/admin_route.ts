@@ -10,10 +10,10 @@ import {
     deleteRole,
     assignRoleToUser,
     removeRoleFromUser,
-} from '../../controllers/users_controllers/admin_controller';
-import * as authController from '../../controllers/auth_controllers/auth_controller';
-import restrictTo from '../../middlewares/authorization';
-import Actions from '../../constants/actions';
+} from '@controllers/users_controllers/admin_controller';
+import * as authController from '@controllers/auth_controllers/auth_controller';
+import restrictTo from '@middlewares/authorization';
+import Actions from '@constants/actions';
 import * as userController from '@controllers/users_controllers/user_controller';
 
 /**

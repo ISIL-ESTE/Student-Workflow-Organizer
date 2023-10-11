@@ -1,4 +1,6 @@
 {
-    "exec": "ts-node-dev server.ts",
-    "watch": ["."]
+    "watch": ["."],
+    "ignore": ["swagger.json", "routes/routes.ts"],
+    "ext": "js ts json",
+    "exec": "npm run generate && ts-node server.ts"
 }

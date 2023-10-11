@@ -4,7 +4,7 @@ import {
     REFRESH_TOKEN_SECRET,
     REFRESH_TOKEN_EXPIRY_TIME,
 } from '@config/app_config';
-import AppError from '../app_error';
+import AppError from '@utils/app_error';
 import jwt from 'jsonwebtoken';
 
 const generateTokens = (id: string) => {

@@ -34,7 +34,8 @@
             "@controllers/*": ["./controllers/*"],
             "@middlewares/*": ["./middlewares/*"],
             "@constants/*": ["./constants/*"],
-            "@interfaces/*": ["./interfaces/*"]
+            "@interfaces/*": ["./interfaces/*"],
+            "tsoa": ["./node_modules/tsoa"]
         },
         "typeRoots": ["./typings"]
     },
