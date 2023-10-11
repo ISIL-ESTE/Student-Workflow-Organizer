@@ -53,7 +53,7 @@ export const githubHandler = async (
             );
             AuthUtils.setAccessTokenCookie(res, accessToken);
             AuthUtils.setRefreshTokenCookie(res, refreshToken);
-            res.sendStatus(204);
+            return res.sendStatus(204);
         }
         if (!githubUser) throw new AppError(400, 'Invalid access token');
         const createdUser = await User.create({
