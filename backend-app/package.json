@@ -78,7 +78,8 @@
         "ts-mocha": "10.0.0",
         "ts-node": "^10.4.0",
         "tsconfig-paths": "4.2.0",
-        "typescript": "5.2.2"
+        "tsoa": "5.1.1",
+        "typescript": "^5.2.2"
     },
     "lint-staged": {
         "*.+(ts|js)": "eslint --fix",
