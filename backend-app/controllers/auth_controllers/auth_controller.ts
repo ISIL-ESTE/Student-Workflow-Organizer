@@ -34,21 +34,15 @@ export const githubHandler = async (
                 500,
                 'User role does not exist. Please contact the admin.'
             );
-        const { code, redirect_url } = req.query as {
+        const { code } = req.query as {
             code: string;
-            redirect_url: string;
         };
-        if (!redirect_url)
-            throw new AppError(400, 'Please provide redirect_url');
-        if (typeof redirect_url !== 'string')
-            throw new AppError(400, 'Invalid redirect_url');
+
         if (!code) throw new AppError(400, 'Please provide code');
         const { access_token } = await getGithubOAuthToken(code);
         if (!access_token) throw new AppError(400, 'Invalid code');
-        const githubUser = await getGithubOAuthUser(access_token as string);
-        const primaryEmail = await getGithubOAuthUserPrimaryEmail(
-            access_token as string
-        );
+        const githubUser = await getGithubOAuthUser(access_token);
+        const primaryEmail = await getGithubOAuthUserPrimaryEmail(access_token);
         const exists = await User.findOne({ email: primaryEmail });
         if (exists) {
             const accessToken = AuthUtils.generateAccessToken(
@@ -59,13 +53,14 @@ export const githubHandler = async (
             );
             AuthUtils.setAccessTokenCookie(res, accessToken);
             AuthUtils.setRefreshTokenCookie(res, refreshToken);
+            res.sendStatus(204);
         }
         if (!githubUser) throw new AppError(400, 'Invalid access token');
         const createdUser = await User.create({
             name: githubUser.name,
             email: primaryEmail,
             password: null,
-            address: githubUser.location,
+            address: githubUser.location ? githubUser.location : null,
             roles: [Roles.USER.name],
             authorities: Roles.USER.authorities,
             restrictions: Roles.USER.restrictions,
@@ -81,8 +76,7 @@ export const githubHandler = async (
         );
         AuthUtils.setAccessTokenCookie(res, accessToken);
         AuthUtils.setRefreshTokenCookie(res, refreshToken);
-        //redirect user to redirect url
-        res.redirect(redirect_url);
+        res.status(201).json(createdUser);
     } catch (err) {
         next(err);
     }
