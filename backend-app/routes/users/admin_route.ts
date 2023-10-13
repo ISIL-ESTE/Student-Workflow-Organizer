@@ -1,16 +1,15 @@
 import { Router } from 'express';
-import {
-    authorizeOrRestrict,
-    banUser,
-    unbanUser,
-    createRole,
-    updateRole,
-    getRole,
-    getRoles,
-    deleteRole,
-    assignRoleToUser,
-    removeRoleFromUser,
-} from '@controllers/users_controllers/admin_controller';
+import // authorizeOrRestrict,
+// banUser,
+// unbanUser,
+// createRole,
+// updateRole,
+// getRole,
+// getRoles,
+// deleteRole,
+// assignRoleToUser,
+// removeRoleFromUser,
+'@controllers/users_controllers/admin_controller';
 import * as authController from '@controllers/auth_controllers/auth_controller';
 import restrictTo from '@middlewares/authorization';
 import Actions from '@constants/actions';
@@ -42,8 +41,8 @@ router.get('/users', userController.getAllUsers);
  */
 router.put(
     '/authorize-or-restrict/:userId',
-    restrictTo(Actions.UPDATE_USER),
-    authorizeOrRestrict
+    restrictTo(Actions.UPDATE_USER)
+    // authorizeOrRestrict
 );
 
 /**
@@ -55,8 +54,8 @@ router.put(
  **/
 router.put(
     '/ban-user/:userId',
-    restrictTo(Actions.UPDATE_USER, Actions.BAN_USER),
-    banUser
+    restrictTo(Actions.UPDATE_USER, Actions.BAN_USER)
+    // banUser
 );
 
 /**
@@ -68,8 +67,8 @@ router.put(
  **/
 router.put(
     '/unban-user/:userId',
-    restrictTo(Actions.UPDATE_USER, Actions.BAN_USER),
-    unbanUser
+    restrictTo(Actions.UPDATE_USER, Actions.BAN_USER)
+    // unbanUser
 );
 
 /**
@@ -78,7 +77,11 @@ router.put(
  * @description Get all roles
  * @access Super Admin
  **/
-router.put('/role', restrictTo(Actions.MANAGE_ROLES), getRoles);
+router.put(
+    '/role',
+    restrictTo(Actions.MANAGE_ROLES)
+    // getRoles
+);
 
 /**
  * @protected
@@ -87,7 +90,11 @@ router.put('/role', restrictTo(Actions.MANAGE_ROLES), getRoles);
  * @access Super Admin
  * @param {string} name - Name of the role to find
  **/
-router.put('/role/:name', restrictTo(Actions.MANAGE_ROLES), getRole);
+router.put(
+    '/role/:name',
+    restrictTo(Actions.MANAGE_ROLES)
+    //  getRole
+);
 
 /**
  * @protected
@@ -95,7 +102,11 @@ router.put('/role/:name', restrictTo(Actions.MANAGE_ROLES), getRole);
  * @description Create a role
  * @access Super Admin
  **/
-router.post('/role', restrictTo(Actions.MANAGE_ROLES), createRole);
+router.post(
+    '/role',
+    restrictTo(Actions.MANAGE_ROLES)
+    // createRole
+);
 
 /**
  * @protected
@@ -104,7 +115,11 @@ router.post('/role', restrictTo(Actions.MANAGE_ROLES), createRole);
  * @access Super Admin
  * @param {string} name - Name of the role to update
  **/
-router.put('/role/:name', restrictTo(Actions.MANAGE_ROLES), updateRole);
+router.put(
+    '/role/:name',
+    restrictTo(Actions.MANAGE_ROLES)
+    // updateRole
+);
 
 /**
  * @protected
@@ -113,7 +128,11 @@ router.put('/role/:name', restrictTo(Actions.MANAGE_ROLES), updateRole);
  * @access Super Admin
  * @param {string} name - Name of the role to delete
  **/
-router.delete('/role/:name', restrictTo(Actions.MANAGE_ROLES), deleteRole);
+router.delete(
+    '/role/:name',
+    restrictTo(Actions.MANAGE_ROLES)
+    // deleteRole
+);
 
 /**
  * @protected
@@ -125,8 +144,8 @@ router.delete('/role/:name', restrictTo(Actions.MANAGE_ROLES), deleteRole);
  * */
 router.put(
     '/assign-role/:name/:userId',
-    restrictTo(Actions.MANAGE_ROLES),
-    assignRoleToUser
+    restrictTo(Actions.MANAGE_ROLES)
+    // assignRoleToUser
 );
 /**
  * @protected
@@ -138,8 +157,8 @@ router.put(
  * */
 router.put(
     '/remove-role/:name/:userId',
-    restrictTo(Actions.MANAGE_ROLES),
-    removeRoleFromUser
+    restrictTo(Actions.MANAGE_ROLES)
+    // removeRoleFromUser
 );
 
 const adminRoutes = (mainrouter: Router) => {

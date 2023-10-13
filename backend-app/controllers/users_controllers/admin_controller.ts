@@ -1,128 +1,38 @@
-import { IReq, IRes, INext } from '@interfaces/vendors';
+/* eslint-disable no-warning-comments */
+import { IReq } from '@interfaces/vendors';
 import USER from '@models/user/user_model';
 import Role from '@utils/authorization/roles/role';
 import AppError from '@utils/app_error';
 import validateActions from '@utils/authorization/validate_actions';
+import { Controller, Delete, Get, Post, Route } from 'tsoa';
+import {
+    Response,
+    SuccessResponse,
+    Middlewares,
+    Put,
+    Example,
+    Request,
+} from '@tsoa/runtime';
+import Actions from '@constants/actions';
+import restrictTo from '@middlewares/authorization';
 
-export const addAdmin = async (req: IReq, res: IRes, next: INext) => {
-    try {
-        const Roles = await Role.getRoles();
-        const { userId } = req.params;
-        const user = await USER.findById(userId);
-        if (!user) throw new AppError(404, 'No user found with this id');
-        if (!Roles.ADMIN)
-            throw new AppError(
-                500,
-                'Error in base roles, please contact an admin'
-            );
-        if (user.roles?.includes(Roles.ADMIN.name))
-            throw new AppError(400, 'User is already an admin');
-        user.roles?.push(Roles.ADMIN.name);
-        const existingAuthorities = user.authorities;
-        const existingRestrictions = user.restrictions;
-        user.authorities = Array.from(
-            new Set([...Roles.ADMIN.authorities, ...existingAuthorities])
-        );
-        user.restrictions = Array.from(
-            new Set([...Roles.ADMIN.restrictions, ...existingRestrictions])
-        );
-        await user.save();
-        res.status(200).json({
-            message: 'User is now an admin',
-        });
-    } catch (err) {
-        next(err);
-    }
-};
+//TODO:  set path in params
+//TODO: set types and interfaces to all the methods
 
-export const removeAdmin = async (req: IReq, res: IRes, next: INext) => {
-    try {
-        const Roles = await Role.getRoles();
-        const { userId } = req.params;
-        const user = await USER.findById(userId);
-        if (!user) throw new AppError(404, 'No user found with this id');
-        if (!Roles.ADMIN || !Roles.USER)
-            throw new AppError(
-                500,
-                'Error in base roles, please contact an admin'
-            );
-        if (req.user._id?.toString() === userId?.toString())
-            throw new AppError(400, 'You cannot remove yourself as an admin');
-        if (!user.roles?.includes(Roles.ADMIN.name))
-            throw new AppError(400, 'User is not an admin');
-        user.roles = user.roles.filter((role) => role !== Roles.ADMIN.name);
-        user.authorities = Roles.USER.authorities;
-        user.restrictions = Roles.USER.restrictions;
-        await user.save();
-        res.status(200).json({
-            message: 'User is no longer an admin',
-        });
-    } catch (err) {
-        next(err);
-    }
-};
-
-export const addSuperAdmin = async (req: IReq, res: IRes, next: INext) => {
-    try {
-        const Roles = await Role.getRoles();
-        const { userId } = req.params;
-        const user = await USER.findById(userId);
-        if (!user) throw new AppError(404, 'No user found with this id');
-        if (req.user._id?.toString() === userId?.toString())
-            throw new AppError(400, 'You cannot make yourself a super admin');
-        if (user.roles?.includes(Roles.SUPER_ADMIN.name))
-            throw new AppError(400, 'User is already a super admin');
-        user.roles?.push(Roles.SUPER_ADMIN.name);
-        const existingRestrictions = user.restrictions;
-        user.authorities = Roles.SUPER_ADMIN.authorities;
-        user.restrictions = Array.from(
-            new Set([
-                ...Roles.SUPER_ADMIN.restrictions,
-                ...existingRestrictions,
-            ])
-        );
-        await user.save();
-        res.status(200).json({
-            message: 'User is now a super admin',
-        });
-    } catch (err) {
-        next(err);
-    }
-};
-
-export const removeSuperAdmin = async (req: IReq, res: IRes, next: INext) => {
-    const { userId } = req.params;
-    try {
-        const Roles = await Role.getRoles();
-        const user = await USER.findById(userId);
-        if (!user) throw new AppError(404, 'No user found with this id');
-        if (req.user._id?.toString() === userId?.toString())
-            throw new AppError(
-                400,
-                'You cannot remove yourself as a super admin'
-            );
-        if (!user.roles?.includes(Roles.SUPER_ADMIN.name))
-            throw new AppError(400, 'User is not a super admin');
-        user.roles = user.roles.filter(
-            (role) => role !== Roles.SUPER_ADMIN.name
-        );
-        user.authorities = Roles.ADMIN.authorities;
-        user.restrictions = Roles.ADMIN.restrictions;
-        await user.save();
-        res.status(200).json({
-            message: 'User is no longer a super admin',
-        });
-    } catch (err) {
-        next(err);
-    }
-};
-
-export const authorizeOrRestrict = async (
-    req: IReq,
-    res: IRes,
-    next: INext
-) => {
-    try {
+@Route('admin')
+export class AdminController extends Controller {
+    @Example({
+        message: 'User is now an admin',
+    })
+    @Response(400, 'User is a super admin')
+    @Response(404, 'No user found with this id')
+    @Response(400, 'You cannot change your own authorities or restrictions')
+    @Response(400, 'One or many actions are invalid in the restrictions array')
+    @Response(400, 'One or many actions are invalid in the authorities array')
+    @SuccessResponse('200', 'OK')
+    @Middlewares(restrictTo(Actions.UPDATE_USER))
+    @Put('authorize-or-restrict/{userId}')
+    async authorizeOrRestrict(@Request() req: IReq) {
         const { authorities, restrictions } = req.body;
         const { userId } = req.params;
         if (!validateActions(authorities))
@@ -154,17 +64,26 @@ export const authorizeOrRestrict = async (
             new Set([...restrictions, ...existingRestrictions])
         );
         await user.save();
-        res.status(200).json({
+        this.setStatus(200);
+        return {
             message: 'User authorities and restrictions updated',
-        });
-    } catch (err) {
-        next(err);
+        };
     }
-};
 
-export const banUser = async (req: IReq, res: IRes, next: INext) => {
-    const { userId } = req.params;
-    try {
+    //ban user
+    @Example({
+        message: 'User is now banned',
+    })
+    @Response(400, 'You cannot ban an admin')
+    @Response(400, 'You cannot ban a super admin')
+    @Response(400, 'User is already banned')
+    @Response(400, 'You cannot ban yourself')
+    @SuccessResponse('200', 'OK')
+    @Middlewares(restrictTo(Actions.UPDATE_USER, Actions.BAN_USER))
+    @Put('ban-user/{userId}')
+    async banUser(@Request() req: IReq) {
+        const { userId } = req.params;
+
         const Roles = await Role.getRoles();
         const user = await USER.findById(userId);
         if (!user) throw new AppError(404, 'No user found with this id');
@@ -178,17 +97,23 @@ export const banUser = async (req: IReq, res: IRes, next: INext) => {
             throw new AppError(400, 'You cannot ban an admin');
         user.accessRestricted = true;
         await user.save();
-        res.status(200).json({
+        this.setStatus(200);
+        return {
             message: 'User is now banned',
-        });
-    } catch (err) {
-        next(err);
+        };
     }
-};
-
-export const unbanUser = async (req: IReq, res: IRes, next: INext) => {
-    const { userId } = req.params;
-    try {
+    //unban user
+    @Example({
+        message: 'User is now unbanned',
+    })
+    @Response(400, 'User is not banned')
+    @Response(400, 'You cannot unban yourself')
+    @Response(404, 'No user found with this id')
+    @SuccessResponse('200', 'OK')
+    @Middlewares(restrictTo(Actions.UPDATE_USER, Actions.BAN_USER))
+    @Put('unban-user/{userId}')
+    async unbanUser(@Request() req: IReq) {
+        const { userId } = req.params;
         const user = await USER.findById(userId);
         if (!user) throw new AppError(404, 'No user found with this id');
         if (req.user._id?.toString() === userId?.toString())
@@ -197,17 +122,24 @@ export const unbanUser = async (req: IReq, res: IRes, next: INext) => {
             throw new AppError(400, 'User is not banned');
         user.accessRestricted = false;
         await user.save();
-        res.status(200).json({
+        this.setStatus(200);
+        return {
             message: 'User is now unbanned',
-        });
-    } catch (err) {
-        next(err);
+        };
     }
-};
 
-export const createRole = async (req: IReq, res: IRes, next: INext) => {
-    const { name, authorities, restrictions } = req.body;
-    try {
+    //create role
+    @Example({
+        message: 'Role created',
+        data: {},
+    })
+    @Response(400, 'Role already exists')
+    @SuccessResponse('201', 'CREATED')
+    @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @Post('role')
+    async createRole(@Request() req: IReq) {
+        const { name, authorities, restrictions } = req.body;
+
         if (await Role.getRoleByName(name))
             throw new AppError(400, 'Role already exists');
         const createdRole = await Role.createRole(
@@ -215,74 +147,92 @@ export const createRole = async (req: IReq, res: IRes, next: INext) => {
             authorities,
             restrictions
         );
-        res.status(201).json({
+        this.setStatus(201);
+        return {
             message: 'Role created',
             data: createdRole,
-        });
-    } catch (err) {
-        next(err);
+        };
     }
-};
-
-export const getRoles = async (_req: IReq, res: IRes, next: INext) => {
-    try {
+    //get roles
+    @Example({
+        message: 'Roles retrieved',
+        data: [],
+    })
+    @SuccessResponse('200', 'OK')
+    @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @Get('role')
+    async getRoles() {
         const roles = await Role.getRoles();
-        res.status(200).json({
+        this.setStatus(200);
+        return {
             message: 'Roles retrieved',
             data: roles,
-        });
-    } catch (err) {
-        next(err);
+        };
     }
-};
 
-export const getRole = async (req: IReq, res: IRes, next: INext) => {
-    const { name } = req.params;
-    try {
+    @Example({
+        message: 'Role retrieved',
+        data: {},
+    })
+    @SuccessResponse('200', 'OK')
+    @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @Get('role/{name}')
+    async getRole(@Request() req: IReq) {
+        const { name } = req.params;
         const singleRole = await Role.getRoleByName(name as string);
-        res.status(200).json({
+        this.setStatus(200);
+        return {
             message: 'Role retrieved',
             data: singleRole,
-        });
-    } catch (err) {
-        next(err);
+        };
     }
-};
 
-export const deleteRole = async (req: IReq, res: IRes, next: INext) => {
-    const { name } = req.params;
-    try {
+    //TODO:need to talk about it
+    @Example({
+        message: 'Role deleted',
+        data: {},
+    })
+    @SuccessResponse('200', 'OK')
+    @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @Delete('role/{name}')
+    async deleteRole(@Request() req: IReq) {
+        const { name } = req.params;
         const deletedRole = await Role.deleteRoleByName(name as string);
-        res.status(200).json({
+        this.setStatus(200);
+        return {
             message: 'Role deleted',
             data: deletedRole,
-        });
-    } catch (err) {
-        next(err);
+        };
     }
-};
-
-export const updateRole = async (req: IReq, res: IRes, next: INext) => {
-    const { name } = req.params;
-    const { authorities, restrictions } = req.body;
-    try {
+    @Example({
+        message: 'Role updated',
+        data: {},
+    })
+    @SuccessResponse('200', 'OK')
+    @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @Put('role/{name}')
+    async updateRole(@Request() req: IReq) {
+        const { name } = req.params;
+        const { authorities, restrictions } = req.body;
         const updatedRole = await Role.updateRoleByName(
             name as string,
             authorities,
             restrictions
         );
-        res.status(200).json({
+        this.setStatus(200);
+        return {
             message: 'Role updated',
             data: updatedRole,
-        });
-    } catch (err) {
-        next(err);
+        };
     }
-};
-
-export const assignRoleToUser = async (req: IReq, res: IRes, next: INext) => {
-    const { userId, name } = req.params;
-    try {
+    @Example({
+        message: 'Role assigned to user',
+    })
+    @SuccessResponse('200', 'OK')
+    @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @Put('assign-role/{name}/{userId}')
+    async assignRoleToUser(@Request() req: IReq) {
+        const { userId, name } = req.params;
         const user = await USER.findById(userId);
         const role = await Role.getRoleByName(name as string);
         if (!user) throw new AppError(404, 'No user found with this id');
@@ -297,17 +247,23 @@ export const assignRoleToUser = async (req: IReq, res: IRes, next: INext) => {
             new Set([...role.restrictions, ...user.restrictions])
         );
         await user.save();
-        res.status(200).json({
+        this.setStatus(200);
+        return {
             message: 'Role assigned to user',
-        });
-    } catch (err) {
-        next(err);
+        };
     }
-};
 
-export const removeRoleFromUser = async (req: IReq, res: IRes, next: INext) => {
-    const { userId, name } = req.params;
-    try {
+    @Example({
+        message: 'Role removed to user',
+    })
+    @Response(400, 'User does not have this role')
+    @Response(404, 'No user found with this id')
+    @Response(404, 'No role found with this name')
+    @SuccessResponse('200', 'OK')
+    @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @Put('remove-role/{name}/{userId}')
+    async removeRoleFromUser(@Request() req: IReq) {
+        const { userId, name } = req.params;
         const role = await Role.getRoleByName(name as string);
         if (!role) throw new AppError(404, 'No role found with this name');
         const user = await USER.findById(userId);
@@ -322,10 +278,8 @@ export const removeRoleFromUser = async (req: IReq, res: IRes, next: INext) => {
             (restriction) => !role.restrictions.includes(restriction)
         );
         await user.save();
-        res.status(200).json({
+        return {
             message: 'Role removed from user',
-        });
-    } catch (err) {
-        next(err);
+        };
     }
-};
+}
