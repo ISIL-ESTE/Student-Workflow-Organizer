@@ -1,4 +1,4 @@
-import { Controller, Route } from 'tsoa';
+import { Controller, Route, Security } from 'tsoa';
 import { Body, Post, Query, Response, Path, Middlewares } from '@tsoa/runtime';
 import { Request, Response as i_res } from 'express';
 
@@ -126,7 +126,8 @@ function customMiddleware(req: Request, res: i_res, next: any) {
     next();
 }
 
-@Route('users')
+@Route('userso')
+@Security('jwt')
 export class UsersController extends Controller {
     /**
      * Retrieves the details of an existing user.
