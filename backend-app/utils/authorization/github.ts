@@ -6,7 +6,9 @@ import qs from 'qs';
 import axios from 'axios';
 import AppError from '@utils/app_error';
 
-export const getGithubOAuthToken = async (code: string) => {
+export const getGithubOAuthToken = async (
+    code: string
+): Promise<{ access_token: string }> => {
     const rootUrl = 'https://github.com/login/oauth/access_token';
 
     const queryString = qs.stringify({
@@ -23,7 +25,7 @@ export const getGithubOAuthToken = async (code: string) => {
 
         const decoded = qs.parse(data);
 
-        return decoded;
+        return decoded as unknown as Promise<{ access_token: string }>;
     } catch (err) {
         throw new AppError(400, 'Invalid code');
     }
