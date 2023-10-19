@@ -5,9 +5,22 @@
     "spec": {
         "outputDirectory": "./docs/api_docs/",
         "specVersion": 2,
-        "specValidation": false
+        "specValidation": false,
+        "securityDefinitions": {
+            "jwt": {
+                "type": "apiKey",
+                "name": "x-auth-token",
+                "in": "header"
+            },
+            "apiKey": {
+                "type": "apiKey",
+                "name": "x-api-key",
+                "in": "header"
+            }
+        }
     },
     "routes": {
-        "routesDir": "routes"
+        "routesDir": "routes",
+        "authenticationModule": "./middlewares/authentications.ts"
     }
 }
