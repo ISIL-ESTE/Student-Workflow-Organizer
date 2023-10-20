@@ -4,7 +4,16 @@ import USER from '@models/user/user_model';
 import Role from '@utils/authorization/roles/role';
 import AppError from '@utils/app_error';
 import validateActions from '@utils/authorization/validate_actions';
-import { Controller, Delete, Get, Post, Route } from 'tsoa';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Path,
+    Post,
+    Route,
+    Security,
+} from 'tsoa';
 import {
     Response,
     SuccessResponse,
@@ -16,8 +25,15 @@ import {
 import Actions from '@constants/actions';
 import restrictTo from '@middlewares/authorization';
 
+interface roleCreationParams {
+    name: string;
+    authorities: string[];
+    restrictions: string[];
+}
+
 //TODO:  set path in params
 //TODO: set types and interfaces to all the methods
+//TODO: need dtos
 
 @Route('admin')
 export class AdminController extends Controller {
@@ -30,11 +46,19 @@ export class AdminController extends Controller {
     @Response(400, 'One or many actions are invalid in the restrictions array')
     @Response(400, 'One or many actions are invalid in the authorities array')
     @SuccessResponse('200', 'OK')
+    @Security('jwt')
     @Middlewares(restrictTo(Actions.UPDATE_USER))
     @Put('authorize-or-restrict/{userId}')
-    async authorizeOrRestrict(@Request() req: IReq) {
-        const { authorities, restrictions } = req.body;
-        const { userId } = req.params;
+    async authorizeOrRestrict(
+        @Path() userId: string,
+        @Request() req: IReq,
+        @Body()
+        body: {
+            authorities: string[];
+            restrictions: string[];
+        }
+    ) {
+        const { authorities, restrictions } = body;
         if (!validateActions(authorities))
             throw new AppError(
                 400,
@@ -128,18 +152,17 @@ export class AdminController extends Controller {
         };
     }
 
-    //create role
-    @Example({
-        message: 'Role created',
-        data: {},
-    })
+    //done
     @Response(400, 'Role already exists')
     @SuccessResponse('201', 'CREATED')
     @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @Security('jwt')
     @Post('role')
-    async createRole(@Request() req: IReq) {
-        const { name, authorities, restrictions } = req.body;
-
+    async createRole(
+        @Body()
+        body: roleCreationParams
+    ): Promise<{ message: string; data: roleCreationParams }> {
+        const { name, authorities, restrictions } = body;
         if (await Role.getRoleByName(name))
             throw new AppError(400, 'Role already exists');
         const createdRole = await Role.createRole(
@@ -153,15 +176,17 @@ export class AdminController extends Controller {
             data: createdRole,
         };
     }
-    //get roles
-    @Example({
-        message: 'Roles retrieved',
-        data: [],
-    })
+    //done
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @Security('jwt')
     @Get('role')
-    async getRoles() {
+    async getRoles(): Promise<{
+        message: string;
+        data: {
+            [key: string]: roleCreationParams;
+        };
+    }> {
         const roles = await Role.getRoles();
         this.setStatus(200);
         return {
@@ -169,53 +194,54 @@ export class AdminController extends Controller {
             data: roles,
         };
     }
-
-    @Example({
-        message: 'Role retrieved',
-        data: {},
-    })
+    //done
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @Security('jwt')
     @Get('role/{name}')
-    async getRole(@Request() req: IReq) {
-        const { name } = req.params;
-        const singleRole = await Role.getRoleByName(name as string);
+    async getRole(@Path() name: string): Promise<{
+        message: string;
+        data: roleCreationParams;
+    }> {
+        const singleRole = await Role.getRoleByName(name);
         this.setStatus(200);
         return {
             message: 'Role retrieved',
             data: singleRole,
         };
     }
-
-    //TODO:need to talk about it
-    @Example({
-        message: 'Role deleted',
-        data: {},
-    })
+    //done
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @Security('jwt')
     @Delete('role/{name}')
-    async deleteRole(@Request() req: IReq) {
-        const { name } = req.params;
-        const deletedRole = await Role.deleteRoleByName(name as string);
+    async deleteRole(@Path() name: string): Promise<{
+        message: string;
+        data: roleCreationParams;
+    }> {
+        const deletedRole = await Role.deleteRoleByName(name);
         this.setStatus(200);
         return {
             message: 'Role deleted',
             data: deletedRole,
         };
     }
-    @Example({
-        message: 'Role updated',
-        data: {},
-    })
+
+    //done
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @Security('jwt')
     @Put('role/{name}')
-    async updateRole(@Request() req: IReq) {
-        const { name } = req.params;
-        const { authorities, restrictions } = req.body;
+    async updateRole(
+        @Path() name: string,
+        @Body() body: Omit<roleCreationParams, 'name'>
+    ): Promise<{
+        message: string;
+        data: roleCreationParams;
+    }> {
+        const { authorities, restrictions } = body;
         const updatedRole = await Role.updateRoleByName(
-            name as string,
+            name,
             authorities,
             restrictions
         );
@@ -225,14 +251,18 @@ export class AdminController extends Controller {
             data: updatedRole,
         };
     }
+    //done
     @Example({
         message: 'Role assigned to user',
     })
+    @Response(400, 'User already has this role')
+    @Response(404, 'No role found with this name')
+    @Response(404, 'No user found with this id')
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @Security('jwt')
     @Put('assign-role/{name}/{userId}')
-    async assignRoleToUser(@Request() req: IReq) {
-        const { userId, name } = req.params;
+    async assignRoleToUser(@Path() name: string, @Path() userId: string) {
         const user = await USER.findById(userId);
         const role = await Role.getRoleByName(name as string);
         if (!user) throw new AppError(404, 'No user found with this id');
