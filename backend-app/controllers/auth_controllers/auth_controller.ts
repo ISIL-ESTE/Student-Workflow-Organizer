@@ -25,7 +25,7 @@ export const githubHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => {
+): Promise<void> => {
     try {
         const Roles = await Role.getRoles();
         // check if user role exists
@@ -53,7 +53,8 @@ export const githubHandler = async (
             );
             AuthUtils.setAccessTokenCookie(res, accessToken);
             AuthUtils.setRefreshTokenCookie(res, refreshToken);
-            return res.sendStatus(204);
+            res.sendStatus(204);
+            return;
         }
         if (!githubUser) throw new AppError(400, 'Invalid access token');
         const createdUser = await User.create({
