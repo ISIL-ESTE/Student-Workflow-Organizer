@@ -112,6 +112,7 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.put('/admin/ban-user/:userId',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(AdminController)),
             ...(fetchMiddlewares<RequestHandler>(AdminController.prototype.banUser)),
 
@@ -137,6 +138,7 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.put('/admin/unban-user/:userId',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(AdminController)),
             ...(fetchMiddlewares<RequestHandler>(AdminController.prototype.unbanUser)),
 
@@ -319,12 +321,14 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.put('/admin/remove-role/:name/:userId',
+            authenticateMiddleware([{"jwt":[]}]),
             ...(fetchMiddlewares<RequestHandler>(AdminController)),
             ...(fetchMiddlewares<RequestHandler>(AdminController.prototype.removeRoleFromUser)),
 
             function AdminController_removeRoleFromUser(request: any, response: any, next: any) {
             const args = {
-                    req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                    name: {"in":"path","name":"name","required":true,"dataType":"string"},
+                    userId: {"in":"path","name":"userId","required":true,"dataType":"string"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

@@ -37,6 +37,7 @@ interface roleCreationParams {
 
 @Route('admin')
 export class AdminController extends Controller {
+    //done
     @Example({
         message: 'User is now an admin',
     })
@@ -46,8 +47,8 @@ export class AdminController extends Controller {
     @Response(400, 'One or many actions are invalid in the restrictions array')
     @Response(400, 'One or many actions are invalid in the authorities array')
     @SuccessResponse('200', 'OK')
-    @Security('jwt')
     @Middlewares(restrictTo(Actions.UPDATE_USER))
+    @Security('jwt')
     @Put('authorize-or-restrict/{userId}')
     async authorizeOrRestrict(
         @Path() userId: string,
@@ -94,7 +95,7 @@ export class AdminController extends Controller {
         };
     }
 
-    //ban user
+    //done
     @Example({
         message: 'User is now banned',
     })
@@ -102,8 +103,10 @@ export class AdminController extends Controller {
     @Response(400, 'You cannot ban a super admin')
     @Response(400, 'User is already banned')
     @Response(400, 'You cannot ban yourself')
+    @Response(404, 'No user found with this id')
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.UPDATE_USER, Actions.BAN_USER))
+    @Security('jwt')
     @Put('ban-user/{userId}')
     async banUser(@Request() req: IReq) {
         const { userId } = req.params;
@@ -126,7 +129,7 @@ export class AdminController extends Controller {
             message: 'User is now banned',
         };
     }
-    //unban user
+    //done
     @Example({
         message: 'User is now unbanned',
     })
@@ -135,6 +138,7 @@ export class AdminController extends Controller {
     @Response(404, 'No user found with this id')
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.UPDATE_USER, Actions.BAN_USER))
+    @Security('jwt')
     @Put('unban-user/{userId}')
     async unbanUser(@Request() req: IReq) {
         const { userId } = req.params;
@@ -282,7 +286,7 @@ export class AdminController extends Controller {
             message: 'Role assigned to user',
         };
     }
-
+    //done
     @Example({
         message: 'Role removed to user',
     })
@@ -291,9 +295,9 @@ export class AdminController extends Controller {
     @Response(404, 'No role found with this name')
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @Security('jwt')
     @Put('remove-role/{name}/{userId}')
-    async removeRoleFromUser(@Request() req: IReq) {
-        const { userId, name } = req.params;
+    async removeRoleFromUser(@Path() name: string, @Path() userId: string) {
         const role = await Role.getRoleByName(name as string);
         if (!role) throw new AppError(404, 'No role found with this name');
         const user = await USER.findById(userId);
