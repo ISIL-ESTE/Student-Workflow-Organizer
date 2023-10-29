@@ -16,7 +16,7 @@ import { COOKIE_SECRET, CURRENT_ENV } from './config/app_config';
 import cookieParser from 'cookie-parser';
 // import routesVersioning from 'express-routes-versioning';
 // import indexRouter from './routes/index';
-import { RegisterRoutes } from './routes/routes';
+import { RegisterRoutes } from './routes';
 
 const app = express();
 
