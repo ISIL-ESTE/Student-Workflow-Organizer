@@ -2,7 +2,7 @@ import { IReq } from '@interfaces/vendors';
 import USER from '@models/user/user_model';
 import Role from '@utils/authorization/roles/role';
 import AppError from '@utils/app_error';
-import { Controller, Route } from 'tsoa';
+import { Controller, Route, Security } from 'tsoa';
 import {
     Response,
     Path,
@@ -25,10 +25,10 @@ export class SuperAdminController extends Controller {
     @Response(400, 'User is already an admin')
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.UPDATE_USER))
+    @Security('jwt')
     @Put('add-admin/{userId}')
     async addAdmin(@Path() userId: string): Promise<{ message: string }> {
         const Roles = await Role.getRoles();
-        // const { userId } = req.params;
         const user = await USER.findById(userId);
         if (!user) throw new AppError(404, 'No user found with this id');
         if (!Roles.ADMIN)
@@ -54,7 +54,6 @@ export class SuperAdminController extends Controller {
         };
     }
 
-    //remove admin
     @Example({ message: 'User is no longer an admin' })
     @Response(400, 'User is not an admin')
     @Response(400, 'You cannot remove yourself as an admin')
@@ -62,13 +61,13 @@ export class SuperAdminController extends Controller {
     @Response(404, 'No user found with this id')
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.UPDATE_USER))
+    @Security('jwt')
     @Put('remove-admin/{userId}')
     async removeAdmin(
         @Path() userId: string,
         @Request() req: IReq
     ): Promise<{ message: string }> {
         const Roles = await Role.getRoles();
-        // const { userId } = req.params;
         const user = await USER.findById(userId);
         if (!user) throw new AppError(404, 'No user found with this id');
         if (!Roles.ADMIN || !Roles.USER)
@@ -96,10 +95,10 @@ export class SuperAdminController extends Controller {
     @Response(404, 'No user found with this id')
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.UPDATE_USER))
+    @Security('jwt')
     @Put('add-super-admin/{userId}')
-    async addSuperAdmin(@Request() req: IReq) {
+    async addSuperAdmin(@Path() userId: string, @Request() req: IReq) {
         const Roles = await Role.getRoles();
-        const { userId } = req.params;
         const user = await USER.findById(userId);
         if (!user) throw new AppError(404, 'No user found with this id');
         if (req.user._id?.toString() === userId?.toString())
@@ -128,9 +127,9 @@ export class SuperAdminController extends Controller {
     @Response(404, 'No user found with this id')
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.UPDATE_USER))
+    @Security('jwt')
     @Put('remove-super-admin/{userId}')
-    async removeSuperAdmin(@Request() req: IReq) {
-        const { userId } = req.params;
+    async removeSuperAdmin(@Path() userId: string, @Request() req: IReq) {
         const Roles = await Role.getRoles();
         const user = await USER.findById(userId);
         if (!user) throw new AppError(404, 'No user found with this id');

@@ -25,19 +25,14 @@ import {
 import Actions from '@constants/actions';
 import restrictTo from '@middlewares/authorization';
 
-interface roleCreationParams {
+interface RoleType {
     name: string;
     authorities: string[];
     restrictions: string[];
 }
 
-//TODO:  set path in params
-//TODO: set types and interfaces to all the methods
-//TODO: need dtos
-
 @Route('admin')
 export class AdminController extends Controller {
-    //done
     @Example({
         message: 'User is now an admin',
     })
@@ -54,10 +49,7 @@ export class AdminController extends Controller {
         @Path() userId: string,
         @Request() req: IReq,
         @Body()
-        body: {
-            authorities: string[];
-            restrictions: string[];
-        }
+        body: Omit<RoleType, 'name'>
     ) {
         const { authorities, restrictions } = body;
         if (!validateActions(authorities))
@@ -95,7 +87,6 @@ export class AdminController extends Controller {
         };
     }
 
-    //done
     @Example({
         message: 'User is now banned',
     })
@@ -108,9 +99,7 @@ export class AdminController extends Controller {
     @Middlewares(restrictTo(Actions.UPDATE_USER, Actions.BAN_USER))
     @Security('jwt')
     @Put('ban-user/{userId}')
-    async banUser(@Request() req: IReq) {
-        const { userId } = req.params;
-
+    async banUser(@Request() req: IReq, @Path() userId: string) {
         const Roles = await Role.getRoles();
         const user = await USER.findById(userId);
         if (!user) throw new AppError(404, 'No user found with this id');
@@ -129,7 +118,6 @@ export class AdminController extends Controller {
             message: 'User is now banned',
         };
     }
-    //done
     @Example({
         message: 'User is now unbanned',
     })
@@ -140,8 +128,7 @@ export class AdminController extends Controller {
     @Middlewares(restrictTo(Actions.UPDATE_USER, Actions.BAN_USER))
     @Security('jwt')
     @Put('unban-user/{userId}')
-    async unbanUser(@Request() req: IReq) {
-        const { userId } = req.params;
+    async unbanUser(@Request() req: IReq, @Path() userId: string) {
         const user = await USER.findById(userId);
         if (!user) throw new AppError(404, 'No user found with this id');
         if (req.user._id?.toString() === userId?.toString())
@@ -156,7 +143,6 @@ export class AdminController extends Controller {
         };
     }
 
-    //done
     @Response(400, 'Role already exists')
     @SuccessResponse('201', 'CREATED')
     @Middlewares(restrictTo(Actions.MANAGE_ROLES))
@@ -164,8 +150,8 @@ export class AdminController extends Controller {
     @Post('role')
     async createRole(
         @Body()
-        body: roleCreationParams
-    ): Promise<{ message: string; data: roleCreationParams }> {
+        body: RoleType
+    ): Promise<{ message: string; data: RoleType }> {
         const { name, authorities, restrictions } = body;
         if (await Role.getRoleByName(name))
             throw new AppError(400, 'Role already exists');
@@ -180,7 +166,6 @@ export class AdminController extends Controller {
             data: createdRole,
         };
     }
-    //done
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.MANAGE_ROLES))
     @Security('jwt')
@@ -188,7 +173,7 @@ export class AdminController extends Controller {
     async getRoles(): Promise<{
         message: string;
         data: {
-            [key: string]: roleCreationParams;
+            [key: string]: RoleType;
         };
     }> {
         const roles = await Role.getRoles();
@@ -198,14 +183,13 @@ export class AdminController extends Controller {
             data: roles,
         };
     }
-    //done
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.MANAGE_ROLES))
     @Security('jwt')
     @Get('role/{name}')
     async getRole(@Path() name: string): Promise<{
         message: string;
-        data: roleCreationParams;
+        data: RoleType;
     }> {
         const singleRole = await Role.getRoleByName(name);
         this.setStatus(200);
@@ -214,14 +198,13 @@ export class AdminController extends Controller {
             data: singleRole,
         };
     }
-    //done
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.MANAGE_ROLES))
     @Security('jwt')
     @Delete('role/{name}')
     async deleteRole(@Path() name: string): Promise<{
         message: string;
-        data: roleCreationParams;
+        data: RoleType;
     }> {
         const deletedRole = await Role.deleteRoleByName(name);
         this.setStatus(200);
@@ -231,17 +214,16 @@ export class AdminController extends Controller {
         };
     }
 
-    //done
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.MANAGE_ROLES))
     @Security('jwt')
     @Put('role/{name}')
     async updateRole(
         @Path() name: string,
-        @Body() body: Omit<roleCreationParams, 'name'>
+        @Body() body: Omit<RoleType, 'name'>
     ): Promise<{
         message: string;
-        data: roleCreationParams;
+        data: RoleType;
     }> {
         const { authorities, restrictions } = body;
         const updatedRole = await Role.updateRoleByName(
@@ -255,7 +237,6 @@ export class AdminController extends Controller {
             data: updatedRole,
         };
     }
-    //done
     @Example({
         message: 'Role assigned to user',
     })
@@ -286,7 +267,6 @@ export class AdminController extends Controller {
             message: 'Role assigned to user',
         };
     }
-    //done
     @Example({
         message: 'Role removed to user',
     })
