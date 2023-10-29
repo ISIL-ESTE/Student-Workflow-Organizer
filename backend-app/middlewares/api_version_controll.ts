@@ -9,8 +9,8 @@ import { API_VERSION } from '@config/app_config';
  * @param {NextFunction} next - Express next function to pass control to the next middleware or route handler.
  */
 const handleAPIVersion = (req: Request, _res: Response, next: NextFunction) => {
-    if (!req.headers['accept-version']) {
-        req.headers['accept-version'] = API_VERSION;
+    if (!req.headers['api-version']) {
+        req.headers['api-version'] = API_VERSION;
     }
     next();
 };
