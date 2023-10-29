@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { IReq, IRes, INext } from '@interfaces/vendors';
 import { promisify } from 'util';
 import AppError from '@utils/app_error';
 import Role from '@utils/authorization/roles/role';
@@ -13,7 +12,6 @@ import AuthUtils from '@utils/authorization/auth_utils';
 import searchCookies from '@utils/searchCookie';
 import User from '@models/user/user_model';
 import { Request, Response, NextFunction } from 'express';
-import { IUser } from '@root/interfaces/models/i_user';
 
 const generateActivationKey = async () => {
     const randomBytesPromiseified = promisify(require('crypto').randomBytes);
@@ -53,7 +51,8 @@ export const githubHandler = async (
             );
             AuthUtils.setAccessTokenCookie(res, accessToken);
             AuthUtils.setRefreshTokenCookie(res, refreshToken);
-            return res.sendStatus(204);
+            res.sendStatus(204);
+            return;
         }
         if (!githubUser) throw new AppError(400, 'Invalid access token');
         const createdUser = await User.create({
@@ -216,19 +215,13 @@ export const tokenRefresh = async (
         next(err);
     }
 };
-export const logout = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const logout = (req: Request, res: Response, next: NextFunction) => {
     try {
         const accessToken = searchCookies(req, 'access_token');
         if (!accessToken)
             throw new AppError(400, 'Please provide access token');
-        const accessTokenPayload =
-            await AuthUtils.verifyAccessToken(accessToken);
-        if (!accessTokenPayload || !accessTokenPayload._id)
-            throw new AppError(400, 'Invalid access token');
+        // delete the access token cookie
+        res.clearCookie('access_token');
         res.sendStatus(204);
     } catch (err) {
         next(err);
@@ -289,75 +282,3 @@ export const activateAccount = async (
         next(err);
     }
 };
-
-export const protect = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        const accessToken = searchCookies(req, 'access_token');
-
-        if (!accessToken) throw new AppError(401, 'Please login to continue');
-
-        const accessTokenPayload =
-            await AuthUtils.verifyAccessToken(accessToken);
-
-        if (!accessTokenPayload || !accessTokenPayload._id)
-            throw new AppError(401, 'Invalid access token');
-        // 3) check if the user is exist (not deleted)
-        const user: IUser = await User.findById(accessTokenPayload._id).select(
-            'accessRestricted active roles authorities restrictions name email'
-        );
-        if (!user) {
-            throw new AppError(401, 'This user is no longer exist');
-        }
-
-        // Check if the account is banned
-        if (user?.accessRestricted)
-            throw new AppError(
-                403,
-                'Your account has been banned. Please contact the admin for more information.'
-            );
-
-        // check if account is active
-        if (!user.active)
-            throw new AppError(
-                403,
-                'Your account is not active. Please activate your account to continue.'
-            );
-
-        // Create a new request object with the user property set to the user object
-
-        req.user = user;
-        next();
-    } catch (err) {
-        // check if the token is expired
-        if (err.name === 'TokenExpiredError') {
-            return next(new AppError(401, 'Your token is expired'));
-        }
-        if (err.name === 'JsonWebTokenError') {
-            return next(new AppError(401, err.message));
-        }
-        next(err);
-    }
-};
-
-// Authorization check if the user have rights to do this action
-export const restrictTo =
-    (...roles: string[]) =>
-    (req: IReq, res: IRes, next: INext) => {
-        try {
-            const roleExist = roles.some((role) =>
-                req.user.roles.includes(role)
-            );
-            if (!roleExist)
-                throw new AppError(
-                    403,
-                    'You are not allowed to do this action'
-                );
-            next();
-        } catch (err) {
-            next(err);
-        }
-    };
