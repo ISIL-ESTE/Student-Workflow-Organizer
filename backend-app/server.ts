@@ -26,7 +26,7 @@ mongoose
     .then(() => {
         logger.info('DB Connected Successfully!');
         expServer = startServer();
-        logger.info(`Swagger Will Be Available at /docs  /docs-json`);
+        logger.info(`API Docs Avaiable at /docs , /docs-json`);
     })
     .catch((err: Error) => {
         logger.error(
@@ -43,7 +43,10 @@ mongoose.connection.on('disconnected', () => {
 const startServer = async (): Promise<import('http').Server> => {
     if (!fs.existsSync('.env'))
         logger.warn('.env file not found, using .env.example file');
-    logger.info(`App running on  http://localhost:${PORT}`);
+    logger.info(`App running on :`);
+    logger.info(` ----------------------------`);
+    logger.info(`| http://localhost:${PORT}/docs |`);
+    logger.info(` ----------------------------`);
     await createRoles();
     return app.listen(PORT);
 };
