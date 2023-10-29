@@ -20,7 +20,7 @@
         }
     },
     "routes": {
-        "routesDir": "routes",
+        "routesDir": ".",
         "authenticationModule": "./middlewares/authentications.ts"
     }
 }

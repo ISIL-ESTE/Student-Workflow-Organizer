@@ -5,7 +5,7 @@
     "main": "app.ts",
     "scripts": {
         "debug": "ndb server.ts",
-        "dev": "concurrently -p name -n SWO,TSOA \"nodemon --config config/nodemon.json\" \" nodemon --config config/nodemon_tsoa.json\"",
+        "dev": "concurrently -p name -n SWO,TSOA \"nodemon --config config/nodemon.json\" \" nodemon --config config/nodemon.tsoa.json\"",
         "start": "node build/server.js",
         "test": "ts-mocha --bail",
         "test:dev": "cd ./build && mocha --bail",
