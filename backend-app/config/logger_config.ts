@@ -28,7 +28,7 @@ const formatLogMessage = format.printf(
  * when the log level is debug, debug and all the levels above it will be logged.
  * when the log level is warn, warn and all the levels above it will be logged.
  */
-const logLevel = CURRENT_ENV === 'development' ? 'debug' : 'warn';
+const logLevel = CURRENT_ENV === 'development' ? 'debug' : 'info';
 
 /**
  * @description - This is the configuration for the logger

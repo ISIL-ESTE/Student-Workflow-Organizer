@@ -18,6 +18,7 @@ mongoose.set('strictQuery', true);
 let expServer: Promise<import('http').Server>;
 
 // Connect the database
+logger.info('Connecting to DB ...');
 mongoose
     .connect(
         DATABASE as string,
@@ -30,7 +31,10 @@ mongoose
     })
     .catch((err: Error) => {
         logger.error(
-            'DB Connection Failed! \n\tException : ' + err + '\n' + err.stack
+            'DB Connection Failed! \n\tException : ' +
+                err.name +
+                ' : ' +
+                err.message
         );
     });
 
