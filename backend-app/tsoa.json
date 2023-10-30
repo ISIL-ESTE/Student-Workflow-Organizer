@@ -4,7 +4,7 @@
     "controllerPathGlobs": ["./controllers/**/*.ts"],
     "spec": {
         "outputDirectory": "./docs/api_docs/",
-        "specVersion": 2,
+        "specVersion": 3,
         "specValidation": false,
         "securityDefinitions": {
             "jwt": {

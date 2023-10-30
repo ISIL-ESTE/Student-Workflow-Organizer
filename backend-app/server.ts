@@ -71,6 +71,7 @@ process.on('SIGTERM', () => {
         logger.info('💥 Process terminated!');
         process.exit(0);
     });
+    process.exit(1);
 });
 
 process.on('SIGINT', () => {
@@ -79,4 +80,5 @@ process.on('SIGINT', () => {
         logger.info('💥 Process terminated!');
         process.exit(0);
     });
+    process.exit(1);
 });
