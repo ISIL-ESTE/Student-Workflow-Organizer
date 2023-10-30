@@ -3,80 +3,94 @@ import logger from '@utils/logger';
 import AppError from '@utils/app_error';
 import generateTokens from '@utils/authorization/generate_tokens';
 import validator from 'validator';
-import { NextFunction, Request, Response } from 'express';
+import { Body, Controller, Post, Route, Tags } from 'tsoa';
 
-export const updatePassword = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        const { email, resetKey, password } = req.body;
+interface UpdatePasswordRequestBody {
+    email: string;
+    resetKey: string;
+    password: string;
+}
 
-        if (!validator.isEmail(email))
-            throw new AppError(400, 'Invalid email format');
+interface ForgotPasswordRequestBody {
+    email: string;
+}
 
-        const user = await User.findOne({ email }).select('+password');
+@Route('password-management')
+@Tags('Password Management')
+export class PasswordManagementController extends Controller {
+    @Post('update-password')
+    public async updatePassword(
+        @Body() requestBody: UpdatePasswordRequestBody
+    ) {
+        try {
+            const { email, resetKey, password } = requestBody;
 
-        if (!user)
-            throw new AppError(404, 'User with this email does not exist');
+            if (!validator.isEmail(email))
+                throw new AppError(400, 'Invalid email format');
 
-        if (!resetKey) throw new AppError(400, 'Please provide reset key');
+            const user = await User.findOne({ email }).select('+password');
 
-        if (!user.resetKey) throw new AppError(400, 'Invalid reset key');
+            if (!user)
+                throw new AppError(404, 'User with this email does not exist');
 
-        if (resetKey !== user.resetKey)
-            throw new AppError(400, 'Invalid reset key');
+            if (!resetKey) throw new AppError(400, 'Please provide reset key');
 
-        user.password = password;
-        user.resetKey = undefined;
-        await user.save();
+            if (!user.resetKey) throw new AppError(400, 'Invalid reset key');
 
-        const token = generateTokens(user.id);
-        user.password = undefined;
+            if (resetKey !== user.resetKey)
+                throw new AppError(400, 'Invalid reset key');
 
-        res.status(200).json({
-            token,
-            user,
-        });
-    } catch (err) {
-        next(err);
+            user.password = password;
+            user.resetKey = undefined;
+            await user.save();
+
+            const token = generateTokens(user.id);
+            user.password = undefined;
+
+            return {
+                token,
+                user,
+            };
+        } catch (err) {
+            this.setStatus(err.statusCode || 500);
+            return { message: err.message };
+        }
     }
-};
 
-export const forgotPassword = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        const { email } = req.body;
+    @Post('forgot-password')
+    public async forgotPassword(
+        @Body() requestBody: ForgotPasswordRequestBody
+    ) {
+        try {
+            const { email } = requestBody;
 
-        if (!email) throw new AppError(400, 'Please provide email');
+            if (!email) throw new AppError(400, 'Please provide email');
 
-        if (!validator.isEmail(email))
-            throw new AppError(400, 'Invalid email format');
+            if (!validator.isEmail(email))
+                throw new AppError(400, 'Invalid email format');
 
-        const user = await User.findOne({ email });
+            const user = await User.findOne({ email });
 
-        if (!user)
-            throw new AppError(404, 'User with this email does not exist');
+            if (!user)
+                throw new AppError(404, 'User with this email does not exist');
 
-        const resetKey = user.generateResetKey();
-        await user.save();
+            const resetKey = user.generateResetKey();
+            await user.save();
 
-        logger.info(
-            `User ${user.name} with email ${user.email} has requested for password reset with reset key ${resetKey}`
-        );
+            logger.info(
+                `User ${user.name} with email ${user.email} has requested for password reset with reset key ${resetKey}`
+            );
 
-        // send email with reset key
-        // eslint-disable-next-line no-warning-comments
-        // TODO: send email with reset key
+            // send email with reset key
+            // eslint-disable-next-line no-warning-comments
+            // TODO: send email with reset key
 
-        res.status(200).json({
-            message: 'Email with reset key sent successfully',
-        });
-    } catch (err) {
-        next(err);
+            return {
+                message: 'Email with reset key sent successfully',
+            };
+        } catch (err) {
+            this.setStatus(err.statusCode || 500);
+            return { message: err.message };
+        }
     }
-};
+}

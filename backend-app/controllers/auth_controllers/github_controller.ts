@@ -1,10 +1,15 @@
 import axios from 'axios';
 import Repository from '@interfaces/github_repo';
 import AppError from '@utils/app_error';
-import { INext, IReq, IRes } from '@interfaces/vendors';
+import { IReq, IRes } from '@interfaces/vendors';
+import { Controller, Get, Request, Res, Route, Security, Tags } from 'tsoa';
 
-export const getRecentRepo = async (req: IReq, res: IRes, next: INext) => {
-    try {
+@Security('jwt')
+@Route('github')
+@Tags('GitHub')
+export class GitHub extends Controller {
+    @Get('/recent-repo')
+    public async getRecentRepo(@Request() req: IReq, @Res() res: IRes) {
         if (!req.user) {
             throw new AppError(401, 'You are not logged in');
         }
@@ -47,7 +52,5 @@ export const getRecentRepo = async (req: IReq, res: IRes, next: INext) => {
         res.status(200).json({
             recentRepository,
         });
-    } catch (err) {
-        next(err);
     }
-};
+}

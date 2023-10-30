@@ -17,9 +17,11 @@ import {
     TsoaResponse,
     Controller,
     Get,
-    Security,
+    Post,
+    Tags,
     Query,
     Body,
+    Route,
 } from 'tsoa';
 import { IUser } from '@root/interfaces/models/i_user';
 import { IReq, IRes } from '@root/interfaces/vendors';
@@ -30,9 +32,11 @@ const generateActivationKey = async () => {
     return activationKey;
 };
 
-@Security('jwt')
+@Route('auth')
+@Tags('Authentication')
 export class AuthController extends Controller {
-    @Get('github')
+    @Get('github/callback')
+    @Tags('GitHub')
     public async githubHandler(
         @Request() _req: Express.Request,
         @Query() code: string,
@@ -92,6 +96,7 @@ export class AuthController extends Controller {
         }
     }
 
+    @Post('login')
     public async login(
         @Request() _req: Express.Request,
         @Res() res: TsoaResponse<200, { accessToken: string; user: IUser }>,
@@ -156,7 +161,7 @@ export class AuthController extends Controller {
             return Promise.reject(new AppError(400, err.message));
         }
     }
-
+    @Post('signup')
     public async signup(
         @Request() _req: Express.Request,
         @Res() res: TsoaResponse<201, { accessToken: string; user: IUser }>,
@@ -207,7 +212,7 @@ export class AuthController extends Controller {
             return Promise.reject(new AppError(400, err.message));
         }
     }
-
+    @Get('refreshToken')
     public async tokenRefres(
         @Request() req: IReq,
         @Res() res: TsoaResponse<204, { message: string }>
@@ -233,6 +238,7 @@ export class AuthController extends Controller {
             return Promise.reject(new AppError(400, err.message));
         }
     }
+    @Get('logout')
     public logout(
         @Request() req: IReq,
         ires: IRes,
@@ -246,7 +252,7 @@ export class AuthController extends Controller {
         ires.sendStatus(204);
         res(204, { message: 'Logged out successfully' });
     }
-
+    @Get('activate')
     public async activateAccount(
         @Request() _req: IReq,
         @Res() res: TsoaResponse<200, { user: IUser }>,
