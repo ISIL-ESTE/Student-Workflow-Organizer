@@ -1,72 +1,120 @@
-import User from '@models/user/user_model';
-import * as base from '@controllers/base_controller';
+import { Controller, Get, Delete, Patch } from '@tsoa/runtime';
+// import * as base from '@controllers/base_controller';
 import AppError from '@utils/app_error';
-import { INext, IReq, IRes } from '@interfaces/vendors';
+import { IReq } from '@interfaces/vendors';
+import {
+    Request,
+    Res,
+    Route,
+    Security,
+    TsoaResponse,
+    Response,
+    SuccessResponse,
+    Tags,
+} from 'tsoa';
+import User from '@root/models/user/user_model';
 
-export const getMe = (req: IReq, res: IRes) => {
-    // return data of the current user
-    res.status(200).json({
-        user: req.user,
-    });
-};
-
-export const deleteMe = async (req: IReq, res: IRes, next: INext) => {
-    try {
-        await User.findByIdAndUpdate(req.user._id, {
-            deleted: true,
-            deletedAt: Date.now(),
-            deletedBy: req.user._id,
-        });
-
-        res.status(204).json({
-            data: null,
-        });
-    } catch (error) {
-        next(error);
+@Route('api/users')
+@Security('jwt')
+@Tags('User')
+export class UserController extends Controller {
+    @Response(401, 'Unauthorized')
+    @SuccessResponse(200, 'OK')
+    @Get('me')
+    public getMe(@Request() req: IReq): Promise<any> {
+        if (!req.user) {
+            return Promise.reject(new AppError(401, 'Please log in again!'));
+        }
+        // return data of the current user
+        return Promise.resolve(req.user);
     }
-};
 
-export const updateMe = async (req: IReq, res: IRes, next: INext) => {
-    try {
-        // 1) Create error if user POSTs password data
-        if (req.body.password || req.body.passwordConfirm) {
-            throw new AppError(
-                400,
-                'This route is not for password updates. Please use /updateMyPassword'
-            );
+    @Response(401, 'Unauthorized')
+    @SuccessResponse(204, 'No Content')
+    @Delete('me')
+    public async deleteMe(
+        @Request() req: IReq,
+        @Res() res: TsoaResponse<204, { message: string }>
+    ): Promise<void> {
+        try {
+            await User.findByIdAndUpdate(req.user._id, {
+                deleted: true,
+                deletedAt: Date.now(),
+                deletedBy: req.user._id,
+            });
+            return res(204, { message: 'User deleted successfully' });
+        } catch (error) {
+            return Promise.reject(new AppError(400, error.message));
         }
-        // create error if user tries to update role
-        if (req.body.roles) {
-            throw new AppError(
-                400,
-                'This route is not for role updates. Please use /updateRole'
-            );
-        }
-        // 2) Filtered out unwanted fields names that are not allowed to be updated
-        const payload = {
-            name: req.body.name,
-            email: req.body.email,
-        };
-        // 3) Update user document
-        const doc = await User.findByIdAndUpdate(req.user._id, payload, {
-            new: true,
-            runValidators: true,
-        });
-        if (!doc) {
-            return next(new AppError(404, 'No document found with that id'));
-        }
-
-        res.status(200).json({
-            doc,
-        });
-    } catch (error) {
-        next(error);
     }
-};
 
-export const getAllUsers = base.getAll(User);
-export const getUser = base.getOne(User);
+    @Response(401, 'Unauthorized')
+    @Response(
+        400,
+        `- This route is not for role updates. Please use /updateRole\n - This route is not for password updates. Please use auth/updateMyPassword`
+    )
+    @Response(404, '<b>No document found with that ID</b>')
+    @SuccessResponse(200, 'OK')
+    @Patch('me')
+    public async updateMe(
+        @Request() req: IReq,
+        @Res() res: TsoaResponse<200, any>
+    ): Promise<any> {
+        try {
+            // 1) Create error if user POSTs password data
+            if (req.body.password || req.body.passwordConfirm) {
+                throw new AppError(
+                    400,
+                    'This route is not for password updates. Please use auth/updateMyPassword'
+                );
+            }
+            // create error if user tries to update role
+            if (req.body.roles) {
+                throw new AppError(
+                    400,
+                    'This route is not for role updates. Please use /updateRole'
+                );
+            }
+            // 2) Filtered out unwanted fields names that are not allowed to be updated
+            const payload = {
+                name: req.body.name,
+                email: req.body.email,
+            };
+            // TODO: the email should have a unique way to update
+            // 3) Update user document
+            const doc = await User.findByIdAndUpdate(req.user._id, payload, {
+                new: true,
+                runValidators: true,
+            });
+            if (!doc) {
+                return Promise.reject(
+                    new AppError(404, 'No document found with that ID')
+                );
+            }
 
-// Don't update password on this
-export const updateUser = base.updateOne(User);
-export const deleteUser = base.deleteOne(User);
+            return Promise.resolve(doc);
+        } catch (error) {
+            return Promise.reject(new AppError(400, error.message));
+        }
+    }
+
+    // @Get()
+    // public async getAllUsers(): Promise<any> {
+    //     return Promise.resolve(base.getAll(User));
+    // }
+
+    // @Get('{id}')
+    // public async getUser(@Path() id: string): Promise<any> {
+    //     return base.getOne(User, id);
+    // }
+
+    // @Put('{id}')
+    // public async updateUser(id: string): Promise<void> {
+    //     base.updateOne(User,id);
+    // }
+
+    // @Delete('{id}')
+    // public async deleteUser(id: string): Promise<void> {
+    //     base.deleteOne(User,id);
+    // }
+}
