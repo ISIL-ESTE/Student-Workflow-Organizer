@@ -1,4 +1,3 @@
-/* eslint-disable no-warning-comments */
 import { IReq } from '@interfaces/vendors';
 import USER from '@models/user/user_model';
 import Role from '@utils/authorization/roles/role';
@@ -11,8 +10,10 @@ import {
     Get,
     Path,
     Post,
+    Res,
     Route,
     Security,
+    TsoaResponse,
 } from 'tsoa';
 import {
     Response,
@@ -30,24 +31,28 @@ interface RoleType {
     authorities: string[];
     restrictions: string[];
 }
-
+@Security('jwt')
 @Route('admin')
 export class AdminController extends Controller {
     @Example({
         message: 'User is now an admin',
     })
-    @Response(400, 'User is a super admin')
-    @Response(404, 'No user found with this id')
-    @Response(400, 'You cannot change your own authorities or restrictions')
-    @Response(400, 'One or many actions are invalid in the restrictions array')
-    @Response(400, 'One or many actions are invalid in the authorities array')
+    @Response(
+        400,
+        `- One or many actions are invalid in the authorities array.
+         - One or many actions are invalid in the restrictions array.
+         - You cannot change your own authorities or restrictions.
+         - No user found with this id.
+         - User is a super admin.
+         `
+    )
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.UPDATE_USER))
-    @Security('jwt')
     @Put('authorize-or-restrict/{userId}')
     async authorizeOrRestrict(
         @Path() userId: string,
         @Request() req: IReq,
+        @Res() res: TsoaResponse<200, any>,
         @Body()
         body: Omit<RoleType, 'name'>
     ) {
@@ -81,25 +86,31 @@ export class AdminController extends Controller {
             new Set([...restrictions, ...existingRestrictions])
         );
         await user.save();
-        this.setStatus(200);
-        return {
+        return res(200, {
             message: 'User authorities and restrictions updated',
-        };
+        });
     }
 
     @Example({
         message: 'User is now banned',
     })
-    @Response(400, 'You cannot ban an admin')
-    @Response(400, 'You cannot ban a super admin')
-    @Response(400, 'User is already banned')
-    @Response(400, 'You cannot ban yourself')
-    @Response(404, 'No user found with this id')
+    @Response(
+        400,
+        `
+         - You cannot ban yourself.
+         - User is already banned.
+         - You cannot ban a super admin.
+         - You cannot ban an admin`
+    )
+    @Response(404, ' No user found with this id')
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.UPDATE_USER, Actions.BAN_USER))
-    @Security('jwt')
     @Put('ban-user/{userId}')
-    async banUser(@Request() req: IReq, @Path() userId: string) {
+    async banUser(
+        @Request() req: IReq,
+        @Res() res: TsoaResponse<200, any>,
+        @Path() userId: string
+    ) {
         const Roles = await Role.getRoles();
         const user = await USER.findById(userId);
         if (!user) throw new AppError(404, 'No user found with this id');
@@ -113,22 +124,27 @@ export class AdminController extends Controller {
             throw new AppError(400, 'You cannot ban an admin');
         user.accessRestricted = true;
         await user.save();
-        this.setStatus(200);
-        return {
+        return res(200, {
             message: 'User is now banned',
-        };
+        });
     }
     @Example({
         message: 'User is now unbanned',
     })
-    @Response(400, 'User is not banned')
-    @Response(400, 'You cannot unban yourself')
+    @Response(
+        400,
+        `- You cannot unban yourself.
+         - User is not banned.`
+    )
     @Response(404, 'No user found with this id')
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.UPDATE_USER, Actions.BAN_USER))
-    @Security('jwt')
     @Put('unban-user/{userId}')
-    async unbanUser(@Request() req: IReq, @Path() userId: string) {
+    async unbanUser(
+        @Request() req: IReq,
+        @Res() res: TsoaResponse<200, any>,
+        @Path() userId: string
+    ) {
         const user = await USER.findById(userId);
         if (!user) throw new AppError(404, 'No user found with this id');
         if (req.user._id?.toString() === userId?.toString())
@@ -137,18 +153,18 @@ export class AdminController extends Controller {
             throw new AppError(400, 'User is not banned');
         user.accessRestricted = false;
         await user.save();
-        this.setStatus(200);
-        return {
+        return res(200, {
             message: 'User is now unbanned',
-        };
+        });
     }
 
     @Response(400, 'Role already exists')
     @SuccessResponse('201', 'CREATED')
     @Middlewares(restrictTo(Actions.MANAGE_ROLES))
-    @Security('jwt')
     @Post('role')
     async createRole(
+        @Res() res: TsoaResponse<201, any>,
+
         @Body()
         body: RoleType
     ): Promise<{ message: string; data: RoleType }> {
@@ -160,66 +176,65 @@ export class AdminController extends Controller {
             authorities,
             restrictions
         );
-        this.setStatus(201);
-        return {
+        return res(201, {
             message: 'Role created',
             data: createdRole,
-        };
+        });
     }
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.MANAGE_ROLES))
-    @Security('jwt')
     @Get('role')
-    async getRoles(): Promise<{
+    async getRoles(@Res() res: TsoaResponse<200, any>): Promise<{
         message: string;
         data: {
             [key: string]: RoleType;
         };
     }> {
         const roles = await Role.getRoles();
-        this.setStatus(200);
-        return {
+        return res(200, {
             message: 'Roles retrieved',
             data: roles,
-        };
+        });
     }
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.MANAGE_ROLES))
-    @Security('jwt')
     @Get('role/{name}')
-    async getRole(@Path() name: string): Promise<{
+    async getRole(
+        @Res() res: TsoaResponse<200, any>,
+        @Path() name: string
+    ): Promise<{
         message: string;
         data: RoleType;
     }> {
         const singleRole = await Role.getRoleByName(name);
-        this.setStatus(200);
-        return {
+        return res(200, {
             message: 'Role retrieved',
             data: singleRole,
-        };
+        });
     }
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.MANAGE_ROLES))
-    @Security('jwt')
     @Delete('role/{name}')
-    async deleteRole(@Path() name: string): Promise<{
+    async deleteRole(
+        @Res() res: TsoaResponse<200, any>,
+        @Path() name: string
+    ): Promise<{
         message: string;
         data: RoleType;
     }> {
         const deletedRole = await Role.deleteRoleByName(name);
-        this.setStatus(200);
-        return {
+        return res(200, {
             message: 'Role deleted',
             data: deletedRole,
-        };
+        });
     }
 
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.MANAGE_ROLES))
-    @Security('jwt')
     @Put('role/{name}')
     async updateRole(
         @Path() name: string,
+        @Res() res: TsoaResponse<200, any>,
         @Body() body: Omit<RoleType, 'name'>
     ): Promise<{
         message: string;
@@ -231,23 +246,28 @@ export class AdminController extends Controller {
             authorities,
             restrictions
         );
-        this.setStatus(200);
-        return {
+        return res(200, {
             message: 'Role updated',
             data: updatedRole,
-        };
+        });
     }
     @Example({
         message: 'Role assigned to user',
     })
     @Response(400, 'User already has this role')
-    @Response(404, 'No role found with this name')
-    @Response(404, 'No user found with this id')
+    @Response(
+        404,
+        `- No user found with this id.
+         - No role found with this name.`
+    )
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.MANAGE_ROLES))
-    @Security('jwt')
     @Put('assign-role/{name}/{userId}')
-    async assignRoleToUser(@Path() name: string, @Path() userId: string) {
+    async assignRoleToUser(
+        @Res() res: TsoaResponse<200, any>,
+        @Path() name: string,
+        @Path() userId: string
+    ) {
         const user = await USER.findById(userId);
         const role = await Role.getRoleByName(name as string);
         if (!user) throw new AppError(404, 'No user found with this id');
@@ -262,22 +282,27 @@ export class AdminController extends Controller {
             new Set([...role.restrictions, ...user.restrictions])
         );
         await user.save();
-        this.setStatus(200);
-        return {
+        return res(200, {
             message: 'Role assigned to user',
-        };
+        });
     }
     @Example({
         message: 'Role removed to user',
     })
     @Response(400, 'User does not have this role')
-    @Response(404, 'No user found with this id')
-    @Response(404, 'No role found with this name')
+    @Response(
+        404,
+        `- No role found with this name.
+         - No user found with this id.`
+    )
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.MANAGE_ROLES))
-    @Security('jwt')
     @Put('remove-role/{name}/{userId}')
-    async removeRoleFromUser(@Path() name: string, @Path() userId: string) {
+    async removeRoleFromUser(
+        @Res() res: TsoaResponse<200, any>,
+        @Path() name: string,
+        @Path() userId: string
+    ) {
         const role = await Role.getRoleByName(name as string);
         if (!role) throw new AppError(404, 'No role found with this name');
         const user = await USER.findById(userId);
@@ -292,8 +317,8 @@ export class AdminController extends Controller {
             (restriction) => !role.restrictions.includes(restriction)
         );
         await user.save();
-        return {
+        return res(200, {
             message: 'Role removed from user',
-        };
+        });
     }
 }

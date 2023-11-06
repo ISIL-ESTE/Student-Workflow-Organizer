@@ -2,7 +2,7 @@ import AppError from '@utils/app_error';
 import roleModel from '@models/user/role_model';
 import Actions from '@constants/actions';
 
-export interface RoleData {
+interface RoleData {
     name: string;
     authorities: string[];
     restrictions: string[];

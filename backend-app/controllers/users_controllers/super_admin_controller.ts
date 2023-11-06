@@ -2,7 +2,7 @@ import { IReq } from '@interfaces/vendors';
 import USER from '@models/user/user_model';
 import Role from '@utils/authorization/roles/role';
 import AppError from '@utils/app_error';
-import { Controller, Route, Security } from 'tsoa';
+import { Controller, Res, Route, Security, TsoaResponse } from 'tsoa';
 import {
     Response,
     Path,
@@ -15,6 +15,7 @@ import {
 import restrictTo from '@middlewares/authorization';
 import Actions from '@constants/actions';
 
+@Security('jwt')
 @Route('super-admin')
 export class SuperAdminController extends Controller {
     @Example({
@@ -25,9 +26,11 @@ export class SuperAdminController extends Controller {
     @Response(400, 'User is already an admin')
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.UPDATE_USER))
-    @Security('jwt')
     @Put('add-admin/{userId}')
-    async addAdmin(@Path() userId: string): Promise<{ message: string }> {
+    async addAdmin(
+        @Res() res: TsoaResponse<200, any>,
+        @Path() userId: string
+    ): Promise<{ message: string }> {
         const Roles = await Role.getRoles();
         const user = await USER.findById(userId);
         if (!user) throw new AppError(404, 'No user found with this id');
@@ -48,22 +51,25 @@ export class SuperAdminController extends Controller {
             new Set([...Roles.ADMIN.restrictions, ...existingRestrictions])
         );
         await user.save();
-        this.setStatus(200);
-        return {
+        return res(200, {
             message: 'User is now an admin',
-        };
+        });
     }
 
     @Example({ message: 'User is no longer an admin' })
-    @Response(400, 'User is not an admin')
-    @Response(400, 'You cannot remove yourself as an admin')
+    @Response(
+        400,
+        `- You cannot remove yourself as an admin.
+         - User is not an admin.
+    `
+    )
     @Response(500, 'Error in base roles, please contact an admin')
     @Response(404, 'No user found with this id')
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.UPDATE_USER))
-    @Security('jwt')
     @Put('remove-admin/{userId}')
     async removeAdmin(
+        @Res() res: TsoaResponse<200, any>,
         @Path() userId: string,
         @Request() req: IReq
     ): Promise<{ message: string }> {
@@ -83,21 +89,26 @@ export class SuperAdminController extends Controller {
         user.authorities = Roles.USER.authorities;
         user.restrictions = Roles.USER.restrictions;
         await user.save();
-        this.setStatus(200);
-        return {
+        return res(200, {
             message: 'User is no longer an admin',
-        };
+        });
     }
 
     @Example({ message: 'User is now a super admin' })
-    @Response(400, 'User is already a super admin')
-    @Response(400, 'You cannot make yourself a super admin')
+    @Response(
+        400,
+        `- You cannot make yourself a super admin.
+         - User is already a super admin`
+    )
     @Response(404, 'No user found with this id')
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.UPDATE_USER))
-    @Security('jwt')
     @Put('add-super-admin/{userId}')
-    async addSuperAdmin(@Path() userId: string, @Request() req: IReq) {
+    async addSuperAdmin(
+        @Res() res: TsoaResponse<200, any>,
+        @Path() userId: string,
+        @Request() req: IReq
+    ) {
         const Roles = await Role.getRoles();
         const user = await USER.findById(userId);
         if (!user) throw new AppError(404, 'No user found with this id');
@@ -115,21 +126,26 @@ export class SuperAdminController extends Controller {
             ])
         );
         await user.save();
-        this.setStatus(200);
-        return {
+        return res(200, {
             message: 'User is now a super admin',
-        };
+        });
     }
 
     @Example({ message: 'User is no longer a super admin' })
-    @Response(400, 'User is not a super admin')
-    @Response(400, 'You cannot remove yourself as a super admin')
+    @Response(
+        400,
+        `- You cannot remove yourself as a super admin.
+         - User is not a super admin.`
+    )
     @Response(404, 'No user found with this id')
     @SuccessResponse('200', 'OK')
     @Middlewares(restrictTo(Actions.UPDATE_USER))
-    @Security('jwt')
     @Put('remove-super-admin/{userId}')
-    async removeSuperAdmin(@Path() userId: string, @Request() req: IReq) {
+    async removeSuperAdmin(
+        @Res() res: TsoaResponse<200, any>,
+        @Path() userId: string,
+        @Request() req: IReq
+    ) {
         const Roles = await Role.getRoles();
         const user = await USER.findById(userId);
         if (!user) throw new AppError(404, 'No user found with this id');
@@ -146,9 +162,8 @@ export class SuperAdminController extends Controller {
         user.authorities = Roles.ADMIN.authorities;
         user.restrictions = Roles.ADMIN.restrictions;
         await user.save();
-        this.setStatus(200);
-        return {
+        return res(200, {
             message: 'User is no longer a super admin',
-        };
+        });
     }
 }
