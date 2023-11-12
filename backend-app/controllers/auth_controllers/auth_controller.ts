@@ -23,8 +23,7 @@ import {
     Body,
     Route,
 } from 'tsoa';
-import { IUser } from '@root/interfaces/models/i_user';
-import { IReq, IRes } from '@root/interfaces/vendors';
+import { IReq } from '@root/interfaces/vendors';
 
 const generateActivationKey = async () => {
     const randomBytesPromiseified = promisify(require('crypto').randomBytes);
@@ -99,7 +98,7 @@ export class AuthController extends Controller {
     @Post('login')
     public async login(
         @Request() _req: Express.Request,
-        @Res() res: TsoaResponse<200, { accessToken: string; user: IUser }>,
+        @Res() res: TsoaResponse<200, { accessToken: string; user: any }>,
         @Body() body?: { email: string; password: string }
     ): Promise<void> {
         try {
@@ -164,7 +163,7 @@ export class AuthController extends Controller {
     @Post('signup')
     public async signup(
         @Request() _req: Express.Request,
-        @Res() res: TsoaResponse<201, { accessToken: string; user: IUser }>,
+        @Res() res: TsoaResponse<201, { accessToken: string; user: any }>,
         @Body() body?: { name: string; email: string; password: string }
     ) {
         try {
@@ -241,26 +240,26 @@ export class AuthController extends Controller {
     @Get('logout')
     public logout(
         @Request() req: IReq,
-        ires: IRes,
         @Res() res: TsoaResponse<204, { message: string }>
     ): void {
         const accessToken = searchCookies(req, 'access_token');
         if (!accessToken)
             throw new AppError(400, 'Please provide access token');
         // delete the access token cookie
-        ires.clearCookie('access_token');
-        ires.sendStatus(204);
+        this.setHeader(
+            'Set-Cookie',
+            `access_token=; HttpOnly; Path=/; Expires=${new Date(0)}`
+        );
         res(204, { message: 'Logged out successfully' });
     }
     @Get('activate')
     public async activateAccount(
         @Request() _req: IReq,
-        @Res() res: TsoaResponse<200, { user: IUser }>,
-        @Query() query?: { id: string; activationKey: string }
+        @Res() res: TsoaResponse<200, { user: any }>,
+        @Query() id: string,
+        @Query() activationKey: string
     ): Promise<void> {
         try {
-            const { id, activationKey } = query;
-
             if (!activationKey) {
                 throw new AppError(400, 'Please provide activation key');
             }
