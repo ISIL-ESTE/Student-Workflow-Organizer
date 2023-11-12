@@ -7,12 +7,11 @@ import {
     Response,
     Path,
     SuccessResponse,
-    Middlewares,
     Put,
     Example,
     Request,
 } from '@tsoa/runtime';
-import restrictTo from '@middlewares/authorization';
+import { InspectAuthority } from '@root/decorators/inspect_authority';
 import Actions from '@constants/actions';
 
 @Security('jwt')
@@ -25,7 +24,7 @@ export class SuperAdminController extends Controller {
     @Response(500, 'Error in base roles, please contact an admin')
     @Response(400, 'User is already an admin')
     @SuccessResponse('200', 'OK')
-    @Middlewares(restrictTo(Actions.UPDATE_USER))
+    @InspectAuthority(Actions.UPDATE_USER)
     @Put('add-admin/{userId}')
     async addAdmin(
         @Res() res: TsoaResponse<200, any>,
@@ -66,7 +65,7 @@ export class SuperAdminController extends Controller {
     @Response(500, 'Error in base roles, please contact an admin')
     @Response(404, 'No user found with this id')
     @SuccessResponse('200', 'OK')
-    @Middlewares(restrictTo(Actions.UPDATE_USER))
+    @InspectAuthority(Actions.UPDATE_USER)
     @Put('remove-admin/{userId}')
     async removeAdmin(
         @Res() res: TsoaResponse<200, any>,
@@ -102,7 +101,7 @@ export class SuperAdminController extends Controller {
     )
     @Response(404, 'No user found with this id')
     @SuccessResponse('200', 'OK')
-    @Middlewares(restrictTo(Actions.UPDATE_USER))
+    @InspectAuthority(Actions.UPDATE_USER)
     @Put('add-super-admin/{userId}')
     async addSuperAdmin(
         @Res() res: TsoaResponse<200, any>,
@@ -139,7 +138,7 @@ export class SuperAdminController extends Controller {
     )
     @Response(404, 'No user found with this id')
     @SuccessResponse('200', 'OK')
-    @Middlewares(restrictTo(Actions.UPDATE_USER))
+    @InspectAuthority(Actions.UPDATE_USER)
     @Put('remove-super-admin/{userId}')
     async removeSuperAdmin(
         @Res() res: TsoaResponse<200, any>,

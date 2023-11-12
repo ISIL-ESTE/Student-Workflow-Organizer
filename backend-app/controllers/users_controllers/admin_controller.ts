@@ -18,13 +18,12 @@ import {
 import {
     Response,
     SuccessResponse,
-    Middlewares,
     Put,
     Example,
     Request,
 } from '@tsoa/runtime';
 import Actions from '@constants/actions';
-import restrictTo from '@middlewares/authorization';
+import { InspectAuthority } from '@root/decorators/inspect_authority';
 
 interface RoleType {
     name: string;
@@ -47,7 +46,7 @@ export class AdminController extends Controller {
          `
     )
     @SuccessResponse('200', 'OK')
-    @Middlewares(restrictTo(Actions.UPDATE_USER))
+    @InspectAuthority(Actions.UPDATE_USER)
     @Put('authorize-or-restrict/{userId}')
     async authorizeOrRestrict(
         @Path() userId: string,
@@ -104,7 +103,7 @@ export class AdminController extends Controller {
     )
     @Response(404, ' No user found with this id')
     @SuccessResponse('200', 'OK')
-    @Middlewares(restrictTo(Actions.UPDATE_USER, Actions.BAN_USER))
+    @InspectAuthority(Actions.UPDATE_USER, Actions.BAN_USER)
     @Put('ban-user/{userId}')
     async banUser(
         @Request() req: IReq,
@@ -138,7 +137,7 @@ export class AdminController extends Controller {
     )
     @Response(404, 'No user found with this id')
     @SuccessResponse('200', 'OK')
-    @Middlewares(restrictTo(Actions.UPDATE_USER, Actions.BAN_USER))
+    @InspectAuthority(Actions.UPDATE_USER, Actions.BAN_USER)
     @Put('unban-user/{userId}')
     async unbanUser(
         @Request() req: IReq,
@@ -160,7 +159,7 @@ export class AdminController extends Controller {
 
     @Response(400, 'Role already exists')
     @SuccessResponse('201', 'CREATED')
-    @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @InspectAuthority(Actions.MANAGE_ROLES)
     @Post('role')
     async createRole(
         @Res() res: TsoaResponse<201, any>,
@@ -182,7 +181,7 @@ export class AdminController extends Controller {
         });
     }
     @SuccessResponse('200', 'OK')
-    @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @InspectAuthority(Actions.MANAGE_ROLES)
     @Get('role')
     async getRoles(@Res() res: TsoaResponse<200, any>): Promise<{
         message: string;
@@ -197,7 +196,7 @@ export class AdminController extends Controller {
         });
     }
     @SuccessResponse('200', 'OK')
-    @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @InspectAuthority(Actions.MANAGE_ROLES)
     @Get('role/{name}')
     async getRole(
         @Res() res: TsoaResponse<200, any>,
@@ -213,7 +212,7 @@ export class AdminController extends Controller {
         });
     }
     @SuccessResponse('200', 'OK')
-    @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @InspectAuthority(Actions.MANAGE_ROLES)
     @Delete('role/{name}')
     async deleteRole(
         @Res() res: TsoaResponse<200, any>,
@@ -230,7 +229,7 @@ export class AdminController extends Controller {
     }
 
     @SuccessResponse('200', 'OK')
-    @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @InspectAuthority(Actions.MANAGE_ROLES)
     @Put('role/{name}')
     async updateRole(
         @Path() name: string,
@@ -261,7 +260,7 @@ export class AdminController extends Controller {
          - No role found with this name.`
     )
     @SuccessResponse('200', 'OK')
-    @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @InspectAuthority(Actions.MANAGE_ROLES)
     @Put('assign-role/{name}/{userId}')
     async assignRoleToUser(
         @Res() res: TsoaResponse<200, any>,
@@ -296,7 +295,7 @@ export class AdminController extends Controller {
          - No user found with this id.`
     )
     @SuccessResponse('200', 'OK')
-    @Middlewares(restrictTo(Actions.MANAGE_ROLES))
+    @InspectAuthority(Actions.MANAGE_ROLES)
     @Put('remove-role/{name}/{userId}')
     async removeRoleFromUser(
         @Res() res: TsoaResponse<200, any>,
