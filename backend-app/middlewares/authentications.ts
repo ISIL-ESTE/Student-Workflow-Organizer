@@ -2,7 +2,7 @@ import { IUser } from '@root/interfaces/models/i_user';
 import User from '@root/models/user/user_model';
 import AppError from '@root/utils/app_error';
 import AuthUtils from '@root/utils/authorization/auth_utils';
-// import searchCookies from '@root/utils/searchCookie';
+import searchCookies from '@root/utils/searchCookie';
 import * as express from 'express';
 
 export function expressAuthentication(
