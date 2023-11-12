@@ -4,6 +4,7 @@ import logger from '@utils/logger';
 import fs from 'fs';
 import { DATABASE, PORT } from './config/app_config';
 import createRoles from './utils/authorization/roles/create_roles';
+import createDefaultUser from './utils/create_default_user';
 
 process.on('uncaughtException', (err) => {
     logger.error('UNCAUGHT EXCEPTION!!!  shutting down ...');
@@ -52,11 +53,9 @@ const startServer = async (): Promise<import('http').Server> => {
     logger.info(`| http://localhost:${PORT}/docs |`);
     logger.info(` ----------------------------`);
     await createRoles();
+    createDefaultUser();
     return app.listen(PORT);
 };
-
-import createDefaultUser from './utils/create_default_user';
-createDefaultUser();
 
 process.on('unhandledRejection', (err: Error) => {
     logger.error('UNHANDLED REJECTION!!!  shutting down ...');

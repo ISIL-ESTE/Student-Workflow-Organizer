@@ -15,7 +15,7 @@ interface ForgotPasswordRequestBody {
     email: string;
 }
 
-@Route('password-management')
+@Route('api/password-management')
 @Tags('Password Management')
 export class PasswordManagementController extends Controller {
     @Post('update-password')

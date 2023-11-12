@@ -65,14 +65,14 @@ export class UserController extends Controller {
             if (req.body.password || req.body.passwordConfirm) {
                 throw new AppError(
                     400,
-                    'This route is not for password updates. Please use auth/updateMyPassword'
+                    'This route is not for password updates. Please use api/password-management/update-password'
                 );
             }
             // create error if user tries to update role
             if (req.body.roles) {
                 throw new AppError(
                     400,
-                    'This route is not for role updates. Please use /updateRole'
+                    'This route is not for role updates. Please use /update-role'
                 );
             }
             // 2) Filtered out unwanted fields names that are not allowed to be updated

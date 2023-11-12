@@ -58,11 +58,9 @@ export function expressAuthentication(
 async function validateAccessToken(req: express.Request): Promise<IUser> {
     // bearer token cookie and header
     const accessToken =
-        // searchCookies(req, 'access_token') ||
-        req.header('x-auth-token') ||
+        req.header('access_token') ||
+        req.cookies?.access_token ||
         req.header('authorization')?.replace('Bearer ', '');
-    console.log(accessToken);
-
     if (!accessToken)
         throw new AppError(
             401,
