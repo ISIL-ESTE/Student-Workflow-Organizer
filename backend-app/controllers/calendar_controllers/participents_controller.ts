@@ -14,6 +14,8 @@ import {
     Security,
     Tags,
     TsoaResponse,
+    SuccessResponse,
+    Response,
 } from 'tsoa';
 
 interface InviteUsersByEmailRequestBody {
@@ -22,9 +24,16 @@ interface InviteUsersByEmailRequestBody {
 
 @Security('jwt')
 @Route('calendar/participants')
-@Tags('Calendar Participants')
+@Tags('Calendar')
 export class CalendarParticipantsController extends Controller {
     @Post('invite')
+    @Response(400, 'Emails are required')
+    @Response(
+        403,
+        `- You do not have permission to invite users to this calendar
+        \n- This calendar is not shareable`
+    )
+    @SuccessResponse(200, 'OK')
     public async inviteUsersByEmail(
         @Request() req: IReq,
         @Body() body: InviteUsersByEmailRequestBody,
@@ -70,6 +79,8 @@ export class CalendarParticipantsController extends Controller {
     }
 
     @Delete('remove')
+    @Response(403, 'You are not the owner of this calendar')
+    @SuccessResponse(200, 'OK')
     public async removeCalendarParticipants(
         @Request() req: IReq,
         @Body() body: any,

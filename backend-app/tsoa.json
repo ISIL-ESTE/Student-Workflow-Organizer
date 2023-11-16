@@ -17,7 +17,12 @@
                 "name": "x-api-key",
                 "in": "header"
             }
-        }
+        },
+        "tags": [
+            {
+                "name": "GitHub"
+            }
+        ]
     },
     "routes": {
         "routesDir": ".",

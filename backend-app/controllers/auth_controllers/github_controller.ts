@@ -24,12 +24,16 @@ interface Repository {
     repoCreatedAt: string;
     url: string;
 }
+import { Response, SuccessResponse } from '@tsoa/runtime';
 
 @Security('jwt')
-@Route('github')
+@Route('api/github')
 @Tags('GitHub')
 export class GitHub extends Controller {
-    @Get('/recent-repo')
+    @Get('recent-repo')
+    @Response(401, 'You are not logged in')
+    @Response(400, 'No repositories found')
+    @SuccessResponse(200, 'OK')
     public async getRecentRepo(
         @Request() req: IReq,
         @Res() res: TsoaResponse<200, { recentRepository: Repository }>

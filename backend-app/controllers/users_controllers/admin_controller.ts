@@ -13,6 +13,7 @@ import {
     Res,
     Route,
     Security,
+    Tags,
     TsoaResponse,
 } from 'tsoa';
 import {
@@ -32,6 +33,7 @@ interface RoleType {
 }
 @Security('jwt')
 @Route('admin')
+@Tags('Admin')
 export class AdminController extends Controller {
     @Example({
         message: 'User is now an admin',
@@ -39,10 +41,10 @@ export class AdminController extends Controller {
     @Response(
         400,
         `- One or many actions are invalid in the authorities array.
-         - One or many actions are invalid in the restrictions array.
-         - You cannot change your own authorities or restrictions.
-         - No user found with this id.
-         - User is a super admin.
+         \n- One or many actions are invalid in the restrictions array.
+         \n- You cannot change your own authorities or restrictions.
+         \n- No user found with this id.
+         \n- User is a super admin.
          `
     )
     @SuccessResponse('200', 'OK')
@@ -97,9 +99,9 @@ export class AdminController extends Controller {
         400,
         `
          - You cannot ban yourself.
-         - User is already banned.
-         - You cannot ban a super admin.
-         - You cannot ban an admin`
+         \n- User is already banned.
+         \n- You cannot ban a super admin.
+         \n- You cannot ban an admin`
     )
     @Response(404, ' No user found with this id')
     @SuccessResponse('200', 'OK')
@@ -133,7 +135,7 @@ export class AdminController extends Controller {
     @Response(
         400,
         `- You cannot unban yourself.
-         - User is not banned.`
+         \n- User is not banned.`
     )
     @Response(404, 'No user found with this id')
     @SuccessResponse('200', 'OK')
@@ -257,7 +259,7 @@ export class AdminController extends Controller {
     @Response(
         404,
         `- No user found with this id.
-         - No role found with this name.`
+         \n- No role found with this name.`
     )
     @SuccessResponse('200', 'OK')
     @InspectAuthority(Actions.MANAGE_ROLES)
@@ -292,7 +294,7 @@ export class AdminController extends Controller {
     @Response(
         404,
         `- No role found with this name.
-         - No user found with this id.`
+         \n- No user found with this id.`
     )
     @SuccessResponse('200', 'OK')
     @InspectAuthority(Actions.MANAGE_ROLES)

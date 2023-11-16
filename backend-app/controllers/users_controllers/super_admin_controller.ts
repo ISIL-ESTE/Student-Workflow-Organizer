@@ -2,7 +2,7 @@ import { IReq } from '@interfaces/vendors';
 import USER from '@models/user/user_model';
 import Role from '@utils/authorization/roles/role';
 import AppError from '@utils/app_error';
-import { Controller, Res, Route, Security, TsoaResponse } from 'tsoa';
+import { Controller, Res, Route, Security, Tags, TsoaResponse } from 'tsoa';
 import {
     Response,
     Path,
@@ -16,6 +16,7 @@ import Actions from '@constants/actions';
 
 @Security('jwt')
 @Route('super-admin')
+@Tags('Super Admin')
 export class SuperAdminController extends Controller {
     @Example({
         message: 'User is now an admin',
@@ -59,7 +60,7 @@ export class SuperAdminController extends Controller {
     @Response(
         400,
         `- You cannot remove yourself as an admin.
-         - User is not an admin.
+         \n- User is not an admin.
     `
     )
     @Response(500, 'Error in base roles, please contact an admin')
@@ -97,7 +98,7 @@ export class SuperAdminController extends Controller {
     @Response(
         400,
         `- You cannot make yourself a super admin.
-         - User is already a super admin`
+         \n- User is already a super admin`
     )
     @Response(404, 'No user found with this id')
     @SuccessResponse('200', 'OK')
@@ -134,7 +135,7 @@ export class SuperAdminController extends Controller {
     @Response(
         400,
         `- You cannot remove yourself as a super admin.
-         - User is not a super admin.`
+         \n- User is not a super admin.`
     )
     @Response(404, 'No user found with this id')
     @SuccessResponse('200', 'OK')

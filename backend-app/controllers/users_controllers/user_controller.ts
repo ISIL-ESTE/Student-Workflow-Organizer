@@ -21,12 +21,12 @@ export class UserController extends Controller {
     @Response(401, 'Unauthorized')
     @SuccessResponse(200, 'OK')
     @Get('me')
-    public getMe(@Request() req: IReq): Promise<any> {
+    public getMe(@Request() req: IReq, @Res() res: TsoaResponse<200, any>) {
         if (!req.user) {
-            return Promise.reject(new AppError(401, 'Please log in again!'));
+            throw new AppError(401, 'Please log in again!');
         }
         // return data of the current user
-        return Promise.resolve(req.user);
+        res(200, req.user);
     }
 
     @Response(401, 'Unauthorized')
@@ -35,23 +35,20 @@ export class UserController extends Controller {
     public async deleteMe(
         @Request() req: IReq,
         @Res() res: TsoaResponse<204, { message: string }>
-    ): Promise<void> {
-        try {
-            await User.findByIdAndUpdate(req.user._id, {
-                deleted: true,
-                deletedAt: Date.now(),
-                deletedBy: req.user._id,
-            });
-            return res(204, { message: 'User deleted successfully' });
-        } catch (error) {
-            return Promise.reject(new AppError(400, error.message));
-        }
+    ) {
+        await User.findByIdAndUpdate(req.user._id, {
+            deleted: true,
+            deletedAt: Date.now(),
+            deletedBy: req.user._id,
+        });
+        return res(204, { message: 'User deleted successfully' });
     }
 
     @Response(401, 'Unauthorized')
     @Response(
         400,
-        `- This route is not for role updates. Please use /updateRole\n - This route is not for password updates. Please use auth/updateMyPassword`
+        `- This route is not for role updates. Please use /updateRole
+         \n- This route is not for password updates. Please use auth/updateMyPassword`
     )
     @Response(404, '<b>No document found with that ID</b>')
     @SuccessResponse(200, 'OK')
@@ -59,43 +56,37 @@ export class UserController extends Controller {
     public async updateMe(
         @Request() req: IReq,
         @Res() res: TsoaResponse<200, any>
-    ): Promise<any> {
-        try {
-            // 1) Create error if user POSTs password data
-            if (req.body.password || req.body.passwordConfirm) {
-                throw new AppError(
-                    400,
-                    'This route is not for password updates. Please use api/password-management/update-password'
-                );
-            }
-            // create error if user tries to update role
-            if (req.body.roles) {
-                throw new AppError(
-                    400,
-                    'This route is not for role updates. Please use /update-role'
-                );
-            }
-            // 2) Filtered out unwanted fields names that are not allowed to be updated
-            const payload = {
-                name: req.body.name,
-                email: req.body.email,
-            };
-            // TODO: the email should have a unique way to update
-            // 3) Update user document
-            const doc = await User.findByIdAndUpdate(req.user._id, payload, {
-                new: true,
-                runValidators: true,
-            });
-            if (!doc) {
-                return Promise.reject(
-                    new AppError(404, 'No document found with that ID')
-                );
-            }
-
-            return Promise.resolve(doc);
-        } catch (error) {
-            return Promise.reject(new AppError(400, error.message));
+    ) {
+        // 1) Create error if user POSTs password data
+        if (req.body.password || req.body.passwordConfirm) {
+            throw new AppError(
+                400,
+                'This route is not for password updates. Please use api/password-management/update-password'
+            );
         }
+        // create error if user tries to update role
+        if (req.body.roles) {
+            throw new AppError(
+                400,
+                'This route is not for role updates. Please use /update-role'
+            );
+        }
+        // 2) Filtered out unwanted fields names that are not allowed to be updated
+        const payload = {
+            name: req.body.name,
+            email: req.body.email,
+        };
+        // TODO: the email should have a unique way to update
+        // 3) Update user document
+        const doc = await User.findByIdAndUpdate(req.user._id, payload, {
+            new: true,
+            runValidators: true,
+        });
+        if (!doc) {
+            throw new AppError(404, 'No document found with that ID');
+        }
+
+        res(200, doc);
     }
 
     // @Get()

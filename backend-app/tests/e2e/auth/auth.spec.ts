@@ -109,7 +109,7 @@ describe('Auth API', () => {
             expect(res.status).to.equal(400);
             expect(res.body).to.have.property(
                 'message',
-                'Invalid email or password'
+                'Please provide email and password'
             );
         });
 
@@ -134,7 +134,7 @@ describe('Auth API', () => {
             expect(res.status).to.equal(400);
             expect(res.body).to.have.property(
                 'message',
-                'Please provide a password'
+                'Please provide email and password'
             );
         });
 
@@ -147,7 +147,7 @@ describe('Auth API', () => {
             expect(res.status).to.equal(401);
             expect(res.body).to.have.property(
                 'message',
-                'Email or Password is wrong'
+                'Invalid email or password'
             );
         });
     });

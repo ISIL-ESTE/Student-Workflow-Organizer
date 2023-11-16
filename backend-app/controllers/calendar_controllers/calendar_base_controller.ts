@@ -7,15 +7,18 @@ import {
     Res,
     Body,
     TsoaResponse,
+    Delete,
 } from 'tsoa';
 import { IReq } from '@interfaces/vendors';
 import AppError from '@utils/app_error';
 import * as calendar_validators from './calendar_validators';
-
-@Route('calendar')
+import { Response, SuccessResponse } from 'tsoa';
+@Route('api/calendar')
 @Tags('Calendar')
 export class CalendarController extends Controller {
     @Post('update')
+    @Response(403, 'You are not allowed to update this calendar')
+    @SuccessResponse(204, 'No Content')
     public async updateCalendar(
         @Request() req: IReq,
         @Res() _res: TsoaResponse<204, void>,
@@ -41,7 +44,9 @@ export class CalendarController extends Controller {
         }
     }
 
-    @Post('delete')
+    @Delete('delete')
+    @Response(403, 'You are not allowed to delete this calendar')
+    @SuccessResponse(204, 'No Content')
     public async deleteCalendar(
         @Request() req: IReq,
         @Res() _res: TsoaResponse<204, void>,
