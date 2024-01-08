@@ -3,15 +3,43 @@ import logger from '@utils/logger';
 import AppError from '@utils/app_error';
 import generateTokens from '@utils/authorization/generate_tokens';
 import validator from 'validator';
-import { NextFunction, Request, Response } from 'express';
+import { Body, Controller, Post, Res, Route, Tags, TsoaResponse } from 'tsoa';
+import { Response, SuccessResponse } from '@tsoa/runtime';
 
-export const updatePassword = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        const { email, resetKey, password } = req.body;
+interface UpdatePasswordRequestBody {
+    email: string;
+    resetKey: string;
+    password: string;
+}
+
+interface ForgotPasswordRequestBody {
+    email: string;
+}
+
+@Route('api/password-management')
+@Tags('Password Management')
+export class PasswordManagementController extends Controller {
+    @Post('update-password')
+    @Response(
+        400,
+        `- Invalid email format
+        \n- Please provide reset key 
+        \n- Invalid reset key`
+    )
+    @Response(404, 'User with this email does not exist')
+    @SuccessResponse(200, 'OK')
+    public async updatePassword(
+        @Body() requestBody: UpdatePasswordRequestBody,
+        @Res()
+        res: TsoaResponse<
+            200,
+            {
+                token: { accessToken: string; refreshToken: string };
+                user: any;
+            }
+        >
+    ) {
+        const { email, resetKey, password } = requestBody;
 
         if (!validator.isEmail(email))
             throw new AppError(400, 'Invalid email format');
@@ -35,22 +63,22 @@ export const updatePassword = async (
         const token = generateTokens(user.id);
         user.password = undefined;
 
-        res.status(200).json({
-            token,
-            user,
-        });
-    } catch (err) {
-        next(err);
+        res(200, { token, user });
     }
-};
 
-export const forgotPassword = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        const { email } = req.body;
+    @Post('forgot-password')
+    @Response(
+        400,
+        `- Please provide email.
+        \n- Invalid email format.`
+    )
+    @Response(404, 'User with this email does not exist')
+    @SuccessResponse(200, 'Email with reset key sent successfully')
+    public async forgotPassword(
+        @Body() requestBody: ForgotPasswordRequestBody,
+        @Res() res: TsoaResponse<200, { message: string }>
+    ) {
+        const { email } = requestBody;
 
         if (!email) throw new AppError(400, 'Please provide email');
 
@@ -73,10 +101,8 @@ export const forgotPassword = async (
         // eslint-disable-next-line no-warning-comments
         // TODO: send email with reset key
 
-        res.status(200).json({
+        res(200, {
             message: 'Email with reset key sent successfully',
         });
-    } catch (err) {
-        next(err);
     }
-};
+}

@@ -22,20 +22,17 @@ class AuthUtils {
         });
     }
     static setAccessTokenCookie(res: any, accessToken: string): AuthUtils {
-        res.cookie('access_token', accessToken, {
-            secure: true,
-            sameSite: 'strict',
-            maxAge: ACCESS_TOKEN_COOKIE_EXPIRY_TIME,
-        });
+        res.setHeader(
+            'Set-Cookie',
+            `access_token=${accessToken}; HttpOnly; Secure; SameSite=Strict; Max-Age=${ACCESS_TOKEN_COOKIE_EXPIRY_TIME}`
+        );
         return this;
     }
     static setRefreshTokenCookie(res: any, refreshToken: string): AuthUtils {
-        res.cookie('refresh_token', refreshToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'strict',
-            maxAge: REFRESH_TOKEN_COOKIE_EXPIRY_TIME,
-        });
+        res.setHeader(
+            'Set-Cookie',
+            `refresh_token=${refreshToken}; HttpOnly; Secure; SameSite=Strict; Max-Age=${REFRESH_TOKEN_COOKIE_EXPIRY_TIME}`
+        );
         return this;
     }
     static async verifyAccessToken(token: string): Promise<any> {

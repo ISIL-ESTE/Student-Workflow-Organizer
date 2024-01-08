@@ -1,0 +1,9 @@
+{
+    "watch": ["controllers/"],
+    "ignore": ["docs/api_docs/swagger.json", "routes/routes.ts"],
+    "ext": "js ts json",
+    "exec": "npm run generate ",
+    "events": {
+        "restart": "echo Controller changed, regenerating swagger docs..."
+    }
+}

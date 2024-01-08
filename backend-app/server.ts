@@ -4,6 +4,7 @@ import logger from '@utils/logger';
 import fs from 'fs';
 import { DATABASE, PORT } from './config/app_config';
 import createRoles from './utils/authorization/roles/create_roles';
+import createDefaultUser from './utils/create_default_user';
 
 process.on('uncaughtException', (err) => {
     logger.error('UNCAUGHT EXCEPTION!!!  shutting down ...');
@@ -18,6 +19,7 @@ mongoose.set('strictQuery', true);
 let expServer: Promise<import('http').Server>;
 
 // Connect the database
+logger.info('Connecting to DB ...');
 mongoose
     .connect(
         DATABASE as string,
@@ -26,11 +28,14 @@ mongoose
     .then(() => {
         logger.info('DB Connected Successfully!');
         expServer = startServer();
-        logger.info(`Swagger Will Be Available at /docs  /docs-json`);
+        logger.info(`API Docs Avaiable at /docs , /docs-json`);
     })
     .catch((err: Error) => {
         logger.error(
-            'DB Connection Failed! \n\tException : ' + err + '\n' + err.stack
+            'DB Connection Failed! \n\tException : ' +
+                err.name +
+                ' : ' +
+                err.message
         );
     });
 
@@ -43,13 +48,14 @@ mongoose.connection.on('disconnected', () => {
 const startServer = async (): Promise<import('http').Server> => {
     if (!fs.existsSync('.env'))
         logger.warn('.env file not found, using .env.example file');
-    logger.info(`App running on  http://localhost:${PORT}`);
+    logger.info(`App running on :`);
+    logger.info(` ----------------------------`);
+    logger.info(`| http://localhost:${PORT}/docs |`);
+    logger.info(` ----------------------------`);
     await createRoles();
+    createDefaultUser();
     return app.listen(PORT);
 };
-
-import createDefaultUser from './utils/create_default_user';
-createDefaultUser();
 
 process.on('unhandledRejection', (err: Error) => {
     logger.error('UNHANDLED REJECTION!!!  shutting down ...');
@@ -68,6 +74,7 @@ process.on('SIGTERM', () => {
         logger.info('💥 Process terminated!');
         process.exit(0);
     });
+    process.exit(1);
 });
 
 process.on('SIGINT', () => {
@@ -76,4 +83,5 @@ process.on('SIGINT', () => {
         logger.info('💥 Process terminated!');
         process.exit(0);
     });
+    process.exit(1);
 });

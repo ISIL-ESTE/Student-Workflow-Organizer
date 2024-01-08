@@ -2,47 +2,64 @@ import { IUser } from '@root/interfaces/models/i_user';
 import User from '@root/models/user/user_model';
 import AppError from '@root/utils/app_error';
 import AuthUtils from '@root/utils/authorization/auth_utils';
-import searchCookies from '@root/utils/searchCookie';
 import * as express from 'express';
 
-export async function expressAuthentication(
+export function expressAuthentication(
     req: express.Request,
     securityName: string,
     scopes?: string[]
 ): Promise<any> {
-    switch (securityName) {
-        case 'jwt':
-            try {
-                const user = await validateAccessToken(req);
-                req.user = user;
-                return Promise.resolve(user);
-            } catch (err) {
-                // check if the token is expired
-                if (err.name === 'TokenExpiredError') {
-                    return Promise.reject(
-                        new AppError(401, 'Your token is expiredo')
-                    );
-                }
-                if (err.name === 'JsonWebTokenError') {
-                    return Promise.reject(new AppError(401, err.message));
-                }
-                return Promise.reject(err);
-            }
-        default:
-            return Promise.reject(
-                new AppError(
-                    401,
-                    'Unknown security type, Please contact the admin'
-                )
-            );
-    }
+    return new Promise((resolve, reject) => {
+        switch (securityName) {
+            case 'jwt':
+                validateAccessToken(req)
+                    .then((user) => {
+                        req.user = user;
+                        if (!scopes || scopes.length === 0)
+                            return resolve(user);
+                        // validate the role
+                        const roleExist = scopes.some((role) =>
+                            req.user.roles.includes(role)
+                        );
+                        if (!roleExist)
+                            reject(
+                                new AppError(
+                                    403,
+                                    'You are not allowed to do this action'
+                                )
+                            );
+                        return resolve(user);
+                    })
+                    .catch((err) => {
+                        // check if the token is expired
+                        if (err.name === 'TokenExpiredError') {
+                            return reject(
+                                new AppError(401, 'Your token is expired')
+                            );
+                        }
+                        if (err.name === 'JsonWebTokenError') {
+                            return reject(new AppError(401, err.message));
+                        }
+                        return reject(err);
+                    });
+                break;
+            default:
+                return reject(
+                    new AppError(
+                        401,
+                        'Unknown security type, Please contact the admin'
+                    )
+                );
+        }
+    });
 }
 
 async function validateAccessToken(req: express.Request): Promise<IUser> {
+    // bearer token cookie and header
     const accessToken =
-        searchCookies(req, 'access_token') || req.header('x-auth-token');
-    console.log('token:', accessToken);
-
+        req.header('access_token') ||
+        req.cookies?.access_token ||
+        req.header('authorization')?.replace('Bearer ', '');
     if (!accessToken)
         throw new AppError(
             401,
@@ -77,32 +94,4 @@ async function validateAccessToken(req: express.Request): Promise<IUser> {
         );
 
     return user;
-}
-
-// Authorization check if the user have rights to do this action
-export function RestrictedTo(roles: string[]) {
-    return function (
-        target: any,
-        propertyKey: string,
-        descriptor: PropertyDescriptor
-    ) {
-        const originalMethod = descriptor.value;
-        descriptor.value = function (...args: any[]) {
-            const req = args[0];
-            try {
-                const roleExist = roles.some((role) =>
-                    req.user.roles.includes(role)
-                );
-                if (!roleExist)
-                    throw new AppError(
-                        403,
-                        'You are not allowed to do this action'
-                    );
-                return originalMethod.apply(this, args);
-            } catch (err) {
-                return Promise.reject(err);
-            }
-        };
-        return descriptor;
-    };
 }

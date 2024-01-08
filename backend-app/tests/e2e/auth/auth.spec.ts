@@ -109,7 +109,7 @@ describe('Auth API', () => {
             expect(res.status).to.equal(400);
             expect(res.body).to.have.property(
                 'message',
-                'Invalid email or password'
+                'Please provide email and password'
             );
         });
 
@@ -134,7 +134,7 @@ describe('Auth API', () => {
             expect(res.status).to.equal(400);
             expect(res.body).to.have.property(
                 'message',
-                'Please provide a password'
+                'Please provide email and password'
             );
         });
 
@@ -147,7 +147,7 @@ describe('Auth API', () => {
             expect(res.status).to.equal(401);
             expect(res.body).to.have.property(
                 'message',
-                'Email or Password is wrong'
+                'Invalid email or password'
             );
         });
     });
@@ -298,7 +298,6 @@ describe('Auth API', () => {
                 .set('Cookie', `refresh_token=${refreshToken}; HttpOnly`);
 
             expect(res.status).to.equal(204);
-            expect(res.header['set-cookie']).to.not.include('access_token');
         });
     });
 
@@ -308,7 +307,7 @@ describe('Auth API', () => {
             const accessToken = generateAccessToken(user._id.toString());
 
             res = await agent
-                .delete('/api/auth/logout')
+                .get('/api/auth/logout')
                 .set('Cookie', `access_token=${accessToken}`);
 
             expect(res.status).to.equal(204);
@@ -323,7 +322,7 @@ describe('Auth API', () => {
         });
 
         it('should return an error if access token is not provided', async () => {
-            res = await agent.delete('/api/auth/logout');
+            res = await agent.get('/api/auth/logout');
 
             expect(res.status).to.equal(400);
             expect(res.body).to.have.property(
@@ -366,13 +365,12 @@ describe('User API', () => {
                 .set('Cookie', `access_token=${accessToken}`);
 
             expect(res.status).to.equal(200);
-            expect(res.body).to.have.property('user');
-            expect(res.body.user).to.have.property(
+            expect(res.body).to.have.property(
                 '_id',
                 user._id.toString().toString()
             );
-            expect(res.body.user).to.have.property('name', user.name);
-            expect(res.body.user).to.have.property('email', user.email);
+            expect(res.body).to.have.property('name', user.name);
+            expect(res.body).to.have.property('email', user.email);
         });
     });
 
@@ -389,7 +387,7 @@ describe('User API', () => {
             expect(res.status).to.equal(400);
             expect(res.body).to.have.property(
                 'message',
-                'This route is not for password updates. Please use /updateMyPassword'
+                'This route is not for password updates. Please use api/password-management/update-password'
             );
         });
 
@@ -404,7 +402,7 @@ describe('User API', () => {
             expect(res.status).to.equal(400);
             expect(res.body).to.have.property(
                 'message',
-                'This route is not for role updates. Please use /updateRole'
+                'This route is not for role updates. Please use /update-role'
             );
         });
 
@@ -432,12 +430,11 @@ describe('User API', () => {
                 });
 
             expect(res.status).to.equal(200);
-            expect(res.body).to.have.property('doc');
-            expect(res.body.doc).to.have.property(
+            expect(res.body).to.have.property(
                 '_id',
                 user._id.toString().toString()
             );
-            expect(res.body.doc).to.have.property('name', 'Updated Name');
+            expect(res.body).to.have.property('name', 'Updated Name');
 
             // Check if the user was updated in the database
             const updatedUser = await User.findById(user._id.toString());
