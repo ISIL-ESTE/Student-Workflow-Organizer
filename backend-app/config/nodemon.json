@@ -1,0 +1,10 @@
+{
+    "watch": ["."],
+    "ignore": [
+        "docs/api_docs/swagger.json",
+        "routes/routes.ts",
+        "controllers/"
+    ],
+    "ext": "js ts json",
+    "exec": "ts-node server.ts"
+}

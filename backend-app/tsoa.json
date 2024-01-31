@@ -4,10 +4,28 @@
     "controllerPathGlobs": ["./controllers/**/*.ts"],
     "spec": {
         "outputDirectory": "./docs/api_docs/",
-        "specVersion": 2,
-        "specValidation": false
+        "specVersion": 3,
+        "specValidation": false,
+        "securityDefinitions": {
+            "jwt": {
+                "type": "apiKey",
+                "name": "access_token",
+                "in": "header"
+            },
+            "apiKey": {
+                "type": "apiKey",
+                "name": "x-api-key",
+                "in": "header"
+            }
+        },
+        "tags": [
+            {
+                "name": "GitHub"
+            }
+        ]
     },
     "routes": {
-        "routesDir": "routes"
+        "routesDir": ".",
+        "authenticationModule": "./middlewares/authentications.ts"
     }
 }

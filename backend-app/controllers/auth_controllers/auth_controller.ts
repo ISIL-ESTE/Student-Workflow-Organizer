@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { IReq, IRes, INext } from '@interfaces/vendors';
 import { promisify } from 'util';
 import AppError from '@utils/app_error';
 import Role from '@utils/authorization/roles/role';
@@ -12,21 +11,43 @@ import {
 import AuthUtils from '@utils/authorization/auth_utils';
 import searchCookies from '@utils/searchCookie';
 import User from '@models/user/user_model';
-import { Request, Response, NextFunction } from 'express';
-import { IUser } from '@root/interfaces/models/i_user';
-
+import {
+    Request,
+    Res,
+    TsoaResponse,
+    Controller,
+    Get,
+    Post,
+    Tags,
+    Query,
+    Body,
+    Route,
+} from 'tsoa';
+import { IReq } from '@root/interfaces/vendors';
+import { Response, SuccessResponse } from '@tsoa/runtime';
 const generateActivationKey = async () => {
     const randomBytesPromiseified = promisify(require('crypto').randomBytes);
     const activationKey = (await randomBytesPromiseified(32)).toString('hex');
     return activationKey;
 };
 
-export const githubHandler = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
+@Route('api/auth')
+@Tags('Authentication')
+export class AuthController extends Controller {
+    @Get('github/callback')
+    @Response(400, 'Invalid access token or code')
+    @Response(500, 'User role does not exist. Please contact the admin.')
+    @SuccessResponse(
+        204,
+        `
+        - User logged in successfully
+        \n- User created successfully`
+    )
+    public async githubHandler(
+        @Request() _req: Express.Request,
+        @Res() res: TsoaResponse<204, { message: string }>,
+        @Query() code?: string
+    ): Promise<void> {
         const Roles = await Role.getRoles();
         // check if user role exists
         if (!Roles.USER)
@@ -34,15 +55,12 @@ export const githubHandler = async (
                 500,
                 'User role does not exist. Please contact the admin.'
             );
-        const { code } = req.query as {
-            code: string;
-        };
-
         if (!code) throw new AppError(400, 'Please provide code');
         const { access_token } = await getGithubOAuthToken(code);
         if (!access_token) throw new AppError(400, 'Invalid code');
         const githubUser = await getGithubOAuthUser(access_token);
         const primaryEmail = await getGithubOAuthUserPrimaryEmail(access_token);
+        // check if user exists
         const exists = await User.findOne({ email: primaryEmail });
         if (exists) {
             const accessToken = AuthUtils.generateAccessToken(
@@ -51,11 +69,14 @@ export const githubHandler = async (
             const refreshToken = AuthUtils.generateRefreshToken(
                 exists._id.toString()
             );
-            AuthUtils.setAccessTokenCookie(res, accessToken);
-            AuthUtils.setRefreshTokenCookie(res, refreshToken);
-            return res.sendStatus(204);
+            AuthUtils.setAccessTokenCookie(this, accessToken);
+            AuthUtils.setRefreshTokenCookie(this, refreshToken);
+            res(204, { message: 'User logged in successfully' });
+            return;
         }
+        // check if user is a new github user
         if (!githubUser) throw new AppError(400, 'Invalid access token');
+        // create new user
         const createdUser = await User.create({
             name: githubUser.name,
             email: primaryEmail,
@@ -67,49 +88,63 @@ export const githubHandler = async (
             githubOauthAccessToken: access_token,
             active: true,
         });
-
+        // set cookies
         const accessToken = AuthUtils.generateAccessToken(
             createdUser._id.toString()
         );
         const refreshToken = AuthUtils.generateRefreshToken(
             createdUser._id.toString()
         );
-        AuthUtils.setAccessTokenCookie(res, accessToken);
-        AuthUtils.setRefreshTokenCookie(res, refreshToken);
-        res.status(201).json(createdUser);
-    } catch (err) {
-        next(err);
-    }
-};
+        AuthUtils.setAccessTokenCookie(this, accessToken);
+        AuthUtils.setRefreshTokenCookie(this, refreshToken);
 
-export const login = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        const { email, password } = req.body as {
-            email: string;
-            password: string;
-        };
+        res(204, { message: 'User created successfully' });
+    }
+
+    @Post('login')
+    @Response(
+        400,
+        `- Please provide email and password
+        \n- Invalid email or password
+        \n- You haven't set a password yet. Please login with GitHub and set a password from your profile page.`
+    )
+    @Response(401, 'Invalid email or password')
+    @Response(
+        403,
+        'Your account has been banned. Please contact the admin for more information.'
+    )
+    @SuccessResponse(200, 'OK')
+    public async login(
+        @Request() _req: Express.Request,
+        @Res() res: TsoaResponse<200, { accessToken: string; user: any }>,
+        @Body() body?: { email?: string; password?: string }
+    ): Promise<void> {
+        const { email, password } = body;
 
         // 1) check if password exist
-        if (!password) {
-            throw new AppError(400, 'Please provide a password');
+        if (!password || !email) {
+            throw new AppError(400, 'Please provide email and password');
         }
-        // to type safty on password
-        if (typeof password !== 'string') {
-            throw new AppError(400, 'Invalid password format');
-        }
-
         // 2) check if user exist and password is correct
         const user = await User.findOne({
             email,
         }).select('+password');
 
-        // check if password exist and  it is a string
-        if (!user?.password || typeof user.password !== 'string')
+        if (!user) {
             throw new AppError(400, 'Invalid email or password');
+        }
+
+        // check if password exist and  it is a string
+        // TODO: add test for this
+        if (!user?.password)
+            throw new AppError(
+                400,
+                "You haven't set a password yet. Please login with github and set a password from your profile page."
+            );
+
+        if (!(await user.correctPassword(password, user.password))) {
+            throw new AppError(401, 'Invalid email or password');
+        }
 
         // Check if the account is banned
         if (user && user?.accessRestricted)
@@ -118,39 +153,39 @@ export const login = async (
                 'Your account has been banned. Please contact the admin for more information.'
             );
 
-        if (!user || !(await user.correctPassword(password, user.password))) {
-            throw new AppError(401, 'Email or Password is wrong');
-        }
-
         // 3) All correct, send accessToken & refreshToken to client via cookie
         const accessToken = AuthUtils.generateAccessToken(user._id.toString());
         const refreshToken = AuthUtils.generateRefreshToken(
             user._id.toString()
         );
-        AuthUtils.setAccessTokenCookie(res, accessToken);
-        AuthUtils.setRefreshTokenCookie(res, refreshToken);
+        AuthUtils.setAccessTokenCookie(this, accessToken);
+        AuthUtils.setRefreshTokenCookie(this, refreshToken);
 
         // Remove the password from the output
         user.password = undefined;
 
-        res.status(200).json({
+        return res(200, {
             accessToken,
             user,
         });
-    } catch (err) {
-        next(err);
     }
-};
-
-export const signup = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
+    @Post('signup')
+    @Response(
+        400,
+        `- Please provide a password
+        \n- Please provide an email
+        \n- Please provide a name
+        `
+    )
+    @Response(500, 'User role does not exist. Please contact the admin.')
+    @SuccessResponse(201, 'Created')
+    public async signup(
+        @Request() _req: Express.Request,
+        @Res() res: TsoaResponse<201, { accessToken: string; user: any }>,
+        @Body() body?: { name?: string; email?: string; password?: string }
+    ) {
         const activationKey = await generateActivationKey();
         const Roles = await Role.getRoles();
-
         // check if user role exists
         if (!Roles.USER)
             throw new AppError(
@@ -159,13 +194,13 @@ export const signup = async (
             );
 
         // check if password is provided
-        if (!req.body.password)
+        if (!body.password)
             throw new AppError(400, 'Please provide a password');
 
         const userpayload = {
-            name: req.body.name,
-            email: req.body.email,
-            password: req.body.password,
+            name: body.name,
+            email: body.email,
+            password: body.password,
             roles: [Roles.USER.name],
             authorities: Roles.USER.authorities,
             active: !REQUIRE_ACTIVATION,
@@ -177,27 +212,25 @@ export const signup = async (
         const refreshToken = AuthUtils.generateRefreshToken(
             user._id.toString()
         );
-        AuthUtils.setAccessTokenCookie(res, accessToken);
-        AuthUtils.setRefreshTokenCookie(res, refreshToken);
+        AuthUtils.setAccessTokenCookie(this, accessToken);
+        AuthUtils.setRefreshTokenCookie(this, refreshToken);
         // Remove the password and activation key from the output
         user.password = undefined;
         user.activationKey = undefined;
 
-        res.status(201).json({
+        return res(201, {
             accessToken,
             user,
         });
-    } catch (err) {
-        next(err);
     }
-};
-
-export const tokenRefresh = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
+    @Get('refreshToken')
+    @Response(400, 'You have to login to continue.')
+    @Response(400, 'Invalid refresh token')
+    @SuccessResponse(204, 'Token refreshed successfully')
+    public async tokenRefres(
+        @Request() req: IReq,
+        @Res() res: TsoaResponse<204, { message: string }>
+    ): Promise<void> {
         // get the refresh token from httpOnly cookie
         const refreshToken = searchCookies(req, 'refresh_token');
         if (!refreshToken)
@@ -210,44 +243,41 @@ export const tokenRefresh = async (
         if (!user) throw new AppError(400, 'Invalid refresh token');
         const accessToken = AuthUtils.generateAccessToken(user._id.toString());
         //set or override accessToken cookie.
-        AuthUtils.setAccessTokenCookie(res, accessToken);
-        res.sendStatus(204);
-    } catch (err) {
-        next(err);
+        AuthUtils.setAccessTokenCookie(this, accessToken);
+        res(204, { message: 'Token refreshed successfully' });
     }
-};
-export const logout = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
+    @Get('logout')
+    @Response(400, 'Please provide access token')
+    @SuccessResponse(204, 'Logged out successfully')
+    public logout(
+        @Request() req: IReq,
+        @Res() res: TsoaResponse<204, { message: string }>
+    ): void {
         const accessToken = searchCookies(req, 'access_token');
         if (!accessToken)
             throw new AppError(400, 'Please provide access token');
-        const accessTokenPayload =
-            await AuthUtils.verifyAccessToken(accessToken);
-        if (!accessTokenPayload || !accessTokenPayload._id)
-            throw new AppError(400, 'Invalid access token');
-        res.sendStatus(204);
-    } catch (err) {
-        next(err);
+        // delete the access token cookie
+        this.setHeader(
+            'Set-Cookie',
+            `access_token=; HttpOnly; Path=/; Expires=${new Date(0)}`
+        );
+        res(204, { message: 'Logged out successfully' });
     }
-};
-
-interface ActivationParams {
-    id: string;
-    activationKey: string;
-}
-
-export const activateAccount = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        const { id, activationKey } = req.query as unknown as ActivationParams;
-
+    @Get('activate')
+    @Response(
+        400,
+        `- Please provide activation key
+        \n- Please provide user id
+        \n- Please provide a valid user id`
+    )
+    @Response(404, 'User does not exist')
+    @Response(409, 'User is already active')
+    public async activateAccount(
+        @Request() _req: IReq,
+        @Res() res: TsoaResponse<200, { user: any }>,
+        @Query() id?: string,
+        @Query() activationKey?: string
+    ): Promise<void> {
         if (!activationKey) {
             throw new AppError(400, 'Please provide activation key');
         }
@@ -282,82 +312,8 @@ export const activateAccount = async (
         // Remove the password from the output
         user.password = undefined;
 
-        res.status(200).json({
+        return res(200, {
             user,
         });
-    } catch (err) {
-        next(err);
     }
-};
-
-export const protect = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    try {
-        const accessToken = searchCookies(req, 'access_token');
-
-        if (!accessToken) throw new AppError(401, 'Please login to continue');
-
-        const accessTokenPayload =
-            await AuthUtils.verifyAccessToken(accessToken);
-
-        if (!accessTokenPayload || !accessTokenPayload._id)
-            throw new AppError(401, 'Invalid access token');
-        // 3) check if the user is exist (not deleted)
-        const user: IUser = await User.findById(accessTokenPayload._id).select(
-            'accessRestricted active roles authorities restrictions name email'
-        );
-        if (!user) {
-            throw new AppError(401, 'This user is no longer exist');
-        }
-
-        // Check if the account is banned
-        if (user?.accessRestricted)
-            throw new AppError(
-                403,
-                'Your account has been banned. Please contact the admin for more information.'
-            );
-
-        // check if account is active
-        if (!user.active)
-            throw new AppError(
-                403,
-                'Your account is not active. Please activate your account to continue.'
-            );
-
-        // Create a new request object with the user property set to the user object
-
-        req.user = user;
-        next();
-    } catch (err) {
-        // check if the token is expired
-        if (err.name === 'TokenExpiredError') {
-            return next(new AppError(401, 'Your token is expired'));
-        }
-        if (err.name === 'JsonWebTokenError') {
-            return next(new AppError(401, err.message));
-        }
-        next(err);
-    }
-};
-
-// Authorization check if the user have rights to do this action
-export const restrictTo =
-    (...roles: string[]) =>
-    (req: IReq, res: IRes, next: INext) => {
-        try {
-            const roleExist = roles.some((role) =>
-                req.user.roles.includes(role)
-            );
-            if (!roleExist)
-                throw new AppError(
-                    403,
-                    'You are not allowed to do this action'
-                );
-            next();
-        } catch (err) {
-            next(err);
-        }
-    };
+}

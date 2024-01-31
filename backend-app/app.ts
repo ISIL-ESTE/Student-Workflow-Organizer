@@ -14,9 +14,9 @@ import swaggerDocs from './utils/swagger/index';
 import handleAPIVersion from './middlewares/api_version_controll';
 import { COOKIE_SECRET, CURRENT_ENV } from './config/app_config';
 import cookieParser from 'cookie-parser';
-import routesVersioning from 'express-routes-versioning';
-import indexRouter from './routes/index';
-import { RegisterRoutes } from './routes/routes';
+// import routesVersioning from 'express-routes-versioning';
+// import indexRouter from './routes/index';
+import { RegisterRoutes } from './routes';
 
 const app = express();
 
@@ -78,12 +78,12 @@ app.get('/', (_req: Request, res: Response) => {
 });
 
 // routes
-app.use(
-    `/api`,
-    routesVersioning()({
-        '1.0.0': indexRouter,
-    })
-);
+// app.use(
+//     `/api`,
+//     routesVersioning()({
+//         '1.0.0': indexRouter,
+//     })
+// );
 
 // register routes
 RegisterRoutes(app);

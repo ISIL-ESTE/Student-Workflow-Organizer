@@ -3,9 +3,16 @@ services:
     build: ./backend-app
     ports:
       - "8000:8000"
+    depends_on:
+      - mongodb
   frontend:
     build: ./frontend-app
     ports:
       - "3000:3000"
     depends_on:
       - backend-api
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"

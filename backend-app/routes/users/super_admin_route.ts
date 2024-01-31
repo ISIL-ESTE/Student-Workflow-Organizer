@@ -3,12 +3,11 @@ import { Router } from 'express';
 import * as authController from '@controllers/auth_controllers/auth_controller';
 import restrictTo from '@middlewares/authorization';
 import Actions from '@constants/actions';
-import {
-    addSuperAdmin,
-    removeSuperAdmin,
-    addAdmin,
-    removeAdmin,
-} from '@controllers/users_controllers/admin_controller';
+import // addSuperAdmin,
+// removeSuperAdmin,
+// addAdmin,
+// removeAdmin,
+'@controllers/users_controllers/admin_controller';
 
 const router = Router();
 
@@ -23,8 +22,8 @@ router.use(authController.restrictTo('SUPER_ADMIN'));
  */
 router.put(
     '/add-super-admin/:userId',
-    restrictTo(Actions.UPDATE_USER),
-    addSuperAdmin
+    restrictTo(Actions.UPDATE_USER)
+    // addSuperAdmin
 );
 
 /*
@@ -36,8 +35,8 @@ router.put(
  **/
 router.put(
     '/remove-super-admin/:userId',
-    restrictTo(Actions.UPDATE_USER, Actions.REMOVE_SUPER_ADMIN),
-    removeSuperAdmin
+    restrictTo(Actions.UPDATE_USER, Actions.REMOVE_SUPER_ADMIN)
+    // removeSuperAdmin
 );
 
 /**
@@ -47,7 +46,7 @@ router.put(
  * @access Super Admin
  * @param {string} userId - Id of the user to add admin role to
  */
-router.put('/add-admin/:userId', restrictTo(Actions.UPDATE_USER), addAdmin);
+// router.put('/add-admin/:userId', restrictTo(Actions.UPDATE_USER), addAdmin);
 
 /**
  * @protected
@@ -58,8 +57,8 @@ router.put('/add-admin/:userId', restrictTo(Actions.UPDATE_USER), addAdmin);
  */
 router.put(
     '/remove-admin/:userId',
-    restrictTo(Actions.UPDATE_USER),
-    removeAdmin
+    restrictTo(Actions.UPDATE_USER)
+    // removeAdmin
 );
 
 const superAdminRoutes = (mainrouter: express.Router) => {

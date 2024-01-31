@@ -1,10 +1,43 @@
 import axios from 'axios';
-import Repository from '@interfaces/github_repo';
 import AppError from '@utils/app_error';
-import { INext, IReq, IRes } from '@interfaces/vendors';
+import { IReq } from '@interfaces/vendors';
+import {
+    Controller,
+    Get,
+    Request,
+    Res,
+    Route,
+    Security,
+    Tags,
+    TsoaResponse,
+} from 'tsoa';
 
-export const getRecentRepo = async (req: IReq, res: IRes, next: INext) => {
-    try {
+interface Repository {
+    id: number;
+    name: string;
+    full_name: string;
+    description: string;
+    isFork: boolean;
+    language: string;
+    license: string | null;
+    openedIssuesCount: number;
+    repoCreatedAt: string;
+    url: string;
+}
+import { Response, SuccessResponse } from '@tsoa/runtime';
+
+@Security('jwt')
+@Route('api/github')
+@Tags('GitHub')
+export class GitHub extends Controller {
+    @Get('recent-repo')
+    @Response(401, 'You are not logged in')
+    @Response(400, 'No repositories found')
+    @SuccessResponse(200, 'OK')
+    public async getRecentRepo(
+        @Request() req: IReq,
+        @Res() res: TsoaResponse<200, { recentRepository: Repository }>
+    ) {
         if (!req.user) {
             throw new AppError(401, 'You are not logged in');
         }
@@ -44,10 +77,6 @@ export const getRecentRepo = async (req: IReq, res: IRes, next: INext) => {
         );
 
         const recentRepository = sortedRepository[0];
-        res.status(200).json({
-            recentRepository,
-        });
-    } catch (err) {
-        next(err);
+        res(200, { recentRepository });
     }
-};
+}

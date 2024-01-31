@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 export interface IReq extends Request {
     user: {
@@ -12,8 +12,6 @@ export interface IReq extends Request {
         githubOauthAccessToken?: string;
     };
 }
-
-import { Response } from 'express';
 
 export interface IRes extends Response {}
 

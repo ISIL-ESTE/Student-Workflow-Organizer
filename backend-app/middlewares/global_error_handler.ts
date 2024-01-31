@@ -47,8 +47,7 @@ const errorHandler = (
             message = (err as any).message;
         } else {
             message =
-                "We're sorry, something went wrong. Please try again later." +
-                err;
+                "It's not you. It's us. We are having some problems. Please try again later.";
         }
     } else {
         message = (err as any).message;
@@ -78,8 +77,6 @@ const errorHandler = (
         },
         message,
     };
-    // logger.debug((err as any).stack);
-
     // Send the response
     res.status((err as any).statusCode).json(response);
 };

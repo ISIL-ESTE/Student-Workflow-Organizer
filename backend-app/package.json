@@ -5,9 +5,9 @@
     "main": "app.ts",
     "scripts": {
         "debug": "ndb server.ts",
-        "start": "nodemon",
-        "start:build": "node build/server.js",
-        "test": "ts-mocha --bail",
+        "dev": "concurrently -p name -n SWO,TSOA \"nodemon --config config/nodemon.json\" \" nodemon --config config/nodemon.tsoa.json\"",
+        "start": "node build/server.js",
+        "test": "tsoa spec-and-routes && tsoa swagger && ts-mocha --bail",
         "test:build": "cd ./build && mocha --bail",
         "clean": "tsc --build --clean",
         "build": "tsc",
@@ -52,6 +52,7 @@
         "xss-clean": "^0.1.4"
     },
     "devDependencies": {
+        "nodemon": "3.0.2",
         "@inquirer/prompts": "3.1.1",
         "@types/bcrypt": "5.0.0",
         "@types/chai": "4.3.6",
@@ -70,10 +71,12 @@
         "@types/validator": "13.11.1",
         "@typescript-eslint/parser": "6.7.2",
         "chai": "4.3.10",
+        "concurrently": "8.2.2",
         "eslint": "8.48.0",
         "eslint-config-prettier": "9.0.0",
         "eslint-plugin-prettier": "5.0.0",
         "lint-staged": "14.0.1",
+        "osascript": "1.2.0",
         "prettier": "3.0.3",
         "ts-mocha": "10.0.0",
         "ts-node": "^10.4.0",

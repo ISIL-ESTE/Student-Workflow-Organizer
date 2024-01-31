@@ -1,137 +1,106 @@
-import { NextFunction, RequestHandler } from 'express';
+import { IUser } from '@root/interfaces/models/i_user';
 import { Model } from 'mongoose';
 import AppError from '@utils/app_error';
 import APIFeatures from '@utils/api_features';
-import { IReq, IRes } from '@interfaces/vendors';
+
+/**
 
 /**
  * Delete a document by ID (soft delete)
  * @param {Model} Model - The mongoose model
  * @returns {Function} - Express middleware function
  */
-export const deleteOne =
-    (Model: Model<any>): RequestHandler =>
-    async (req: IReq, res: IRes, next: NextFunction): Promise<void> => {
-        try {
-            const doc = await Model.findByIdAndUpdate(
-                req.params.id,
-                {
-                    deleted: true,
-                    ...(req.user && { deletedBy: req.user?._id }),
-                    deletedAt: Date.now(),
-                },
-                { new: true }
-            );
-
-            if (!doc) throw new AppError(404, 'No document found with that id');
-
-            res.status(204).json({
-                data: null,
-            });
-        } catch (error) {
-            next(error);
-        }
-    };
+export const deleteOne = async (
+    Model: Model<any>,
+    userId: string,
+    id: string
+): Promise<void> => {
+    const doc = await Model.findByIdAndUpdate(
+        id,
+        {
+            deleted: true,
+            deletedBy: userId,
+            deletedAt: Date.now(),
+        },
+        { new: true }
+    );
+    if (!doc) throw new AppError(404, 'No document found with that id');
+};
 
 /**
  * Update a document by ID
  * @param {Model} Model - The mongoose model
  * @returns {Function} - Express middleware function
  */
-export const updateOne =
-    (Model: Model<any>): RequestHandler =>
-    async (req: IReq, res: IRes, next: NextFunction) => {
-        try {
-            // get the user who is updating the document
-            const userid = req.user?._id;
-            req.body.updatedBy = userid;
-            const payload = new Model(req.body);
-            const doc = await Model.findByIdAndUpdate(req.params.id, payload, {
-                new: true,
-                runValidators: true,
-            });
+export const updateOne = async (
+    Model: Model<any>,
+    userId: string,
+    id: string,
+    body: any
+): Promise<void> => {
+    body.updatedBy = userId;
+    const payload = new Model(body);
+    const doc = await Model.findByIdAndUpdate(id, payload, {
+        new: true,
+        runValidators: true,
+    });
 
-            if (!doc) throw new AppError(404, 'No document found with that id');
-
-            res.status(200).json({
-                doc,
-            });
-        } catch (error) {
-            next(error);
-        }
-    };
+    if (!doc) throw new AppError(404, 'No document found with that id');
+};
 
 /**
  * Create a new document
  * @param {Model} Model - The mongoose model
  * @returns {Function} - Express middleware function
  */
-export const createOne =
-    (Model: Model<any>): RequestHandler =>
-    async (req: IReq, res: IRes, next: NextFunction) => {
-        try {
-            // get the user who is creating the document
-            if (req.user === undefined)
-                throw new AppError(
-                    401,
-                    'You are not authorized to perform this action'
-                );
-            const userid = req.user._id;
-            req.body.createdBy = userid;
+export const createOne = async (
+    Model: Model<any>,
+    body: any,
+    user: IUser
+): Promise<any> => {
+    // get the user who is creating the document
+    if (user === undefined)
+        throw new AppError(
+            401,
+            'You are not authorized to perform this action'
+        );
+    const userid = user._id;
+    body.createdBy = userid;
 
-            const doc = await Model.create(req.body);
+    const doc = await Model.create(body);
 
-            res.status(201).json({
-                doc,
-            });
-        } catch (error) {
-            next(error);
-        }
-    };
+    return doc;
+};
+
 /**
  * Get a document by ID
  * @param {Model} Model - The mongoose model
  * @returns {Function} - Express middleware function
  */
-export const getOne =
-    (Model: Model<any>): RequestHandler =>
-    async (req: IReq, res: IRes, next: NextFunction) => {
-        try {
-            const doc = await Model.findById(req.params.id);
+export const getOne = async (Model: Model<any>, id: string): Promise<any> => {
+    const doc = await Model.findById(id);
 
-            if (!doc) throw new AppError(404, 'No document found with that id');
+    if (!doc) throw new AppError(404, 'No document found with that id');
 
-            res.status(200).json({
-                doc,
-            });
-        } catch (error) {
-            next(error);
-        }
-    };
+    return doc;
+};
 
 /**
  * Get all documents
  * @param {Model} Model - The mongoose model
+ * @param {Object} query - The query object
  * @returns {Function} - Express middleware function
  */
-export const getAll =
-    (Model: Model<any>): RequestHandler =>
-    async (req: IReq, res: IRes, next: NextFunction) => {
-        try {
-            const features = new APIFeatures(
-                Model.find(),
-                req.query as Record<string, string>
-            )
-                .sort()
-                .paginate();
+export const getAll = async (
+    Model: Model<any>,
+    query: Record<string, string>
+): Promise<any> => {
+    const features = new APIFeatures(Model.find(), query).sort().paginate();
 
-            const doc = await features.query;
+    const doc = await features.query;
 
-            res.status(200).json({
-                results: doc.length,
-                data: doc,
-            });
-        } catch (error) {
-            next(error);
-        }
+    return {
+        results: doc.length,
+        data: doc,
     };
+};
