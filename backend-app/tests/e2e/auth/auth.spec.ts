@@ -75,7 +75,7 @@ describe('Auth API', () => {
     });
 
     afterEach(function () {
-        const errorBody = res && res.body;
+        const errorBody = res?.body;
         if (this.currentTest.state === 'failed' && errorBody) {
             console.debug('res: ', errorBody);
         }
@@ -350,7 +350,7 @@ describe('User API', () => {
         accessToken = res.body.accessToken;
     });
     afterEach(function () {
-        const errorBody = res && res.body;
+        const errorBody = res?.body;
         if (this.currentTest.state === 'failed' && errorBody) {
             console.debug('res: ', errorBody);
         }
