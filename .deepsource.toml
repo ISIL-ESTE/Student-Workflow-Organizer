@@ -1,0 +1,21 @@
+version = 1
+
+[[analyzers]]
+name = "javascript"
+
+  [analyzers.meta]
+  environment = [
+    "mocha",
+    "mongo",
+    "nodejs"
+  ]
+
+[[analyzers]]
+name = "docker"
+
+  [analyzers.meta]
+  dockerfile_paths = [
+    "/",
+    "backend-app",
+    "frontend-app"
+  ]
