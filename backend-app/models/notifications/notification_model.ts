@@ -24,6 +24,7 @@ interface INotification extends Document {
     sender: string | mongoose.Types.ObjectId;
     receiver: mongoose.Types.ObjectId;
     sendThrough: SendThrough;
+    archive: boolean;
 }
 
 const notificationSchema: Schema = new mongoose.Schema<INotification>(
@@ -95,6 +96,10 @@ const notificationSchema: Schema = new mongoose.Schema<INotification>(
                 },
                 message: 'Invalid sendThrough value',
             },
+        },
+        archive: {
+            type: Boolean,
+            default: false,
         },
     },
     {
