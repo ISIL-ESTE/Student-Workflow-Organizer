@@ -3,18 +3,18 @@ import validator from 'validator';
 import metaData from '@constants/meta_data';
 
 enum SendThrough {
-    SMS = "sms",
-    Gmail = "gmail",
-    Notification = "notification"
+    SMS = 'sms',
+    Gmail = 'gmail',
+    Notification = 'notification',
 }
-enum CategoryType{
-    Message = "message",
-    Alert = "alert",
-    Reminder = "reminder",
-    Other = "other"
+enum CategoryType {
+    Message = 'message',
+    Alert = 'alert',
+    Reminder = 'reminder',
+    Other = 'other',
 }
 
-interface INotification extends Document {
+export interface INotification extends Document {
     id: string;
     sentDate: Date;
     receivedDate: Date;
@@ -103,7 +103,7 @@ const notificationSchema: Schema = new mongoose.Schema<INotification>(
 );
 
 // add meta data to the schema
-metaData.apply(notificationSchema)
+metaData.apply(notificationSchema);
 
 notificationSchema.pre('find', function () {
     this.where({ deleted: false });
@@ -113,6 +113,8 @@ notificationSchema.pre('findOne', function () {
     this.where({ deleted: false });
 });
 
-const Notification: Model<INotification> = mongoose.model<INotification>("Notification", notificationSchema);
+const Notification: Model<INotification> = mongoose.model<INotification>(
+    'Notification',
+    notificationSchema
+);
 export default Notification;
-
