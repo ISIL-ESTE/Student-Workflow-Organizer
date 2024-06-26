@@ -18,8 +18,14 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           
+      - name: Get branch name
+        run: echo "PR_BRANCH=$(jq -r .pull_request.head.ref < $GITHUB_EVENT_PATH)" >> $GITHUB_ENV
+
+      - name: Checkout the pull request branch
+        run: git checkout ${{ env.PR_BRANCH }}
+
       - name: Enable auto-merge for Dependabot PRs
         run: gh pr merge --auto --merge "$PR_URL"
         env:
           GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          pull-request-number: ${{ steps.metadata.outputs.pull-request-number }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
