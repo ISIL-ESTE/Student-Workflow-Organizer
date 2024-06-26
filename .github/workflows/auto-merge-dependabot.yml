@@ -1,31 +1,27 @@
-name: Dependabot auto-merge
-on: pull_request
+name: "Dependabot Automerge - Action"
 
-permissions:
-  pull-requests: write
+on:
+  pull_request:
 
 jobs:
-  dependabot:
+  worker:
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }}
+
+    if: github.actor == 'dependabot[bot]'
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Dependabot metadata
-        id: metadata
-        uses: dependabot/fetch-metadata@v1
+      - name: automerge
+        uses: actions/github-script@0.2.0
         with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
-          
-      - name: Get branch name
-        run: echo "PR_BRANCH=$(jq -r .pull_request.head.ref < $GITHUB_EVENT_PATH)" >> $GITHUB_ENV
-
-      - name: Checkout the pull request branch
-        run: git checkout ${{ env.PR_BRANCH }}
-
-      - name: Enable auto-merge for Dependabot PRs
-        run: gh pr merge --auto --merge "$PR_URL"
-        env:
-          GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          PR_URL: ${{ github.event.pull_request.html_url }}
+          script: |
+            github.pullRequests.createReview({
+              owner: context.payload.repository.owner.login,
+              repo: context.payload.repository.name,
+              pull_number: context.payload.pull_request.number,
+              event: 'APPROVE'
+            })
+            github.pullRequests.merge({
+              owner: context.payload.repository.owner.login,
+              repo: context.payload.repository.name,
+              pull_number: context.payload.pull_request.number
+            })
+          github-token: ${{github.token}}
