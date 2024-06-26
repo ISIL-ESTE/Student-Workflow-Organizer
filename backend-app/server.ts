@@ -46,6 +46,8 @@ mongoose.connection.on('disconnected', () => {
 
 // Start the server
 const startServer = async (): Promise<import('http').Server> => {
+    if (!fs.existsSync('.env'))
+        logger.warn('.env file not found, using .env.example file');
     logger.info(`App running on :`);
     logger.info(` ----------------------------`);
     logger.info(`| http://localhost:${PORT}/docs |`);
