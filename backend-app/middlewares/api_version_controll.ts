@@ -12,6 +12,7 @@ import AppError from '@root/utils/app_error';
 const handleAPIVersion = (req: Request, res: Response, next: NextFunction) => {
     if (!req.headers['api-version']) {
         req.headers['api-version'] = API_VERSION;
+        res.setHeader('api-version', API_VERSION);
     }
 
     // Redirect to the default API version if the API version is missing in the URL
@@ -29,7 +30,6 @@ const handleAPIVersion = (req: Request, res: Response, next: NextFunction) => {
 
     // Check if the API version is the latest
     if (req.headers['api-version'] === API_VERSION) {
-        console.log('API version is the latest');
         return next();
     }
 
