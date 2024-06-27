@@ -19,10 +19,10 @@ RUN npm install
 COPY . .
 
 # env port 8000
-ENV PORT=8000
+ENV PORT=8080
 
 # Expose the port your application will be listening on
-EXPOSE 8000
+EXPOSE 8080
 
 # Start the Node.js application in dev mode
 CMD ["npm", "run", "dev"]

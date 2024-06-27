@@ -10,7 +10,7 @@
         "test": "tsoa spec-and-routes && tsoa swagger && ts-mocha --bail",
         "test:build": "cd ./build && mocha --bail",
         "clean": "tsc --build --clean",
-        "build": "tsc",
+        "build": "tsoa spec-and-routes && tsoa swagger && tsc",
         "generate": "tsoa spec-and-routes && tsoa swagger",
         "seed": "ts-node-dev ./seeds/m.js"
     },

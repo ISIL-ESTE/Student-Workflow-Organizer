@@ -13,6 +13,14 @@ import request from 'supertest';
 let res: request.Response;
 
 describe('Auth API', () => {
+    afterEach(function () {
+        const errorBody = res?.body;
+        if (this.currentTest.state === 'failed' && errorBody) {
+            console.debug('res: ', errorBody);
+        }
+
+        res = null;
+    });
     describe('POST /signup', () => {
         it('should return an error if email is not provided', async () => {
             res = await agent.post('/api/auth/signup').send({
@@ -74,14 +82,6 @@ describe('Auth API', () => {
         });
     });
 
-    afterEach(function () {
-        const errorBody = res && res.body;
-        if (this.currentTest.state === 'failed' && errorBody) {
-            console.debug('res: ', errorBody);
-        }
-
-        res = null;
-    });
     describe('POST /login', () => {
         it('should login a user', async () => {
             res = await agent.post('/api/auth/login').send({
@@ -152,109 +152,133 @@ describe('Auth API', () => {
         });
     });
 
-    describe('GET /activate', () => {
-        let user: any;
+    if (process.env.REQUIRE_ACTIVATION === 'true')
+        describe('GET /activate', () => {
+            let user: any;
 
-        // login user each time
-        beforeEach(async () => {
-            user = await User.findOne({ email: 'testuser@example.com' }).select(
-                '+activationKey'
-            );
+            // login user each time
+            beforeEach(async () => {
+                user = await User.findOne({
+                    email: 'testuser@example.com',
+                }).select('+activationKey');
+            });
+
+            it('should return an error if activation key is not provided', async () => {
+                res = await agent.get(
+                    `/api/auth/activate?id=${user._id.toString()}`
+                );
+
+                expect(res.status).to.equal(400);
+                expect(res.body).to.have.property(
+                    'message',
+                    'Please provide activation key'
+                );
+            });
+
+            it('should return an error if user id is not provided', async () => {
+                res = await agent.get(
+                    `/api/auth/activate?activationKey=${user.activationKey}`
+                );
+
+                expect(res.status).to.equal(400);
+                expect(res.body).to.have.property(
+                    'message',
+                    'Please provide user id'
+                );
+            });
+
+            it('should return an error if user id is invalid', async () => {
+                res = await agent.get(
+                    `/api/auth/activate?id=invalidid&activationKey=${user.activationKey}`
+                );
+
+                expect(res.status).to.equal(400);
+                expect(res.body).to.have.property(
+                    'message',
+                    'Please provide a valid user id'
+                );
+            });
+
+            it('should return an error if activation key is invalid', async () => {
+                res = await agent.get(
+                    `/api/auth/activate?id=${user._id.toString()}&activationKey=invalidkey`
+                );
+
+                expect(res.status).to.equal(400);
+                expect(res.body).to.have.property(
+                    'message',
+                    'Invalid activation key'
+                );
+            });
+
+            it('should return an error if user does not exist', async () => {
+                res = await agent.get(
+                    `/api/auth/activate?id=${new mongoose.Types.ObjectId()}&activationKey=${
+                        user.activationKey
+                    }`
+                );
+
+                expect(res.status).to.equal(404);
+                expect(res.body).to.have.property(
+                    'message',
+                    'User does not exist'
+                );
+            });
+
+            it('should activate a user account', async () => {
+                res = await agent.get(
+                    `/api/auth/activate?id=${user._id.toString()}&activationKey=${
+                        user.activationKey
+                    }`
+                );
+
+                expect(res.status).to.equal(200);
+                expect(res.body).to.have.property('user');
+                expect(res.body.user).to.have.property('name', 'Test User');
+                expect(res.body.user).to.have.property(
+                    'email',
+                    'testuser@example.com'
+                );
+                expect(res.body.user).to.not.have.property('password');
+                expect(res.body.user).to.not.have.property('activationKey');
+                expect(res.body.user).to.have.property('active', true);
+            });
+            it('should return an error if user is already active', async () => {
+                res = await agent.get(
+                    `/api/auth/activate?id=${user._id.toString()}&activationKey=${
+                        user.activationKey
+                    }`
+                );
+
+                expect(res.status).to.equal(409);
+                expect(res.body).to.have.property(
+                    'message',
+                    'User is already active'
+                );
+            });
+        });
+    else
+        describe('GET /activate', () => {
+            it('should return a conflict error (User is already active) if activation is not required', async () => {
+                var user: any;
+                user = await User.findOne({
+                    email: 'testuser@example.com',
+                }).select('+activationKey');
+                res = await agent.get(
+                    `/api/auth/activate?id=${user._id.toString()}&activationKey=${
+                        user.activationKey
+                    }`
+                );
+
+                expect(res.status).to.equal(409);
+                expect(res.body).to.have.property(
+                    'message',
+                    'User is already active'
+                );
+            });
         });
 
-        it('should return an error if activation key is not provided', async () => {
-            res = await agent.get(
-                `/api/auth/activate?id=${user._id.toString()}`
-            );
-
-            expect(res.status).to.equal(400);
-            expect(res.body).to.have.property(
-                'message',
-                'Please provide activation key'
-            );
-        });
-
-        it('should return an error if user id is not provided', async () => {
-            res = await agent.get(
-                `/api/auth/activate?activationKey=${user.activationKey}`
-            );
-
-            expect(res.status).to.equal(400);
-            expect(res.body).to.have.property(
-                'message',
-                'Please provide user id'
-            );
-        });
-
-        it('should return an error if user id is invalid', async () => {
-            res = await agent.get(
-                `/api/auth/activate?id=invalidid&activationKey=${user.activationKey}`
-            );
-
-            expect(res.status).to.equal(400);
-            expect(res.body).to.have.property(
-                'message',
-                'Please provide a valid user id'
-            );
-        });
-
-        it('should return an error if activation key is invalid', async () => {
-            res = await agent.get(
-                `/api/auth/activate?id=${user._id.toString()}&activationKey=invalidkey`
-            );
-
-            expect(res.status).to.equal(400);
-            expect(res.body).to.have.property(
-                'message',
-                'Invalid activation key'
-            );
-        });
-
-        it('should return an error if user does not exist', async () => {
-            res = await agent.get(
-                `/api/auth/activate?id=${new mongoose.Types.ObjectId()}&activationKey=${
-                    user.activationKey
-                }`
-            );
-
-            expect(res.status).to.equal(404);
-            expect(res.body).to.have.property('message', 'User does not exist');
-        });
-
-        it('should activate a user account', async () => {
-            res = await agent.get(
-                `/api/auth/activate?id=${user._id.toString()}&activationKey=${
-                    user.activationKey
-                }`
-            );
-
-            expect(res.status).to.equal(200);
-            expect(res.body).to.have.property('user');
-            expect(res.body.user).to.have.property('name', 'Test User');
-            expect(res.body.user).to.have.property(
-                'email',
-                'testuser@example.com'
-            );
-            expect(res.body.user).to.not.have.property('password');
-            expect(res.body.user).to.not.have.property('activationKey');
-            expect(res.body.user).to.have.property('active', true);
-        });
-        it('should return an error if user is already active', async () => {
-            res = await agent.get(
-                `/api/auth/activate?id=${user._id.toString()}&activationKey=${
-                    user.activationKey
-                }`
-            );
-
-            expect(res.status).to.equal(409);
-            expect(res.body).to.have.property(
-                'message',
-                'User is already active'
-            );
-        });
-    });
-
-    describe(' GET /auth/refreshToken', () => {
+    describe('GET /auth/refreshToken', () => {
         let accessToken: string;
         let refreshToken: string;
 
@@ -313,6 +337,7 @@ describe('Auth API', () => {
             expect(res.status).to.equal(204);
             const setCookieHeader = res.headers['set-cookie'];
             if (setCookieHeader) {
+                // @ts-ignore
                 const cookies = setCookieHeader.map(
                     (cookie: string) => cookie.split(';')[0]
                 );
@@ -350,7 +375,7 @@ describe('User API', () => {
         accessToken = res.body.accessToken;
     });
     afterEach(function () {
-        const errorBody = res && res.body;
+        const errorBody = res?.body;
         if (this.currentTest.state === 'failed' && errorBody) {
             console.debug('res: ', errorBody);
         }
