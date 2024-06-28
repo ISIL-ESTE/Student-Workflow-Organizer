@@ -20,7 +20,7 @@ const parseBoolean = (value: string): boolean => value === 'true';
 
 export const logFilePath = join(__dirname, '../server-logs');
 export const CURRENT_ENV = process.env.NODE_ENV?.toLowerCase();
-export const API_VERSION = process.env.npm_package_version;
+export const API_VERSION = process.env.API_VERSION;
 export const DATABASE = process.env.MONGO_URI;
 export const MONGO_URI_TEST = process.env.MONGO_URI_TEST;
 export const PORT = process.env.PORT;

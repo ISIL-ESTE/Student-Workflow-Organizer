@@ -67,7 +67,8 @@ const errorHandler = (
         status: (err as any).statusCode,
         title: httpStatus.getStatusText((err as any).statusCode),
         details: {
-            ...((err as any).path && { path: (err as any).path }),
+            ...((err as any).path && { path: (err as any).path.replace(/\/v\d+/, '') }),
+            "api-version": req.headers['api-version'],
             ...(CURRENT_ENV === 'development' && {
                 error: {
                     '0': 'Do not forget to remove this in production!',
