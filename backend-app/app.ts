@@ -17,7 +17,8 @@ import cookieParser from 'cookie-parser';
 // import routesVersioning from 'express-routes-versioning';
 // import indexRouter from './routes/index';
 import { RegisterRoutes } from './routes';
-
+import TaskEmitter from '@root/utils/TaskEmitter';
+import { expressAuthentication } from './middlewares/authentications';
 const app = express();
 
 // use json as default format
@@ -69,6 +70,30 @@ app.use(handleAPIVersion);
 
 // handle bearer token
 app.use(bearerToken());
+
+app.get(
+    '/streams',
+    async (req, res, next) => {
+        await expressAuthentication(req, 'jwt');
+        next();
+    },
+    (req, res) => {
+        TaskEmitter.registerClient(req, res);
+        console.log('Client connnected...');
+        res.writeHead(200, {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Content-Encoding': 'none',
+            Connection: 'keep-alive',
+        });
+        TaskEmitter.listenIncomingNotification();
+        res.on('close', () => {
+            console.log('Client disconnected.');
+            TaskEmitter.removeConnectedClient(String(req.user._id));
+            res.end();
+        });
+    }
+);
 
 app.get('/', (_req: Request, res: Response) => {
     res.status(200).json({

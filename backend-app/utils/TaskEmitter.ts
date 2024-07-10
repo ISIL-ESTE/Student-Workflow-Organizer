@@ -9,7 +9,7 @@ import {
     SendThrough,
 } from '@root/models/notifications/notification_model';
 import Logger from '@utils/logger';
-import test from 'collections/sorted-set';
+
 class TaskEmitter extends EventEmitter {
     public connectedClients: Map<string, Response> = new Map();
     constructor() {
@@ -20,8 +20,7 @@ class TaskEmitter extends EventEmitter {
         this.emit(event, data);
     }
     public registerClient(req: IReq, res: Response): void {
-        let userId = req.user._id as unknown as string;
-        userId = userId.toString();
+        let userId = String(req.user._id);
         if (this.connectedClients.has(userId)) {
             this.connectedClients.delete(userId);
             this.connectedClients.set(userId, res);
