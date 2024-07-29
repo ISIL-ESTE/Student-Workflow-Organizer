@@ -17,6 +17,7 @@ import cookieParser from 'cookie-parser';
 // import routesVersioning from 'express-routes-versioning';
 // import indexRouter from './routes/index';
 import { RegisterRoutes } from './routes';
+import notification_controller from './controllers/notification_controller';
 
 const app = express();
 
@@ -69,6 +70,8 @@ app.use(handleAPIVersion);
 
 // handle bearer token
 app.use(bearerToken());
+
+app.get('/streams', notification_controller);
 
 app.get('/', (_req: Request, res: Response) => {
     res.status(200).json({

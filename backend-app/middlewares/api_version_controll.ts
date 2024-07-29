@@ -19,12 +19,16 @@ const handleAPIVersion = (req: Request, res: Response, next: NextFunction) => {
     if (
         req.url.includes('/docs') ||
         req.url.includes('/docs-json') ||
-        req.url.includes(`/${req.headers['api-version']}`)
+        req.url.includes(`/${req.headers['api-version']}`) ||
+        req.url.includes('/streams')
     )
         return next();
 
     // validate the API version
-    if (!/^v[0-9]+$/.test(String(req.headers['api-version'])) || req.headers['api-version'] > API_VERSION) {
+    if (
+        !/^v[0-9]+$/.test(String(req.headers['api-version'])) ||
+        req.headers['api-version'] > API_VERSION
+    ) {
         throw new AppError(400, 'Invalid API version');
     }
 

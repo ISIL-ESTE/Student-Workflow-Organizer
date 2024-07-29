@@ -2,14 +2,14 @@ import Notification, {
     INotification,
 } from '@root/models/notifications/notification_model';
 import logger from '../logger';
-type notificationInput = Pick<
+export type NotificationInput = Pick<
     INotification,
     'content' | 'sender' | 'receiver' | 'category' | 'sendThrough'
 >;
 // type notificationOutput = Required<INotification>;
 export default class NotificationHandler {
     public static async createNotification(
-        data: notificationInput
+        data: NotificationInput
     ): Promise<INotification> {
         const { content, sender, receiver, category, sendThrough } = data;
 
@@ -33,9 +33,6 @@ export default class NotificationHandler {
             return null;
         }
     }
-    // public static async sendNotification(notification: notificationOutput) {
-    //     //send with SSE
-    // }
     public static async seenNotification(id: string) {
         try {
             await Notification.findOneAndUpdate({ id }, { seen: true });
@@ -61,4 +58,3 @@ export default class NotificationHandler {
         return notifications;
     }
 }
-
