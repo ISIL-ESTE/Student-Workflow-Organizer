@@ -12,7 +12,7 @@ jobs:
       - name: Automerge
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PAT }}
           script: |
             console.log("Context: ", context);
             
