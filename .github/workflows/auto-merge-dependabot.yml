@@ -7,12 +7,15 @@ jobs:
   worker:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Automerge
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.PAT }}
+          github-token: ${{ github.token }}
           script: |
             console.log("Context: ", context);
             
