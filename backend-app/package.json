@@ -79,7 +79,7 @@
         "nodemon": "3.0.2",
         "osascript": "1.2.0",
         "prettier": "3.0.3",
-        "ts-mocha": "10.0.0",
+        "ts-mocha": "11.1.0",
         "ts-node": "^10.4.0",
         "tsconfig-paths": "4.2.0",
         "typescript": "^5.2.2"
