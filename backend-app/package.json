@@ -47,7 +47,7 @@
         "supertest": "6.3.3",
         "swagger-ui-express": "5.0.0",
         "tsoa": "6.3.1",
-        "validator": "^13.11.0",
+        "validator": "^13.15.22",
         "winston": "^3.10.0",
         "winston-daily-rotate-file": "^4.7.1",
         "xss-clean": "^0.1.4"
